@@ -1,0 +1,1860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FF Tournament Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@700;900&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #050508;
+    --bg2: #0a0a0f;
+    --bg3: #0f0f18;
+    --card: #111120;
+    --card2: #161628;
+    --border: #1e1e3a;
+    --accent: #f5a623;
+    --accent2: #ff4e00;
+    --blue: #3d6ef5;
+    --blue2: #5b8cff;
+    --green: #00e676;
+    --red: #ff3d57;
+    --text: #e8e8f0;
+    --muted: #6a6a8a;
+    --gold: #ffd700;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 4px; }
+
+  /* ── HEADER ── */
+  #header {
+    background: linear-gradient(90deg, #050508, #0a0a1a, #050508);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+  .logo span { color: var(--blue2); -webkit-text-fill-color: var(--blue2); }
+  #userBadge {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .role-pill {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 10px; border-radius: 20px; text-transform: uppercase;
+  }
+  .role-admin { background: rgba(245,166,35,0.15); color: var(--accent); border: 1px solid rgba(245,166,35,0.4); }
+  .role-captain { background: rgba(61,110,245,0.15); color: var(--blue2); border: 1px solid rgba(61,110,245,0.4); }
+  .role-player { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+  #logoutBtn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 5px 12px; border-radius: 6px;
+    cursor: pointer; font-size: 12px; transition: all 0.2s;
+  }
+  #logoutBtn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── NAV ── */
+  #nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 2px; padding: 0 16px;
+    overflow-x: auto;
+  }
+  .nav-btn {
+    background: transparent; border: none; color: var(--muted);
+    padding: 12px 16px; cursor: pointer; font-size: 13px;
+    font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    letter-spacing: 0.5px; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── MAIN ── */
+  #main { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+
+  /* ── SECTIONS ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── PAGE TITLE ── */
+  .page-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 22px; font-weight: 700; letter-spacing: 1px;
+    margin-bottom: 18px; color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .page-title::before {
+    content: ''; width: 4px; height: 22px;
+    background: linear-gradient(var(--accent), var(--accent2));
+    border-radius: 2px; display: inline-block;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(61,110,245,0.3); }
+  .card-head {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px; font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  /* ── GRID ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media(max-width:600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  /* ── STAT BOX ── */
+  .stat-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; text-align: center;
+  }
+  .stat-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--blue2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-label { color: var(--muted); font-size: 11px; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* ── BADGE / TAG ── */
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .badge-orange { background: rgba(245,166,35,0.15); color: var(--accent); }
+  .badge-blue { background: rgba(61,110,245,0.15); color: var(--blue2); }
+  .badge-green { background: rgba(0,230,118,0.1); color: var(--green); }
+  .badge-red { background: rgba(255,61,87,0.15); color: var(--red); }
+  .badge-gold { background: rgba(255,215,0,0.1); color: var(--gold); }
+
+  /* ── MATCH CARD ── */
+  .match-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .match-card:hover { border-color: rgba(61,110,245,0.3); transform: translateY(-1px); }
+  .match-name {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px; font-weight: 700;
+  }
+  .match-meta { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+  .match-info { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+  .match-info-item { font-size: 12px; color: var(--muted); }
+  .match-info-item strong { color: var(--text); display: block; font-size: 13px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 9px 18px; border-radius: 7px; border: none;
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    font-family: 'Rajdhani', sans-serif; letter-spacing: 0.5px;
+    transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue2)); color: #fff; }
+  .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+  .btn-accent { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #000; font-weight: 700; }
+  .btn-accent:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-green { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+  .btn-green:hover { background: rgba(0,230,118,0.25); }
+  .btn-red { background: rgba(255,61,87,0.15); color: var(--red); border: 1px solid rgba(255,61,87,0.3); }
+  .btn-red:hover { background: rgba(255,61,87,0.25); }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--blue); color: var(--blue2); }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* ── INPUTS ── */
+  input, select, textarea {
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); border-radius: 7px; padding: 10px 14px;
+    font-size: 13px; width: 100%; outline: none;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--blue); }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  select option { background: var(--bg3); }
+  .form-row { margin-bottom: 12px; }
+  .form-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; display: block; letter-spacing: 0.5px; text-transform: uppercase; }
+  .form-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(5,5,8,0.92);
+    z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; width: 100%; max-width: 480px;
+    max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal-title {
+    font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 18px;
+    background: none; border: none; color: var(--muted);
+    font-size: 20px; cursor: pointer; line-height: 1;
+  }
+  .modal { position: relative; }
+
+  /* ── WALLET ── */
+  .wallet-box {
+    background: linear-gradient(135deg, #0d0d20, #111128);
+    border: 1px solid rgba(61,110,245,0.3);
+    border-radius: 12px; padding: 20px; margin-bottom: 14px;
+    position: relative; overflow: hidden;
+  }
+  .wallet-box::before {
+    content: '◆';
+    position: absolute; right: 20px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 60px; color: rgba(61,110,245,0.05);
+  }
+  .wallet-bal {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, #ffd700, #f5a623);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .wallet-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+  /* ── SLOT TABLE ── */
+  .slot-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .slot-table th { background: var(--bg3); color: var(--muted); font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  .slot-table td { padding: 9px 10px; border-bottom: 1px solid rgba(30,30,58,0.5); vertical-align: top; }
+  .slot-table tr:last-child td { border-bottom: none; }
+  .slot-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .slot-no {
+    font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--accent); background: rgba(245,166,35,0.1);
+    border-radius: 4px; padding: 2px 8px; display: inline-block;
+  }
+  .uid-list { font-size: 11px; color: var(--muted); line-height: 1.8; }
+  .uid-list span { display: block; }
+  .uid-required { color: var(--text); }
+  .uid-optional { color: var(--muted); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--card2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 999; opacity: 0; transition: all 0.3s;
+    pointer-events: none;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.toast-success { border-color: var(--green); color: var(--green); }
+  #toast.toast-error { border-color: var(--red); color: var(--red); }
+
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 300; display: flex; align-items: center; justify-content: center;
+  }
+  .login-box {
+    width: 100%; max-width: 360px; padding: 20px;
+  }
+  .login-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-align: center; margin-bottom: 6px; letter-spacing: 3px;
+  }
+  .login-sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 28px; letter-spacing: 2px; text-transform: uppercase; }
+  .role-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .role-tab {
+    flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 13px;
+    text-align: center; transition: all 0.2s;
+  }
+  .role-tab.active { background: rgba(61,110,245,0.15); border-color: var(--blue); color: var(--blue2); }
+  .hexdeco {
+    position: fixed; opacity: 0.03; font-size: 200px;
+    pointer-events: none; user-select: none;
+    font-family: 'Orbitron', sans-serif; color: var(--blue2);
+  }
+  .hexdeco.tl { top: -40px; left: -40px; }
+  .hexdeco.br { bottom: -40px; right: -40px; }
+
+  /* ── UTR DEPOSIT ── */
+  .utr-box {
+    background: var(--bg3); border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 10px; padding: 16px; margin: 12px 0;
+    font-size: 13px;
+  }
+  .utr-box .upi { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--accent); letter-spacing: 1px; }
+
+  /* ── TXNS ── */
+  .txn-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(30,30,58,0.5); }
+  .txn-row:last-child { border-bottom: none; }
+  .txn-label { font-size: 13px; }
+  .txn-sub { font-size: 11px; color: var(--muted); }
+  .txn-amt { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; }
+  .txn-credit { color: var(--green); }
+  .txn-debit { color: var(--red); }
+
+  /* ── SLOT NUMBER BIG ── */
+  .slot-badge {
+    background: linear-gradient(135deg, rgba(245,166,35,0.15), rgba(255,78,0,0.1));
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 10px; padding: 16px; text-align: center; margin: 12px 0;
+  }
+  .slot-num {
+    font-family: 'Orbitron', sans-serif; font-size: 40px; font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .slot-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
+
+  /* ── DISTRIBUTE ── */
+  .dist-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .dist-row label { flex: 1; font-size: 13px; }
+  .dist-row input { width: 100px; }
+
+  /* ── EMPTY STATE ── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+  .empty p { font-size: 13px; }
+
+  /* divider */
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  /* ── ROOM CREDS ── */
+  .room-cred {
+    background: var(--bg3); border: 1px solid rgba(0,230,118,0.2);
+    border-radius: 8px; padding: 14px; margin-top: 10px;
+  }
+  .room-cred .rc-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .room-cred .rc-val { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--green); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<!-- BG Deco -->
+<div class="hexdeco tl">⬡</div>
+<div class="hexdeco br">⬡</div>
+
+<!-- APP LOADER -->
+<div id="appLoader" style="position:fixed;inset:0;background:var(--bg);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+  <div style="font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px">FF HUB</div>
+  <div style="display:flex;gap:6px">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--blue2);animation:dot 1.2s ease-in-out infinite"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:dot 1.2s ease-in-out 0.2s infinite"></div>
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:dot 1.2s ease-in-out 0.4s infinite"></div>
+  </div>
+  <div style="font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase">Connecting to Firebase...</div>
+</div>
+<style>
+@keyframes dot { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+</style>
+
+<!-- LOGIN -->
+<div id="loginScreen" style="display:none">
+  <div class="login-box">
+    <div class="login-logo">FF HUB</div>
+    <div class="login-sub">Tournament Manager</div>
+    <div class="role-tabs">
+      <div class="role-tab active" onclick="selectRole('admin')">⚙ Admin</div>
+      <div class="role-tab" onclick="selectRole('captain')">🎖 Captain</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Username</label>
+      <input id="loginUser" placeholder="Enter username" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Password</label>
+      <input id="loginPass" type="password" placeholder="Enter password" />
+    </div>
+    <div id="loginCapFields" style="display:none">
+      <div class="form-row">
+        <label class="form-label">Your Free Fire UID</label>
+        <input id="loginUID" placeholder="Enter your UID" />
+      </div>
+    </div>
+    <button class="btn btn-accent btn-full" style="margin-top:8px" onclick="doLogin()">LOGIN →</button>
+    <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--muted)">
+      Admin default: admin / admin123
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div id="header" style="display:none">
+  <div class="logo">FF<span>HUB</span></div>
+  <div id="userBadge"></div>
+</div>
+
+<!-- NAV -->
+<div id="nav" style="display:none"></div>
+
+<!-- MAIN -->
+<div id="main" style="display:none">
+
+  <!-- DASHBOARD -->
+  <div id="sec-dashboard" class="section">
+    <div class="page-title">Dashboard</div>
+    <div class="grid3" id="dashStats"></div>
+    <div style="margin-top:18px" id="dashMatches"></div>
+  </div>
+
+  <!-- MATCHES (Admin create / Captain view) -->
+  <div id="sec-matches" class="section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="page-title" style="margin:0">Matches</div>
+      <button class="btn btn-accent btn-sm" id="createMatchBtn" style="display:none" onclick="openModal('createMatchModal')">+ Create Match</button>
+    </div>
+    <div id="matchesList"></div>
+  </div>
+
+  <!-- MY TEAMS (Captain) -->
+  <div id="sec-myteam" class="section">
+    <div class="page-title">My Registrations</div>
+    <div id="myTeamContent"></div>
+  </div>
+
+  <!-- WALLET -->
+  <div id="sec-wallet" class="section">
+    <div class="page-title">Wallet</div>
+    <div id="walletContent"></div>
+  </div>
+
+  <!-- SLOTS (Admin) -->
+  <div id="sec-slots" class="section">
+    <div class="page-title">All Slots & Teams</div>
+    <div id="slotsContent"></div>
+  </div>
+
+  <!-- DISTRIBUTE (Admin) -->
+  <div id="sec-distribute" class="section">
+    <div class="page-title">Distribute Winnings</div>
+    <div id="distributeContent"></div>
+  </div>
+
+  <!-- CAPTAINS (Admin) -->
+  <div id="sec-captains" class="section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="page-title" style="margin:0">Captains</div>
+      <button class="btn btn-accent btn-sm" onclick="openModal('adminAddCaptainModal')">+ Add Captain</button>
+    </div>
+    <div id="captainsContent"></div>
+  </div>
+
+  <!-- ADMIN WALLET (Admin) -->
+  <div id="sec-adminwallet" class="section">
+    <div class="page-title">💰 Wallet Manager</div>
+    <div id="adminWalletContent"></div>
+  </div>
+
+</div>
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- CREATE MATCH -->
+<div class="modal-overlay" id="createMatchModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('createMatchModal')">✕</button>
+    <div class="modal-title">🎮 Create Match</div>
+    <div class="form-row">
+      <label class="form-label">Match Name</label>
+      <input id="mName" placeholder="e.g. Sunday Clash #5" />
+    </div>
+    <div class="grid2">
+      <div class="form-row">
+        <label class="form-label">Type</label>
+        <select id="mType">
+          <option>Battle Royale</option>
+          <option>Clash Squad</option>
+          <option>Daily Match</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Format</label>
+        <select id="mFormat">
+          <option>Squad (6 players)</option>
+          <option>Duo (2 players)</option>
+          <option>Solo</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="form-row">
+        <label class="form-label">Date & Time</label>
+        <input id="mTime" type="datetime-local" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Entry Fee (₹)</label>
+        <input id="mEntry" type="number" placeholder="100" />
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="form-row">
+        <label class="form-label">Max Slots</label>
+        <input id="mSlots" type="number" placeholder="12" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Prize Pool (₹)</label>
+        <input id="mPrize" type="number" placeholder="1000" />
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Map</label>
+      <input id="mMap" placeholder="e.g. Bermuda, Kalahari, Purgatory" />
+    </div>
+    <button class="btn btn-accent btn-full" onclick="createMatch()">Create Match</button>
+  </div>
+</div>
+
+<!-- JOIN MATCH (Captain register team) -->
+<div class="modal-overlay" id="joinMatchModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('joinMatchModal')">✕</button>
+    <div class="modal-title">🏆 Register Team</div>
+    <div id="joinMatchInfo"></div>
+    <div class="divider"></div>
+    <div class="form-row">
+      <label class="form-label">Team Name</label>
+      <input id="jTeamName" placeholder="Your team name" />
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Players (UID + In-Game Name)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="jUID1" placeholder="P1 UID *" />
+      <input id="jIGN1" placeholder="P1 In-Game Name *" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="jUID2" placeholder="P2 UID *" />
+      <input id="jIGN2" placeholder="P2 In-Game Name *" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="jUID3" placeholder="P3 UID *" />
+      <input id="jIGN3" placeholder="P3 In-Game Name *" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="jUID4" placeholder="P4 UID *" />
+      <input id="jIGN4" placeholder="P4 In-Game Name *" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="jUID5" placeholder="P5 UID (opt)" />
+      <input id="jIGN5" placeholder="P5 In-Game Name" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <input id="jUID6" placeholder="P6 UID (opt)" />
+      <input id="jIGN6" placeholder="P6 In-Game Name" />
+    </div>
+    <div id="joinFeeNote" style="font-size:12px;color:var(--muted);margin-bottom:12px"></div>
+    <button class="btn btn-accent btn-full" onclick="joinMatch()">Pay Entry & Get Slot</button>
+  </div>
+</div>
+
+<!-- DEPOSIT MODAL -->
+<div class="modal-overlay" id="depositModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('depositModal')">✕</button>
+    <div class="modal-title">💰 Add Money</div>
+    <div class="utr-box">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Pay to UPI ID</div>
+      <div class="upi" id="depUpiId">tournament@upi</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">After payment, enter UTR number below</div>
+    </div>
+    <div id="depQrBox" style="display:none;text-align:center;margin:10px 0">
+      <img id="depQrImg" src="" alt="QR Code" style="max-width:200px;max-height:200px;border-radius:10px;border:1px solid var(--border)" />
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">Scan QR to pay</div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Amount (₹)</label>
+      <input id="depAmount" type="number" placeholder="Enter amount" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">UTR / Transaction ID</label>
+      <input id="depUTR" placeholder="12-digit UTR number" />
+    </div>
+    <button class="btn btn-accent btn-full" onclick="submitDeposit()">Submit for Approval</button>
+    <div class="form-hint" style="text-align:center;margin-top:10px">Admin will verify & credit your wallet within 30 mins</div>
+  </div>
+</div>
+
+<!-- WITHDRAW MODAL -->
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('withdrawModal')">✕</button>
+    <div class="modal-title">💸 Withdraw Money</div>
+    <div class="form-row">
+      <label class="form-label">Amount (₹)</label>
+      <input id="wdAmount" type="number" placeholder="Enter amount to withdraw" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">UPI ID / Account Details</label>
+      <input id="wdUPI" placeholder="Your UPI ID or bank details" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Note (Optional)</label>
+      <input id="wdNote" placeholder="Any note for admin" />
+    </div>
+    <button class="btn btn-green btn-full" onclick="submitWithdraw()">Request Withdrawal</button>
+    <div class="form-hint" style="text-align:center;margin-top:10px">Admin will process within 24 hours</div>
+  </div>
+</div>
+
+<!-- ADMIN WITHDRAW APPROVE -->
+<div class="modal-overlay" id="approveWdModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('approveWdModal')">✕</button>
+    <div class="modal-title">💸 Pending Withdrawals</div>
+    <div id="pendingWdList"></div>
+  </div>
+</div>
+
+<!-- ADMIN DEPOSIT APPROVE -->
+<div class="modal-overlay" id="approveDepModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('approveDepModal')">✕</button>
+    <div class="modal-title">✅ Pending Deposits</div>
+    <div id="pendingDepList"></div>
+  </div>
+</div>
+
+<!-- ADMIN PAYMENT SETTINGS -->
+<div class="modal-overlay" id="paySettingsModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('paySettingsModal')">✕</button>
+    <div class="modal-title">⚙ Payment Settings</div>
+    <div class="form-row">
+      <label class="form-label">UPI ID</label>
+      <input id="psUpiId" placeholder="yourname@upi" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">QR Code Image URL</label>
+      <input id="psQrUrl" placeholder="https://... (link to QR image)" />
+      <div class="form-hint">Paste a direct image URL or upload to imgbb/imgur and paste link</div>
+    </div>
+    <div id="psQrPreview" style="display:none;text-align:center;margin:10px 0">
+      <img id="psQrImg" src="" alt="QR Preview" style="max-width:160px;border-radius:8px;border:1px solid var(--border)" />
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-bottom:10px" onclick="previewQr()">Preview QR</button>
+    <button class="btn btn-accent btn-full" onclick="savePaySettings()">Save Settings</button>
+  </div>
+</div>
+
+<!-- VIEW SLOT DETAIL -->
+<div class="modal-overlay" id="slotDetailModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('slotDetailModal')">✕</button>
+    <div id="slotDetailContent"></div>
+  </div>
+</div>
+
+<!-- SET ROOM CREDS (Admin) -->
+<div class="modal-overlay" id="roomCredModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('roomCredModal')">✕</button>
+    <div class="modal-title">🔑 Set Room Credentials</div>
+    <div class="form-row">
+      <label class="form-label">Room ID</label>
+      <input id="rcRoomId" placeholder="Room ID" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Room Password</label>
+      <input id="rcRoomPass" placeholder="Password" />
+    </div>
+    <button class="btn btn-green btn-full" onclick="saveRoomCreds()">Save & Reveal to Players</button>
+  </div>
+</div>
+
+<!-- DISTRIBUTE WINNINGS -->
+<div class="modal-overlay" id="distributeModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('distributeModal')">✕</button>
+    <div class="modal-title">🏅 Distribute Winnings</div>
+    <div id="distMatchInfo" style="margin-bottom:12px"></div>
+    <div id="distRows"></div>
+    <div class="divider"></div>
+    <div id="distTotal" style="font-size:13px;color:var(--muted);margin-bottom:12px"></div>
+    <button class="btn btn-accent btn-full" onclick="confirmDistribute()">Confirm & Send to Wallets</button>
+  </div>
+</div>
+
+<!-- CAPTAIN REGISTER (Admin Only) -->
+<div class="modal-overlay" id="capRegModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('capRegModal')">✕</button>
+    <div class="modal-title">🎖 Captain Registration</div>
+    <div class="form-row">
+      <label class="form-label">Username</label>
+      <input id="regUser" placeholder="Choose username" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Password</label>
+      <input id="regPass" type="password" placeholder="Choose password" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Captain Name</label>
+      <input id="regName" placeholder="Your in-game name" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Free Fire UID</label>
+      <input id="regUID" placeholder="Your UID" />
+    </div>
+    <button class="btn btn-accent btn-full" onclick="doRegister()">Register as Captain</button>
+  </div>
+</div>
+
+<!-- ADMIN ADD CAPTAIN MODAL -->
+<div class="modal-overlay" id="adminAddCaptainModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('adminAddCaptainModal')">✕</button>
+    <div class="modal-title">➕ Create Captain Account</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Create a captain account and share the credentials with the player.</div>
+    <div class="form-row">
+      <label class="form-label">Username</label>
+      <input id="acUser" placeholder="Choose username" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Password</label>
+      <input id="acPass" type="password" placeholder="Choose password" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Captain Name (In-Game)</label>
+      <input id="acName" placeholder="In-game name" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Free Fire UID</label>
+      <input id="acUID" placeholder="Captain's UID" />
+    </div>
+    <button class="btn btn-accent btn-full" onclick="adminCreateCaptain()">Create Account</button>
+    <div id="acResult" style="display:none;margin-top:14px;background:var(--bg3);border:1px solid rgba(0,230,118,0.3);border-radius:8px;padding:14px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">✓ Account Created — Share these credentials</div>
+      <div style="font-size:13px;margin-bottom:4px">Username: <strong id="acResUser" style="color:var(--blue2)"></strong></div>
+      <div style="font-size:13px">Password: <strong id="acResPass" style="color:var(--accent)"></strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script type="module">
+// ═══════════════════════════════════════════════
+//  FIREBASE SETUP
+// ═══════════════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCG2UQB0O-pM3VikwhO7ovEr1DCgMifItI",
+  authDomain: "ffhub-3b5c3.firebaseapp.com",
+  projectId: "ffhub-3b5c3",
+  storageBucket: "ffhub-3b5c3.firebasestorage.app",
+  messagingSenderId: "172809979091",
+  appId: "1:172809979091:web:4cf7a080541345561a8026"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ═══════════════════════════════════════════════
+//  IN-MEMORY DB + FIRESTORE SYNC
+//  All data lives in DB{} in-memory.
+//  Every write also pushes to Firestore.
+//  onSnapshot keeps all clients in sync.
+// ═══════════════════════════════════════════════
+const DB = {
+  admin:       { username:'admin', password:'admin123' },
+  captains:    [],
+  matches:     [],
+  registrations: [],
+  wallets:     {},
+  deposits:    [],
+  withdrawals: [],
+  txns:        {},
+  paySettings: { upiId:'tournament@upi', qrUrl:'' },
+};
+
+// Keys stored as single Firestore documents in collection "ffhub"
+const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings'];
+
+// Write one key to Firestore
+async function fsSet(key, value) {
+  DB[key] = value;
+  try {
+    await setDoc(doc(db, 'ffhub', key), { data: JSON.stringify(value) });
+  } catch(e) { console.warn('Firestore write failed:', e); }
+}
+
+// S shim — reads from in-memory DB (always instant), writes go to Firestore too
+const S = {
+  get: (k) => DB[k],
+  set: (k, v) => { fsSet(k, v); },
+};
+
+// Load all data from Firestore on startup, then set up live listeners
+async function initData() {
+  showLoader(true);
+  try {
+    // Initial load — fetch all docs in parallel
+    await Promise.all(KEYS.map(async key => {
+      try {
+        const snap = await getDoc(doc(db, 'ffhub', key));
+        if (snap.exists()) {
+          DB[key] = JSON.parse(snap.data().data);
+        } else {
+          // First time — write defaults to Firestore
+          await setDoc(doc(db, 'ffhub', key), { data: JSON.stringify(DB[key]) });
+        }
+      } catch(e) { console.warn('Load error for', key, e); }
+    }));
+
+    // Set up real-time listeners — any change from any device updates UI
+    KEYS.forEach(key => {
+      onSnapshot(doc(db, 'ffhub', key), (snap) => {
+        if (snap.exists()) {
+          try {
+            DB[key] = JSON.parse(snap.data().data);
+            // If a section is currently shown, re-render it
+            if (CUR) {
+              const active = document.querySelector('.section.active');
+              if (active) {
+                const sec = active.id.replace('sec-','');
+                renderSection(sec);
+              }
+            }
+          } catch(e) {}
+        }
+      });
+    });
+  } catch(e) {
+    console.warn('Firebase init failed, running offline:', e);
+  }
+  showLoader(false);
+  // Show login screen
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function showLoader(show) {
+  document.getElementById('appLoader').style.display = show ? 'flex' : 'none';
+  document.getElementById('loginScreen').style.display = show ? 'none' : 'flex';
+}
+
+// ═══════ AUTH ═══════
+let CUR = null;
+let selectedRole = 'admin';
+
+function selectRole(r) {
+  selectedRole = r;
+  document.querySelectorAll('.role-tab').forEach((t,i) => t.classList.toggle('active', i === (r==='admin'?0:1)));
+  document.getElementById('loginCapFields').style.display = r==='captain' ? 'block' : 'none';
+}
+
+function doLogin() {
+  const u = v('loginUser'), p = v('loginPass');
+  if (!u || !p) { toast('Enter username & password','error'); return; }
+
+  if (selectedRole === 'admin') {
+    const admin = S.get('admin');
+    if (u === admin.username && p === admin.password) {
+      CUR = { role:'admin', username:'Admin', name:'Admin' };
+      startSession();
+    } else { toast('Wrong admin credentials','error'); }
+  } else {
+    const caps = S.get('captains');
+    const cap = caps.find(c => c.username === u && c.password === p);
+    if (cap) {
+      CUR = { role:'captain', username:cap.username, name:cap.name, uid:cap.uid };
+      startSession();
+    } else { toast('Captain not found','error'); }
+  }
+}
+
+function showRegModal() { openModal('capRegModal'); }
+
+function doRegister() {
+  const u = v('regUser'), p = v('regPass'), n = v('regName'), uid = v('regUID');
+  if (!u||!p||!n||!uid) { toast('Fill all fields','error'); return; }
+  const caps = S.get('captains');
+  if (caps.find(c => c.username===u)) { toast('Username taken','error'); return; }
+  caps.push({ username:u, password:p, name:n, uid });
+  S.set('captains', caps);
+  const wallets = S.get('wallets');
+  wallets[u] = 0;
+  S.set('wallets', wallets);
+  const txns = S.get('txns');
+  txns[u] = [];
+  S.set('txns', txns);
+  closeModal('capRegModal');
+  toast('Registered! You can now login','success');
+}
+
+function startSession() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('header').style.display = 'flex';
+  document.getElementById('nav').style.display = 'flex';
+  document.getElementById('main').style.display = 'block';
+  renderUserBadge();
+  buildNav();
+  nav('dashboard');
+}
+
+function doLogout() {
+  CUR = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('header').style.display = 'none';
+  document.getElementById('nav').style.display = 'none';
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+function renderUserBadge() {
+  const badge = CUR.role === 'admin' ? '<span class="role-pill role-admin">Admin</span>'
+    : '<span class="role-pill role-captain">Captain</span>';
+  document.getElementById('userBadge').innerHTML = `
+    <span style="font-size:13px;font-family:Rajdhani,sans-serif;font-weight:600">${CUR.name}</span>
+    ${badge}
+    <button id="logoutBtn" onclick="doLogout()">Logout</button>
+  `;
+}
+
+// ═══════ NAV ═══════
+const ADMIN_TABS = [
+  {id:'dashboard',label:'Dashboard'},
+  {id:'matches',label:'Matches'},
+  {id:'slots',label:'Slots'},
+  {id:'distribute',label:'Distribute'},
+  {id:'captains',label:'Captains'},
+  {id:'adminwallet',label:'💰 Wallet'},
+];
+const CAP_TABS = [
+  {id:'dashboard',label:'Dashboard'},
+  {id:'matches',label:'Matches'},
+  {id:'myteam',label:'My Teams'},
+  {id:'wallet',label:'Wallet'},
+];
+
+function buildNav() {
+  const tabs = CUR.role==='admin' ? ADMIN_TABS : CAP_TABS;
+  document.getElementById('nav').innerHTML = tabs.map(t =>
+    `<button class="nav-btn" id="navbtn-${t.id}" onclick="nav('${t.id}')">${t.label}</button>`
+  ).join('');
+}
+
+function nav(sec) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const btn = document.getElementById('navbtn-'+sec);
+  if (btn) btn.classList.add('active');
+  const el = document.getElementById('sec-'+sec);
+  if (el) { el.classList.add('active'); renderSection(sec); }
+}
+
+// ═══════ RENDER SECTIONS ═══════
+function renderSection(sec) {
+  if (sec==='dashboard') renderDashboard();
+  else if (sec==='matches') renderMatches();
+  else if (sec==='myteam') renderMyTeam();
+  else if (sec==='wallet') renderWallet();
+  else if (sec==='slots') renderSlots();
+  else if (sec==='distribute') renderDistribute();
+  else if (sec==='captains') renderCaptains();
+  else if (sec==='adminwallet') renderAdminWallet();
+}
+
+// DASHBOARD
+function renderDashboard() {
+  const matches = S.get('matches');
+  const regs = S.get('registrations');
+  const caps = S.get('captains');
+  if (CUR.role==='admin') {
+    const totalEntry = regs.reduce((a,r) => {
+      const m = matches.find(x => x.id===r.matchId);
+      return a + (m ? Number(m.entry) : 0);
+    }, 0);
+    document.getElementById('dashStats').innerHTML = `
+      <div class="stat-box"><div class="stat-val">${matches.length}</div><div class="stat-label">Total Matches</div></div>
+      <div class="stat-box"><div class="stat-val">${caps.length}</div><div class="stat-label">Captains</div></div>
+      <div class="stat-box"><div class="stat-val">₹${totalEntry}</div><div class="stat-label">Total Entry Collected</div></div>
+    `;
+    const active = matches.filter(m => m.status !== 'completed').slice(0,3);
+    document.getElementById('dashMatches').innerHTML = active.length
+      ? `<div class="page-title" style="font-size:15px">Active Matches</div>` + active.map(m => matchCardHTML(m, regs)).join('')
+      : `<div class="empty"><div class="empty-icon">🎮</div><p>No active matches</p></div>`;
+  } else {
+    const wallets = S.get('wallets');
+    const bal = wallets[CUR.username] || 0;
+    const myRegs = regs.filter(r => r.captain===CUR.username);
+    document.getElementById('dashStats').innerHTML = `
+      <div class="stat-box"><div class="stat-val">₹${bal}</div><div class="stat-label">Wallet Balance</div></div>
+      <div class="stat-box"><div class="stat-val">${myRegs.length}</div><div class="stat-label">Matches Joined</div></div>
+      <div class="stat-box"><div class="stat-val">${matches.filter(m=>m.status!=='completed').length}</div><div class="stat-label">Open Matches</div></div>
+    `;
+    const open = matches.filter(m => m.status!=='completed').slice(0,3);
+    document.getElementById('dashMatches').innerHTML = open.length
+      ? `<div class="page-title" style="font-size:15px">Open Matches</div>` + open.map(m => matchCardHTML(m, regs)).join('')
+      : `<div class="empty"><div class="empty-icon">🏆</div><p>No open matches right now</p></div>`;
+  }
+}
+
+function matchCardHTML(m, regs) {
+  const joined = regs.filter(r => r.matchId===m.id).length;
+  const dt = new Date(m.time);
+  const isCap = CUR.role==='captain';
+  const myReg = isCap ? regs.find(r=>r.matchId===m.id && r.captain===CUR.username) : null;
+  const statusColor = m.status==='open' ? 'green' : m.status==='live' ? 'orange' : 'red';
+  return `<div class="match-card">
+    <div class="card-head">
+      <div class="match-name">${m.name}</div>
+      <span class="badge badge-${statusColor}">${m.status||'open'}</span>
+    </div>
+    <div class="match-meta">
+      <span class="badge badge-blue">${m.type}</span>
+      <span class="badge badge-orange">${m.format||'Squad'}</span>
+    </div>
+    <div class="match-info">
+      <div class="match-info-item"><strong>${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</strong>Date & Time</div>
+      <div class="match-info-item"><strong>₹${m.entry}</strong>Entry Fee</div>
+      <div class="match-info-item"><strong>${joined}/${m.slots}</strong>Slots Filled</div>
+      <div class="match-info-item"><strong>₹${m.prize}</strong>Prize Pool</div>
+    </div>
+    ${m.map ? `<div style="font-size:12px;color:var(--muted);margin-top:8px">🗺 ${m.map}</div>` : ''}
+    ${m.roomId ? `<div class="room-cred"><div class="rc-label">Room ID</div><div class="rc-val">${m.roomId}</div><div class="rc-label" style="margin-top:8px">Password</div><div class="rc-val">${m.roomPass}</div></div>` : ''}
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+      ${isCap && !myReg && m.status!=='completed' ? `<button class="btn btn-accent btn-sm" onclick="openJoinMatch('${m.id}')">Join Match</button>` : ''}
+      ${isCap && myReg ? `<span class="badge badge-green" style="padding:6px 12px">✓ Slot #${myReg.slot}</span>` : ''}
+      ${CUR.role==='admin' ? `
+        <button class="btn btn-ghost btn-sm" onclick="openRoomCreds('${m.id}')">Set Room</button>
+        <button class="btn btn-ghost btn-sm" onclick="changeStatus('${m.id}','${m.status}')">Status</button>
+      ` : ''}
+    </div>
+  </div>`;
+}
+
+// MATCHES
+function renderMatches() {
+  if (CUR.role==='admin') document.getElementById('createMatchBtn').style.display='inline-flex';
+  const matches = S.get('matches');
+  const regs = S.get('registrations');
+  document.getElementById('matchesList').innerHTML = matches.length
+    ? matches.map(m => matchCardHTML(m, regs)).join('')
+    : `<div class="empty"><div class="empty-icon">🎮</div><p>No matches yet. Create one!</p></div>`;
+}
+
+// MY TEAM (Captain)
+function renderMyTeam() {
+  const regs = S.get('registrations').filter(r => r.captain===CUR.username);
+  const matches = S.get('matches');
+  if (!regs.length) {
+    document.getElementById('myTeamContent').innerHTML = `<div class="empty"><div class="empty-icon">🏆</div><p>You haven't joined any match yet.</p></div>`;
+    return;
+  }
+  document.getElementById('myTeamContent').innerHTML = regs.map(r => {
+    const m = matches.find(x=>x.id===r.matchId);
+    if (!m) return '';
+    const dt = new Date(m.time);
+    return `<div class="card">
+      <div class="card-head">
+        <div class="card-title">${m.name}</div>
+        <span class="badge badge-blue">${m.type}</span>
+      </div>
+      <div class="slot-badge">
+        <div class="slot-num">#${r.slot}</div>
+        <div class="slot-label">Your Slot Number</div>
+      </div>
+      <div class="match-info">
+        <div class="match-info-item"><strong>${r.teamName}</strong>Team Name</div>
+        <div class="match-info-item"><strong>${dt.toLocaleDateString()}</strong>Match Date</div>
+        <div class="match-info-item"><strong>₹${m.entry}</strong>Entry Paid</div>
+        <div class="match-info-item"><strong>${m.map||'TBA'}</strong>Map</div>
+      </div>
+      ${m.roomId ? `<div class="room-cred"><div class="rc-label">Room ID</div><div class="rc-val">${m.roomId}</div><div class="rc-label" style="margin-top:8px">Password</div><div class="rc-val">${m.roomPass}</div></div>` : '<div style="font-size:12px;color:var(--muted);margin-top:10px">🔑 Room credentials will appear here once admin releases them</div>'}
+      <div class="divider"></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Team Players</div>
+      <div class="uid-list">
+        ${(r.players || r.uids.filter(Boolean).map((uid,i)=>({uid,ign:''}))).map((p,i) => p ? `<span class="${i<4?'uid-required':'uid-optional'}">P${i+1}: <strong>${p.ign||'—'}</strong> <span style="opacity:0.5">(${p.uid})</span>${i>=4?' (sub)':''}</span>` : '').join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// WALLET (Captain)
+function renderWallet() {
+  const wallets = S.get('wallets');
+  const txns = S.get('txns');
+  const bal = wallets[CUR.username] || 0;
+  const myTxns = (txns[CUR.username] || []).slice().reverse();
+  const deps = S.get('deposits').filter(d=>d.captain===CUR.username);
+  const wds = S.get('withdrawals').filter(w=>w.captain===CUR.username);
+  const pendingDep = deps.filter(d=>d.status==='pending');
+  const pendingWd = wds.filter(w=>w.status==='pending');
+  document.getElementById('walletContent').innerHTML = `
+    <div class="wallet-box">
+      <div class="wallet-label">Available Balance</div>
+      <div class="wallet-bal">₹${bal}</div>
+      ${pendingDep.length ? `<div style="font-size:11px;color:var(--accent);margin-top:8px">⏳ ${pendingDep.length} deposit pending approval</div>` : ''}
+      ${pendingWd.length ? `<div style="font-size:11px;color:var(--red);margin-top:4px">⏳ ${pendingWd.length} withdrawal pending approval</div>` : ''}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <button class="btn btn-accent btn-full" onclick="openDepositModal()">+ Add Money</button>
+      <button class="btn btn-green btn-full" onclick="openModal('withdrawModal')">↑ Withdraw</button>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px">Transaction History</div>
+      ${myTxns.length ? myTxns.map(t => `
+        <div class="txn-row">
+          <div>
+            <div class="txn-label">${t.label}</div>
+            <div class="txn-sub">${t.date}</div>
+          </div>
+          <div class="txn-amt ${t.type==='credit'?'txn-credit':'txn-debit'}">${t.type==='credit'?'+':'-'}₹${t.amount}</div>
+        </div>`).join('')
+      : '<div class="empty"><p>No transactions yet</p></div>'}
+    </div>
+  `;
+}
+
+// SLOTS (Admin)
+function renderSlots() {
+  const matches = S.get('matches');
+  if (!matches.length) {
+    document.getElementById('slotsContent').innerHTML = `<div class="empty"><div class="empty-icon">📋</div><p>No matches created yet</p></div>`;
+    return;
+  }
+  document.getElementById('slotsContent').innerHTML = matches.map(m => {
+    const regs = S.get('registrations').filter(r=>r.matchId===m.id);
+    return `<div class="card">
+      <div class="card-head">
+        <div class="card-title">${m.name}</div>
+        <span class="badge badge-blue">${regs.length}/${m.slots} slots</span>
+      </div>
+      ${regs.length ? `
+      <div style="overflow-x:auto;margin-top:10px">
+        <table class="slot-table">
+          <tr><th>Slot</th><th>Team</th><th>Captain</th><th>Players</th><th>Entry</th></tr>
+          ${regs.map(r=>`<tr>
+            <td><span class="slot-no">#${r.slot}</span></td>
+            <td style="font-weight:600">${r.teamName}</td>
+            <td>${r.captain}</td>
+            <td><div class="uid-list">
+              ${(r.players || r.uids.filter(Boolean).map((uid,i)=>({uid,ign:''}))).map((p,i)=>p?`<span class="${i<4?'uid-required':'uid-optional'}">${p.ign||'P'+(i+1)}: <span style="opacity:0.6">${p.uid}</span>${i>=4?' (sub)':''}</span>`:'').join('')}
+            </div></td>
+            <td style="color:var(--green)">₹${m.entry}</td>
+          </tr>`).join('')}
+        </table>
+      </div>` : `<div class="empty" style="padding:20px"><p>No registrations yet</p></div>`}
+    </div>`;
+  }).join('');
+}
+
+// DISTRIBUTE (Admin)
+function renderDistribute() {
+  const matches = S.get('matches');
+  document.getElementById('distributeContent').innerHTML = matches.length
+    ? matches.map(m => {
+        const regs = S.get('registrations').filter(r=>r.matchId===m.id);
+        const pot = regs.length * Number(m.entry);
+        return `<div class="card">
+          <div class="card-head">
+            <div class="card-title">${m.name}</div>
+            <span class="badge badge-gold">Pool: ₹${pot}</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${regs.length} teams registered • Prize: ₹${m.prize}</div>
+          ${regs.length ? `<button class="btn btn-accent btn-sm" onclick="openDistribute('${m.id}')">Distribute Winnings</button>` : '<span style="font-size:12px;color:var(--muted)">No registrations</span>'}
+        </div>`;
+      }).join('')
+    : `<div class="empty"><div class="empty-icon">🏅</div><p>No matches yet</p></div>`;
+}
+
+// CAPTAINS (Admin)
+function renderCaptains() {
+  const caps = S.get('captains');
+  const wallets = S.get('wallets');
+  const regs = S.get('registrations');
+  const matches = S.get('matches');
+  document.getElementById('captainsContent').innerHTML = `
+    ${caps.length ? caps.map(c=>{
+      const capRegs = regs.filter(r=>r.captain===c.username);
+      const histHTML = capRegs.length ? capRegs.map(r=>{
+        const m = matches.find(x=>x.id===r.matchId);
+        if (!m) return '';
+        const players = r.players || r.uids.filter(Boolean).map((uid,i)=>({uid,ign:'P'+(i+1)}));
+        return `<div style="background:var(--bg3);border-radius:6px;padding:10px;margin-top:8px">
+          <div style="font-size:12px;font-weight:600;color:var(--blue2)">${m.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Team: ${r.teamName} • Slot #${r.slot}</div>
+          <div style="font-size:11px;color:var(--muted)">
+            ${players.map((p,i)=>`<span style="display:inline-block;background:var(--card);border-radius:4px;padding:2px 6px;margin:2px;${i<4?'color:var(--text)':'color:var(--muted)'}">P${i+1}: ${p.ign||'—'} <span style="opacity:0.5">(${p.uid})</span></span>`).join('')}
+          </div>
+        </div>`;
+      }).join('') : '<div style="font-size:11px;color:var(--muted);padding:6px 0">No matches played yet</div>';
+
+      return `<div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">${c.name}</div>
+            <div style="font-size:11px;color:var(--muted)">@${c.username} • UID: ${c.uid}</div>
+          </div>
+          <div style="font-family:Orbitron,sans-serif;font-size:16px;color:var(--gold)">₹${wallets[c.username]||0}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn btn-ghost btn-sm" onclick="adminAddFunds('${c.username}')">+ Add Funds</button>
+          <button class="btn btn-ghost btn-sm" onclick="adminDeductFunds('${c.username}')">- Deduct</button>
+        </div>
+        <details style="margin-top:12px">
+          <summary style="font-size:11px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.5px">
+            Match History (${capRegs.length} matches)
+          </summary>
+          ${histHTML}
+        </details>
+      </div>`;
+    }).join('')
+    : `<div class="empty"><div class="empty-icon">👥</div><p>No captains yet. Add one above.</p></div>`}
+  `;
+}
+
+
+// ═══════ ADMIN WALLET MANAGER ═══════
+function renderAdminWallet() {
+  const deps = S.get('deposits') || [];
+  const wds = S.get('withdrawals') || [];
+  const wallets = S.get('wallets') || {};
+  const caps = S.get('captains') || [];
+  const ps = S.get('paySettings') || { upiId:'tournament@upi', qrUrl:'' };
+
+  const totalWalletBal = caps.reduce((a,c) => a + (wallets[c.username]||0), 0);
+  const totalDeposited = deps.filter(d=>d.status==='approved').reduce((a,d)=>a+d.amount,0);
+  const totalWithdrawn = wds.filter(w=>w.status==='approved').reduce((a,w)=>a+w.amount,0);
+  const pendingDeps = deps.filter(d=>d.status==='pending');
+  const pendingWds = wds.filter(w=>w.status==='pending');
+
+  // All txns across all captains sorted newest first
+  const txns = S.get('txns') || {};
+  const allTxns = [];
+  caps.forEach(c => {
+    (txns[c.username]||[]).forEach(t => allTxns.push({...t, captain:c.username, capName:c.name}));
+  });
+  allTxns.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  document.getElementById('adminWalletContent').innerHTML = `
+
+    <!-- STATS ROW -->
+    <div class="grid3" style="margin-bottom:18px">
+      <div class="stat-box">
+        <div class="stat-val" style="font-size:20px">₹${totalWalletBal}</div>
+        <div class="stat-label">Total in Wallets</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="font-size:20px;background:linear-gradient(135deg,var(--green),#00c853);-webkit-background-clip:text">₹${totalDeposited}</div>
+        <div class="stat-label">Total Deposited</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" style="font-size:20px;background:linear-gradient(135deg,var(--red),#ff7043);-webkit-background-clip:text">₹${totalWithdrawn}</div>
+        <div class="stat-label">Total Withdrawn</div>
+      </div>
+    </div>
+
+    <!-- QR / UPI SETTINGS CARD -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        <div class="card-title">📱 Payment Settings</div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleSection('awPayEdit')">Edit</button>
+      </div>
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:1;min-width:160px">
+          <div class="form-label" style="margin-bottom:4px">UPI ID</div>
+          <div style="font-family:Orbitron,sans-serif;font-size:14px;color:var(--accent)">${ps.upiId||'—'}</div>
+        </div>
+        ${ps.qrUrl ? `<div style="text-align:center">
+          <div class="form-label" style="margin-bottom:4px">QR Code</div>
+          <img src="${ps.qrUrl}" alt="QR" style="width:100px;height:100px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.style.display='none'" />
+        </div>` : `<div style="font-size:12px;color:var(--muted);padding-top:16px">No QR set</div>`}
+      </div>
+      <div id="awPayEdit" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="form-row">
+          <label class="form-label">UPI ID</label>
+          <input id="awUpiId" value="${ps.upiId||''}" placeholder="yourname@upi" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">QR Image URL</label>
+          <input id="awQrUrl" value="${ps.qrUrl||''}" placeholder="https://i.imgur.com/..." />
+          <div class="form-hint">Upload to imgur/imgbb → paste direct image link</div>
+        </div>
+        ${ps.qrUrl ? `<div style="text-align:center;margin-bottom:10px"><img src="${ps.qrUrl}" id="awQrPreview" style="max-width:120px;border-radius:8px;border:1px solid var(--border)" /></div>` : ''}
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="previewAwQr()">Preview QR</button>
+          <button class="btn btn-accent btn-sm" onclick="saveAwPaySettings()">Save</button>
+        </div>
+        <div id="awQrPreviewBox" style="display:none;text-align:center;margin-top:10px">
+          <img id="awQrPreviewImg" src="" style="max-width:140px;border-radius:8px;border:1px solid var(--green)" />
+        </div>
+      </div>
+    </div>
+
+    <!-- PENDING DEPOSITS -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        <div class="card-title">⏳ Deposit Requests</div>
+        <span class="badge ${pendingDeps.length ? 'badge-orange' : 'badge-green'}">${pendingDeps.length} pending</span>
+      </div>
+      ${deps.length ? `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <button class="btn btn-ghost btn-sm" onclick="filterDeps('pending')" id="fdPending" style="border-color:var(--accent);color:var(--accent)">Pending (${pendingDeps.length})</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterDeps('approved')" id="fdApproved">Approved</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterDeps('rejected')" id="fdRejected">Rejected</button>
+          </div>
+          <div id="depFilterList">${renderDepList('pending')}</div>
+        </div>` : '<div class="empty" style="padding:16px"><p>No deposit requests yet</p></div>'}
+    </div>
+
+    <!-- PENDING WITHDRAWALS -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-head">
+        <div class="card-title">💸 Withdrawal Requests</div>
+        <span class="badge ${pendingWds.length ? 'badge-red' : 'badge-green'}">${pendingWds.length} pending</span>
+      </div>
+      ${wds.length ? `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <button class="btn btn-ghost btn-sm" onclick="filterWds('pending')" id="fwPending" style="border-color:var(--red);color:var(--red)">Pending (${pendingWds.length})</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterWds('approved')" id="fwApproved">Approved</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterWds('rejected')" id="fwRejected">Rejected</button>
+          </div>
+          <div id="wdFilterList">${renderWdList('pending')}</div>
+        </div>` : '<div class="empty" style="padding:16px"><p>No withdrawal requests yet</p></div>'}
+    </div>
+
+    <!-- ALL TRANSACTIONS -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">📋 All Transactions</div>
+        <span class="badge badge-blue">${allTxns.length} total</span>
+      </div>
+      ${allTxns.length ? allTxns.slice(0,50).map(t=>`
+        <div class="txn-row">
+          <div>
+            <div class="txn-label">${t.label}</div>
+            <div class="txn-sub">@${t.captain} (${t.capName}) • ${t.date}</div>
+          </div>
+          <div class="txn-amt ${t.type==='credit'?'txn-credit':'txn-debit'}">${t.type==='credit'?'+':'-'}₹${t.amount}</div>
+        </div>`).join('')
+      : '<div class="empty"><p>No transactions yet</p></div>'}
+    </div>
+  `;
+}
+
+function renderDepList(status) {
+  const deps = (S.get('deposits')||[]).filter(d=>d.status===status);
+  if (!deps.length) return `<div style="font-size:12px;color:var(--muted);padding:8px 0">No ${status} deposits</div>`;
+  return deps.map(d=>`
+    <div style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <div>
+          <div style="font-size:13px;font-weight:600">@${d.captain}</div>
+          <div style="font-size:11px;color:var(--muted)">UTR: ${d.utr} • ${d.date}</div>
+        </div>
+        <div style="font-family:Orbitron,sans-serif;font-size:15px;color:var(--gold)">₹${d.amount}</div>
+      </div>
+      ${status==='pending' ? `<div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-green btn-sm" onclick="approveDep('${d.id}');renderAdminWallet()">✓ Approve</button>
+        <button class="btn btn-red btn-sm" onclick="rejectDep('${d.id}');renderAdminWallet()">✕ Reject</button>
+      </div>` : `<div style="margin-top:6px"><span class="badge ${status==='approved'?'badge-green':'badge-red'}">${status}</span></div>`}
+    </div>`).join('');
+}
+
+function renderWdList(status) {
+  const wds = (S.get('withdrawals')||[]).filter(w=>w.status===status);
+  if (!wds.length) return `<div style="font-size:12px;color:var(--muted);padding:8px 0">No ${status} withdrawals</div>`;
+  return wds.map(w=>`
+    <div style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <div>
+          <div style="font-size:13px;font-weight:600">@${w.captain}</div>
+          <div style="font-size:11px;color:var(--muted)">UPI: ${w.upi} • ${w.date}</div>
+          ${w.note ? `<div style="font-size:11px;color:var(--muted)">Note: ${w.note}</div>` : ''}
+        </div>
+        <div style="font-family:Orbitron,sans-serif;font-size:15px;color:var(--red)">₹${w.amount}</div>
+      </div>
+      ${status==='pending' ? `<div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-green btn-sm" onclick="approveWd('${w.id}');renderAdminWallet()">✓ Approve</button>
+        <button class="btn btn-red btn-sm" onclick="rejectWd('${w.id}');renderAdminWallet()">✕ Reject</button>
+      </div>` : `<div style="margin-top:6px"><span class="badge ${status==='approved'?'badge-green':'badge-red'}">${status}</span></div>`}
+    </div>`).join('');
+}
+
+function filterDeps(status) {
+  document.getElementById('depFilterList').innerHTML = renderDepList(status);
+  ['fdPending','fdApproved','fdRejected'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.borderColor=''; el.style.color=''; }
+  });
+  const activeId = status==='pending'?'fdPending':status==='approved'?'fdApproved':'fdRejected';
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) { activeEl.style.borderColor='var(--blue)'; activeEl.style.color='var(--blue2)'; }
+}
+
+function filterWds(status) {
+  document.getElementById('wdFilterList').innerHTML = renderWdList(status);
+  ['fwPending','fwApproved','fwRejected'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.borderColor=''; el.style.color=''; }
+  });
+  const activeId = status==='pending'?'fwPending':status==='approved'?'fwApproved':'fwRejected';
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) { activeEl.style.borderColor='var(--blue)'; activeEl.style.color='var(--blue2)'; }
+}
+
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display==='none' ? 'block' : 'none';
+}
+
+function previewAwQr() {
+  const url = document.getElementById('awQrUrl')?.value?.trim();
+  if (!url) { toast('Enter QR URL first','error'); return; }
+  document.getElementById('awQrPreviewImg').src = url;
+  document.getElementById('awQrPreviewBox').style.display = 'block';
+}
+
+function saveAwPaySettings() {
+  const upiId = document.getElementById('awUpiId')?.value?.trim();
+  const qrUrl = document.getElementById('awQrUrl')?.value?.trim();
+  if (!upiId) { toast('Enter UPI ID','error'); return; }
+  S.set('paySettings', { upiId, qrUrl: qrUrl||'' });
+  toast('Payment settings saved!','success');
+  renderAdminWallet();
+}
+
+// ═══════ CREATE MATCH ═══════
+function createMatch() {
+  const name=v('mName'),type=v('mType'),format=v('mFormat'),time=v('mTime'),entry=v('mEntry'),slots=v('mSlots'),prize=v('mPrize'),map=v('mMap');
+  if (!name||!time||!entry||!slots||!prize) { toast('Fill required fields','error'); return; }
+  const matches = S.get('matches');
+  matches.push({ id:'m'+Date.now(), name, type, format, time, entry, slots, prize, map, status:'open', roomId:'', roomPass:'' });
+  S.set('matches', matches);
+  closeModal('createMatchModal');
+  toast('Match created!','success');
+  renderMatches();
+}
+
+// ═══════ JOIN MATCH ═══════
+let joinMatchId = null;
+function openJoinMatch(mid) {
+  joinMatchId = mid;
+  const m = S.get('matches').find(x=>x.id===mid);
+  const regs = S.get('registrations').filter(r=>r.matchId===mid);
+  document.getElementById('joinMatchInfo').innerHTML = `
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div class="card-title">${m.name}</div>
+      <span class="badge badge-blue">${m.type}</span>
+    </div>
+    <div class="match-info" style="margin-top:10px">
+      <div class="match-info-item"><strong>₹${m.entry}</strong>Entry Fee</div>
+      <div class="match-info-item"><strong>${regs.length}/${m.slots}</strong>Slots</div>
+    </div>
+  `;
+  document.getElementById('joinFeeNote').textContent = `Entry fee ₹${m.entry} will be deducted from your wallet`;
+  ['jTeamName','jUID1','jUID2','jUID3','jUID4','jUID5','jUID6','jIGN1','jIGN2','jIGN3','jIGN4','jIGN5','jIGN6'].forEach(id=>document.getElementById(id).value='');
+  openModal('joinMatchModal');
+}
+
+function joinMatch() {
+  const m = S.get('matches').find(x=>x.id===joinMatchId);
+  const wallets = S.get('wallets');
+  const regs = S.get('registrations');
+  const bal = wallets[CUR.username] || 0;
+  const fee = Number(m.entry);
+  const teamName = v('jTeamName');
+  const uid1=v('jUID1'),uid2=v('jUID2'),uid3=v('jUID3'),uid4=v('jUID4');
+  const uid5=v('jUID5'),uid6=v('jUID6');
+  const ign1=v('jIGN1'),ign2=v('jIGN2'),ign3=v('jIGN3'),ign4=v('jIGN4');
+  const ign5=v('jIGN5'),ign6=v('jIGN6');
+  if (!teamName) { toast('Enter team name','error'); return; }
+  if (!uid1||!uid2||!uid3||!uid4) { toast('4 UIDs are required','error'); return; }
+  if (!ign1||!ign2||!ign3||!ign4) { toast('4 In-Game Names are required','error'); return; }
+  if (regs.find(r=>r.matchId===joinMatchId&&r.captain===CUR.username)) { toast('Already registered in this match','error'); return; }
+  const joined = regs.filter(r=>r.matchId===joinMatchId).length;
+  if (joined >= Number(m.slots)) { toast('Match is full!','error'); return; }
+  if (bal < fee) { toast(`Insufficient balance! Need ₹${fee}, have ₹${bal}. Deposit first.`,'error'); return; }
+
+  // Deduct
+  wallets[CUR.username] = bal - fee;
+  S.set('wallets', wallets);
+  addTxn(CUR.username, { type:'debit', amount:fee, label:`Entry: ${m.name}`, date:now() });
+
+  const slot = joined + 1;
+  const players = [
+    {uid:uid1,ign:ign1},{uid:uid2,ign:ign2},{uid:uid3,ign:ign3},{uid:uid4,ign:ign4},
+    uid5?{uid:uid5,ign:ign5}:null, uid6?{uid:uid6,ign:ign6}:null
+  ].filter(Boolean);
+  regs.push({ id:'r'+Date.now(), matchId:joinMatchId, captain:CUR.username, teamName, uids:[uid1,uid2,uid3,uid4,uid5,uid6], players, slot });
+  S.set('registrations', regs);
+  closeModal('joinMatchModal');
+  toast(`Registered! Your slot is #${slot}`,'success');
+  renderSection('matches');
+}
+
+// ═══════ ROOM CREDS ═══════
+let roomCredMatchId = null;
+function openRoomCreds(mid) {
+  roomCredMatchId = mid;
+  const m = S.get('matches').find(x=>x.id===mid);
+  document.getElementById('rcRoomId').value = m.roomId||'';
+  document.getElementById('rcRoomPass').value = m.roomPass||'';
+  openModal('roomCredModal');
+}
+
+function saveRoomCreds() {
+  const rid=v('rcRoomId'),rp=v('rcRoomPass');
+  if (!rid||!rp) { toast('Enter room ID and password','error'); return; }
+  const matches = S.get('matches');
+  const m = matches.find(x=>x.id===roomCredMatchId);
+  m.roomId = rid; m.roomPass = rp;
+  S.set('matches', matches);
+  closeModal('roomCredModal');
+  toast('Room credentials set!','success');
+  renderSection('matches');
+}
+
+// ═══════ STATUS ═══════
+function changeStatus(mid, cur) {
+  const statuses = ['open','live','completed'];
+  const next = statuses[(statuses.indexOf(cur)+1)%statuses.length];
+  const matches = S.get('matches');
+  matches.find(x=>x.id===mid).status = next;
+  S.set('matches', matches);
+  toast(`Status → ${next}`,'success');
+  renderSection('matches');
+}
+
+// ═══════ DEPOSIT ═══════
+function openDepositModal() {
+  const ps = S.get('paySettings') || { upiId:'tournament@upi', qrUrl:'' };
+  document.getElementById('depUpiId').textContent = ps.upiId || 'tournament@upi';
+  const qrBox = document.getElementById('depQrBox');
+  const qrImg = document.getElementById('depQrImg');
+  if (ps.qrUrl) {
+    qrImg.src = ps.qrUrl;
+    qrBox.style.display = 'block';
+  } else {
+    qrBox.style.display = 'none';
+  }
+  document.getElementById('depAmount').value = '';
+  document.getElementById('depUTR').value = '';
+  openModal('depositModal');
+}
+
+function submitDeposit() {
+  const amt = v('depAmount'), utr = v('depUTR');
+  if (!amt||!utr) { toast('Fill amount and UTR','error'); return; }
+  const deps = S.get('deposits');
+  deps.push({ id:'d'+Date.now(), captain:CUR.username, amount:Number(amt), utr, status:'pending', date:now() });
+  S.set('deposits', deps);
+  closeModal('depositModal');
+  toast('Deposit submitted! Pending admin approval','success');
+  renderWallet();
+}
+
+// ═══════ WITHDRAW ═══════
+function submitWithdraw() {
+  const amt = v('wdAmount'), upi = v('wdUPI'), note = v('wdNote');
+  if (!amt||!upi) { toast('Fill amount and UPI ID','error'); return; }
+  const wallets = S.get('wallets');
+  const bal = wallets[CUR.username] || 0;
+  if (Number(amt) > bal) { toast(`Insufficient balance! Have ₹${bal}`,'error'); return; }
+  const wds = S.get('withdrawals');
+  wds.push({ id:'w'+Date.now(), captain:CUR.username, amount:Number(amt), upi, note, status:'pending', date:now() });
+  S.set('withdrawals', wds);
+  closeModal('withdrawModal');
+  toast('Withdrawal request sent! Pending admin approval','success');
+  renderWallet();
+}
+
+function renderPendingWds() {
+  const wds = S.get('withdrawals').filter(w=>w.status==='pending');
+  document.getElementById('pendingWdList').innerHTML = wds.length
+    ? wds.map(w=>`
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-head">
+          <div>
+            <div style="font-size:14px;font-weight:600">@${w.captain}</div>
+            <div style="font-size:11px;color:var(--muted)">UPI: ${w.upi} • ${w.date}</div>
+            ${w.note ? `<div style="font-size:11px;color:var(--muted)">Note: ${w.note}</div>` : ''}
+          </div>
+          <div style="font-family:Orbitron,sans-serif;font-size:16px;color:var(--red)">₹${w.amount}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-green btn-sm" onclick="approveWd('${w.id}')">✓ Approve</button>
+          <button class="btn btn-red btn-sm" onclick="rejectWd('${w.id}')">✕ Reject</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty"><p>No pending withdrawals</p></div>';
+}
+
+function approveWd(wid) {
+  const wds = S.get('withdrawals');
+  const w = wds.find(x=>x.id===wid);
+  const wallets = S.get('wallets');
+  const bal = wallets[w.captain] || 0;
+  if (Number(w.amount) > bal) { toast('Captain has insufficient balance!','error'); return; }
+  w.status = 'approved';
+  S.set('withdrawals', wds);
+  wallets[w.captain] = bal - Number(w.amount);
+  S.set('wallets', wallets);
+  addTxn(w.captain, { type:'debit', amount:w.amount, label:`Withdrawal to ${w.upi}`, date:now() });
+  toast('Withdrawal approved & deducted','success');
+  renderPendingWds();
+  renderCaptains();
+}
+
+function rejectWd(wid) {
+  const wds = S.get('withdrawals');
+  wds.find(x=>x.id===wid).status = 'rejected';
+  S.set('withdrawals', wds);
+  toast('Withdrawal rejected','error');
+  renderPendingWds();
+}
+
+// ═══════ PAYMENT SETTINGS (Admin) ═══════
+function openPaySettings() {
+  const ps = S.get('paySettings') || { upiId:'tournament@upi', qrUrl:'' };
+  document.getElementById('psUpiId').value = ps.upiId || '';
+  document.getElementById('psQrUrl').value = ps.qrUrl || '';
+  document.getElementById('psQrPreview').style.display = 'none';
+  openModal('paySettingsModal');
+}
+
+function previewQr() {
+  const url = v('psQrUrl');
+  if (!url) { toast('Enter QR URL first','error'); return; }
+  document.getElementById('psQrImg').src = url;
+  document.getElementById('psQrPreview').style.display = 'block';
+}
+
+function savePaySettings() {
+  const upiId = v('psUpiId'), qrUrl = v('psQrUrl');
+  if (!upiId) { toast('Enter UPI ID','error'); return; }
+  S.set('paySettings', { upiId, qrUrl });
+  closeModal('paySettingsModal');
+  toast('Payment settings saved!','success');
+}
+
+// ═══════ ADMIN CREATE CAPTAIN ═══════
+function adminCreateCaptain() {
+  const u=v('acUser'),p=v('acPass'),n=v('acName'),uid=v('acUID');
+  if (!u||!p||!n||!uid) { toast('Fill all fields','error'); return; }
+  const caps = S.get('captains');
+  if (caps.find(c=>c.username===u)) { toast('Username already taken','error'); return; }
+  caps.push({ username:u, password:p, name:n, uid });
+  S.set('captains', caps);
+  const wallets = S.get('wallets');
+  wallets[u] = 0;
+  S.set('wallets', wallets);
+  const txns = S.get('txns');
+  txns[u] = [];
+  S.set('txns', txns);
+  // Show credentials
+  document.getElementById('acResUser').textContent = u;
+  document.getElementById('acResPass').textContent = p;
+  document.getElementById('acResult').style.display = 'block';
+  ['acUser','acPass','acName','acUID'].forEach(id=>document.getElementById(id).value='');
+  toast(`Captain @${u} created!`,'success');
+  renderCaptains();
+}
+
+function renderPendingDeps() {
+  const deps = S.get('deposits').filter(d=>d.status==='pending');
+  document.getElementById('pendingDepList').innerHTML = deps.length
+    ? deps.map(d=>`
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-head">
+          <div>
+            <div style="font-size:14px;font-weight:600">@${d.captain}</div>
+            <div style="font-size:11px;color:var(--muted)">UTR: ${d.utr} • ${d.date}</div>
+          </div>
+          <div style="font-family:Orbitron,sans-serif;font-size:16px;color:var(--gold)">₹${d.amount}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-green btn-sm" onclick="approveDep('${d.id}')">✓ Approve</button>
+          <button class="btn btn-red btn-sm" onclick="rejectDep('${d.id}')">✕ Reject</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty"><p>No pending deposits</p></div>';
+}
+
+function approveDep(did) {
+  const deps = S.get('deposits');
+  const d = deps.find(x=>x.id===did);
+  d.status = 'approved';
+  S.set('deposits', deps);
+  const wallets = S.get('wallets');
+  wallets[d.captain] = (wallets[d.captain]||0) + d.amount;
+  S.set('wallets', wallets);
+  addTxn(d.captain, { type:'credit', amount:d.amount, label:`Deposit via UPI (UTR: ${d.utr})`, date:now() });
+  toast('Deposit approved & credited','success');
+  renderPendingDeps();
+  renderCaptains();
+}
+
+function rejectDep(did) {
+  const deps = S.get('deposits');
+  deps.find(x=>x.id===did).status = 'rejected';
+  S.set('deposits', deps);
+  toast('Deposit rejected','error');
+  renderPendingDeps();
+}
+
+// ═══════ ADMIN ADD/DEDUCT FUNDS ═══════
+function adminAddFunds(username) {
+  const amt = prompt(`Add funds to @${username} (₹):`);
+  if (!amt || isNaN(amt)) return;
+  const wallets = S.get('wallets');
+  wallets[username] = (wallets[username]||0) + Number(amt);
+  S.set('wallets', wallets);
+  addTxn(username, { type:'credit', amount:Number(amt), label:'Admin credit', date:now() });
+  toast(`₹${amt} added to @${username}`,'success');
+  renderCaptains();
+}
+
+function adminDeductFunds(username) {
+  const amt = prompt(`Deduct from @${username} (₹):`);
+  if (!amt || isNaN(amt)) return;
+  const wallets = S.get('wallets');
+  wallets[username] = Math.max(0, (wallets[username]||0) - Number(amt));
+  S.set('wallets', wallets);
+  addTxn(username, { type:'debit', amount:Number(amt), label:'Admin deduction', date:now() });
+  toast(`₹${amt} deducted from @${username}`,'success');
+  renderCaptains();
+}
+
+// ═══════ DISTRIBUTE ═══════
+let distMatchId = null;
+function openDistribute(mid) {
+  distMatchId = mid;
+  const m = S.get('matches').find(x=>x.id===mid);
+  const regs = S.get('registrations').filter(r=>r.matchId===mid);
+  const pot = regs.length * Number(m.entry);
+  document.getElementById('distMatchInfo').innerHTML = `
+    <div style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">${m.name}</strong> • Prize Pool: <strong style="color:var(--gold)">₹${m.prize}</strong> • Entry Pot: <strong style="color:var(--green)">₹${pot}</strong></div>`;
+  document.getElementById('distRows').innerHTML = regs.map(r=>`
+    <div class="dist-row">
+      <label>Slot #${r.slot} — <strong>${r.teamName}</strong> <span style="font-size:11px;color:var(--muted)">(@${r.captain})</span></label>
+      <input type="number" id="dist_${r.captain}" placeholder="₹0" />
+    </div>`).join('');
+  document.getElementById('distTotal').textContent = `Enter prize amounts for each team. Total can be any amount.`;
+  openModal('distributeModal');
+}
+
+function confirmDistribute() {
+  const m = S.get('matches').find(x=>x.id===distMatchId);
+  const regs = S.get('registrations').filter(r=>r.matchId===distMatchId);
+  const wallets = S.get('wallets');
+  let total = 0;
+  regs.forEach(r=>{
+    const inp = document.getElementById('dist_'+r.captain);
+    const amt = Number(inp?.value||0);
+    if (amt > 0) {
+      wallets[r.captain] = (wallets[r.captain]||0) + amt;
+      addTxn(r.captain, { type:'credit', amount:amt, label:`Prize: ${m.name} (Slot #${r.slot})`, date:now() });
+      total += amt;
+    }
+  });
+  S.set('wallets', wallets);
+  closeModal('distributeModal');
+  toast(`₹${total} distributed to winners!`,'success');
+  renderDistribute();
+}
+
+// ═══════ TXN HELPER ═══════
+function addTxn(username, txn) {
+  const txns = S.get('txns');
+  if (!txns[username]) txns[username] = [];
+  txns[username].push(txn);
+  S.set('txns', txns);
+}
+
+// ═══════ UTILS ═══════
+function v(id) { return document.getElementById(id)?.value?.trim()||''; }
+function now() { return new Date().toLocaleString(); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' toast-'+type : '');
+  setTimeout(()=>{ t.className=''; }, 3000);
+}
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click', e=>{ if (e.target===o) o.classList.remove('open'); });
+});
+
+// ═══════ EXPOSE TO WINDOW (required for type=module + onclick) ═══════
+Object.assign(window, {
+  selectRole, doLogin, doLogout, doRegister, nav,
+  openModal, closeModal, toggleSection,
+  renderAdminWallet,
+  createMatch, openJoinMatch, joinMatch,
+  openRoomCreds, saveRoomCreds, changeStatus,
+  openDepositModal, submitDeposit,
+  submitWithdraw, renderPendingWds,
+  approveWd, rejectWd,
+  approveDep, rejectDep, renderPendingDeps,
+  adminAddFunds, adminDeductFunds,
+  adminCreateCaptain,
+  openDistribute, confirmDistribute,
+  filterDeps, filterWds,
+  previewAwQr, saveAwPaySettings,
+  previewQr, savePaySettings, openPaySettings,
+});
+
+// ═══════ INIT ═══════
+initData();
+</script>
+</body>
+</html>
