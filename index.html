@@ -965,15 +965,11 @@ async function initData() {
       }
     }
 
-    // Fix admin if old format
+    // Always fix admin to latest format — force overwrite old data
     const adm = _cache['admin'];
-    if (!adm || adm.username === 'admin') {
+    if (!adm || adm.username === 'admin' || !adm.adminCode || !adm.username) {
       _cache['admin'] = DEFAULTS.admin;
       await setDoc(doc(db, 'ffhub', 'admin'), { value: JSON.stringify(DEFAULTS.admin) });
-    } else if (!adm.adminCode) {
-      adm.adminCode = 'ZX@ADMIN';
-      _cache['admin'] = adm;
-      await setDoc(doc(db, 'ffhub', 'admin'), { value: JSON.stringify(adm) });
     }
 
     // Real-time listener — dusre device pe change hone par auto refresh
