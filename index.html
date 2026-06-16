@@ -8,21 +8,21 @@
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@700;900&family=Inter:wght@400;500;600&display=swap');
 
   :root {
-    --bg: #050508;
-    --bg2: #0a0a0f;
-    --bg3: #0f0f18;
-    --card: #111120;
-    --card2: #161628;
-    --border: #1e1e3a;
-    --accent: #f5a623;
-    --accent2: #ff4e00;
-    --blue: #3d6ef5;
-    --blue2: #5b8cff;
-    --green: #00e676;
-    --red: #ff3d57;
-    --text: #e8e8f0;
-    --muted: #6a6a8a;
-    --gold: #ffd700;
+    --bg: #020d1a;
+    --bg2: #030f1e;
+    --bg3: #051220;
+    --card: #071525;
+    --card2: #091828;
+    --border: #0a1628;
+    --accent: #0066ff;
+    --accent2: #00c3ff;
+    --blue: #0044cc;
+    --blue2: #00aaff;
+    --green: #00e5ff;
+    --red: #f43f5e;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --gold: #fbbf24;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,8 +42,9 @@
 
   /* ── HEADER ── */
   #header {
-    background: linear-gradient(90deg, #050508, #0a0a1a, #050508);
-    border-bottom: 1px solid var(--border);
+    background: linear-gradient(90deg, #020d1a, #041020, #020d1a);
+    border-bottom: 1px solid rgba(0,102,255,0.35);
+    box-shadow: 0 1px 20px rgba(0,102,255,0.12);
     padding: 0 20px;
     display: flex;
     align-items: center;
@@ -55,14 +56,12 @@
   }
   .logo {
     font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #fff;
     letter-spacing: 2px;
   }
-  .logo span { color: var(--blue2); -webkit-text-fill-color: var(--blue2); }
+  .logo span { color: #0066ff; }
   #userBadge {
     display: flex; align-items: center; gap: 10px;
   }
@@ -70,9 +69,9 @@
     font-size: 10px; font-weight: 700; letter-spacing: 1px;
     padding: 3px 10px; border-radius: 20px; text-transform: uppercase;
   }
-  .role-admin { background: rgba(245,166,35,0.15); color: var(--accent); border: 1px solid rgba(245,166,35,0.4); }
-  .role-captain { background: rgba(61,110,245,0.15); color: var(--blue2); border: 1px solid rgba(61,110,245,0.4); }
-  .role-player { background: rgba(0,230,118,0.1); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+  .role-admin { background: rgba(0,102,255,0.15); color: #3b9eff; border: 1px solid rgba(0,102,255,0.4); }
+  .role-captain { background: rgba(0,102,255,0.1); color: var(--blue2); border: 1px solid rgba(0,102,255,0.5); }
+  .role-player { background: rgba(0,229,255,0.1); color: var(--green); border: 1px solid rgba(0,229,255,0.3); }
   #logoutBtn {
     background: transparent; border: 1px solid var(--border);
     color: var(--muted); padding: 5px 12px; border-radius: 6px;
@@ -80,10 +79,9 @@
   }
   #logoutBtn:hover { border-color: var(--red); color: var(--red); }
 
-  /* ── NAV ── */
   #nav {
     background: var(--bg2);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(0,102,255,0.2);
     display: flex; gap: 2px; padding: 0 16px;
     overflow-x: auto;
   }
@@ -96,7 +94,7 @@
     transition: all 0.2s;
   }
   .nav-btn:hover { color: var(--text); }
-  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-btn.active { color: #3b9eff; border-bottom-color: #0066ff; }
 
   /* ── MAIN ── */
   #main { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
@@ -114,7 +112,7 @@
   }
   .page-title::before {
     content: ''; width: 4px; height: 22px;
-    background: linear-gradient(var(--accent), var(--accent2));
+    background: linear-gradient(#0066ff, #00c3ff);
     border-radius: 2px; display: inline-block;
   }
 
@@ -127,7 +125,7 @@
     margin-bottom: 14px;
     transition: border-color 0.2s;
   }
-  .card:hover { border-color: rgba(61,110,245,0.3); }
+  .card:hover { border-color: rgba(0,102,255,0.4); }
   .card-head {
     display: flex; align-items: center;
     justify-content: space-between; margin-bottom: 12px;
@@ -150,9 +148,9 @@
     border-radius: 10px; padding: 16px; text-align: center;
   }
   .stat-val {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 26px; font-weight: 700;
-    background: linear-gradient(135deg, var(--accent), var(--blue2));
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 30px; font-weight: 700;
+    background: linear-gradient(135deg, #3b9eff, #00aaff);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
   .stat-label { color: var(--muted); font-size: 11px; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
@@ -162,23 +160,92 @@
     display: inline-block; font-size: 10px; font-weight: 700;
     padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; text-transform: uppercase;
   }
-  .badge-orange { background: rgba(245,166,35,0.15); color: var(--accent); }
-  .badge-blue { background: rgba(61,110,245,0.15); color: var(--blue2); }
-  .badge-green { background: rgba(0,230,118,0.1); color: var(--green); }
-  .badge-red { background: rgba(255,61,87,0.15); color: var(--red); }
-  .badge-gold { background: rgba(255,215,0,0.1); color: var(--gold); }
+  .badge-orange { background: rgba(0,102,255,0.15); color: #3b9eff; }
+  .badge-blue { background: rgba(0,102,255,0.1); color: var(--blue2); }
+  .badge-green { background: rgba(0,229,255,0.1); color: var(--green); }
+  .badge-red { background: rgba(244,63,94,0.15); color: var(--red); }
+  .badge-gold { background: rgba(251,191,36,0.1); color: var(--gold); }
 
   /* ── MATCH CARD ── */
   .match-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px; margin-bottom: 12px;
+    background: var(--card);
+    border: 1px solid rgba(0,102,255,0.25);
+    border-left: 3px solid #00e676;
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 14px;
+    overflow: hidden;
     transition: all 0.2s;
+    position: relative;
   }
-  .match-card:hover { border-color: rgba(61,110,245,0.3); transform: translateY(-1px); }
+  .match-card:hover { border-color: rgba(0,102,255,0.5); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,102,255,0.15); }
+  .mc-body { padding: 16px 16px 0 16px; }
+  .mc-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .mc-badges { display: flex; gap: 8px; align-items: center; }
+  .mc-type-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(0,102,255,0.18); border: 1px solid rgba(0,170,255,0.4);
+    color: #00c3ff; font-size: 12px; font-weight: 700;
+    padding: 5px 12px; border-radius: 8px; letter-spacing: 0.5px;
+  }
+  .mc-format-badge {
+    background: rgba(120,60,200,0.25); border: 1px solid rgba(160,80,255,0.4);
+    color: #c084fc; font-size: 12px; font-weight: 700;
+    padding: 5px 12px; border-radius: 8px; letter-spacing: 0.5px;
+  }
+  .mc-status-open {
+    background: transparent; border: 2px solid #00e676;
+    color: #00e676; font-size: 12px; font-weight: 800;
+    padding: 5px 14px; border-radius: 8px; letter-spacing: 1.5px;
+    font-family: 'Orbitron', sans-serif;
+  }
+  .mc-status-live {
+    background: transparent; border: 2px solid #fbbf24;
+    color: #fbbf24; font-size: 12px; font-weight: 800;
+    padding: 5px 14px; border-radius: 8px; letter-spacing: 1.5px;
+    font-family: 'Orbitron', sans-serif;
+  }
+  .mc-status-completed {
+    background: transparent; border: 2px solid #f43f5e;
+    color: #f43f5e; font-size: 12px; font-weight: 800;
+    padding: 5px 14px; border-radius: 8px; letter-spacing: 1.5px;
+    font-family: 'Orbitron', sans-serif;
+  }
   .match-name {
     font-family: 'Rajdhani', sans-serif;
-    font-size: 17px; font-weight: 700;
+    font-size: 22px; font-weight: 700; letter-spacing: 0.5px;
+    color: #fff; margin-bottom: 10px;
   }
+  .mc-date-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; color: var(--text); margin-bottom: 10px;
+  }
+  .mc-map-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--muted); margin-bottom: 10px;
+  }
+  .mc-teams-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--muted); margin-bottom: 0;
+  }
+  .mc-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 12px 0 0 0; }
+  .mc-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+  }
+  .mc-prize {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800;
+    color: var(--gold);
+  }
+  .mc-entry {
+    font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700;
+    color: var(--gold); letter-spacing: 0.5px;
+  }
+  .mc-actions { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 16px 14px; }
   .match-meta { display: flex; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
   .match-info { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
   .match-info-item { font-size: 12px; color: var(--muted); }
@@ -191,16 +258,16 @@
     font-family: 'Rajdhani', sans-serif; letter-spacing: 0.5px;
     transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
   }
-  .btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue2)); color: #fff; }
+  .btn-primary { background: linear-gradient(135deg, #0044cc, #00aaff); color: #fff; }
   .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
-  .btn-accent { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #000; font-weight: 700; }
+  .btn-accent { background: linear-gradient(135deg, #0066ff, #3b9eff); color: #fff; font-weight: 700; }
   .btn-accent:hover { filter: brightness(1.1); transform: translateY(-1px); }
-  .btn-green { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
-  .btn-green:hover { background: rgba(0,230,118,0.25); }
-  .btn-red { background: rgba(255,61,87,0.15); color: var(--red); border: 1px solid rgba(255,61,87,0.3); }
-  .btn-red:hover { background: rgba(255,61,87,0.25); }
+  .btn-green { background: rgba(0,229,255,0.12); color: var(--green); border: 1px solid rgba(0,229,255,0.3); }
+  .btn-green:hover { background: rgba(0,229,255,0.22); }
+  .btn-red { background: rgba(244,63,94,0.15); color: var(--red); border: 1px solid rgba(244,63,94,0.3); }
+  .btn-red:hover { background: rgba(244,63,94,0.25); }
   .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--blue); color: var(--blue2); }
+  .btn-ghost:hover { border-color: #0066ff; color: #3b9eff; }
   .btn-sm { padding: 5px 12px; font-size: 12px; }
   .btn-full { width: 100%; justify-content: center; }
 
@@ -212,7 +279,7 @@
     font-family: 'Inter', sans-serif;
     transition: border-color 0.2s;
   }
-  input:focus, select:focus, textarea:focus { border-color: var(--blue); }
+  input:focus, select:focus, textarea:focus { border-color: #0066ff; box-shadow: 0 0 0 2px rgba(0,102,255,0.12); }
   input::placeholder, textarea::placeholder { color: var(--muted); }
   select option { background: var(--bg3); }
   .form-row { margin-bottom: 12px; }
@@ -245,8 +312,9 @@
 
   /* ── WALLET ── */
   .wallet-box {
-    background: linear-gradient(135deg, #0d0d20, #111128);
-    border: 1px solid rgba(61,110,245,0.3);
+    background: linear-gradient(135deg, #041020, #071828);
+    border: 1px solid rgba(0,102,255,0.35);
+    box-shadow: 0 0 30px rgba(0,102,255,0.08);
     border-radius: 12px; padding: 20px; margin-bottom: 14px;
     position: relative; overflow: hidden;
   }
@@ -254,12 +322,12 @@
     content: '◆';
     position: absolute; right: 20px; top: 50%;
     transform: translateY(-50%);
-    font-size: 60px; color: rgba(61,110,245,0.05);
+    font-size: 60px; color: rgba(0,102,255,0.06);
   }
   .wallet-bal {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 32px; font-weight: 700;
-    background: linear-gradient(135deg, #ffd700, #f5a623);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 36px; font-weight: 700;
+    background: linear-gradient(135deg, #3b9eff, #00aaff);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
   .wallet-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
@@ -272,7 +340,7 @@
   .slot-table tr:hover td { background: rgba(255,255,255,0.02); }
   .slot-no {
     font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700;
-    color: var(--accent); background: rgba(245,166,35,0.1);
+    color: #3b9eff; background: rgba(0,102,255,0.12);
     border-radius: 4px; padding: 2px 8px; display: inline-block;
   }
   .uid-list { font-size: 11px; color: var(--muted); line-height: 1.8; }
@@ -295,43 +363,60 @@
   /* ── LOGIN SCREEN ── */
   #loginScreen {
     position: fixed; inset: 0;
-    background: var(--bg);
+    background: radial-gradient(ellipse at 30% 20%, rgba(0,102,255,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 80%, rgba(0,170,255,0.1) 0%, transparent 60%),
+                #020d1a;
     z-index: 300; display: flex; align-items: center; justify-content: center;
   }
   .login-box {
-    width: 100%; max-width: 360px; padding: 20px;
+    width: 100%; max-width: 380px; padding: 24px;
+    background: rgba(12,12,24,0.85);
+    border: 1px solid rgba(0,102,255,0.35);
+    border-radius: 16px;
+    box-shadow: 0 0 60px rgba(0,102,255,0.15), 0 0 0 1px rgba(0,102,255,0.1);
+    backdrop-filter: blur(10px);
+    margin: 16px;
   }
   .login-logo {
     font-family: 'Orbitron', sans-serif;
-    font-size: 28px; font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    text-align: center; margin-bottom: 6px; letter-spacing: 3px;
+    font-size: 42px; font-weight: 900;
+    color: #fff;
+    text-align: center; margin-bottom: 4px; letter-spacing: 4px;
   }
-  .login-sub { text-align: center; color: var(--muted); font-size: 12px; margin-bottom: 28px; letter-spacing: 2px; text-transform: uppercase; }
-  .role-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .login-logo .logo-x { color: #0066ff; }
+  .login-tagline {
+    text-align: center; color: var(--muted); font-size: 11px;
+    margin-bottom: 6px; letter-spacing: 3px; text-transform: uppercase;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .login-slogan {
+    text-align: center; color: #3b9eff; font-size: 12px;
+    margin-bottom: 24px; letter-spacing: 2px; text-transform: uppercase;
+    font-family: 'Rajdhani', sans-serif; font-weight: 600;
+  }
+  .role-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
   .role-tab {
-    flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+    flex: 1; padding: 10px; border-radius: 0; border: none;
     background: transparent; color: var(--muted); cursor: pointer;
-    font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 13px;
-    text-align: center; transition: all 0.2s;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px;
+    text-align: center; transition: all 0.2s; letter-spacing: 1px;
   }
-  .role-tab.active { background: rgba(61,110,245,0.15); border-color: var(--blue); color: var(--blue2); }
+  .role-tab.active { background: rgba(0,102,255,0.2); color: #3b9eff; border-bottom: 2px solid #0066ff; }
   .hexdeco {
-    position: fixed; opacity: 0.03; font-size: 200px;
+    position: fixed; opacity: 0.04; font-size: 200px;
     pointer-events: none; user-select: none;
-    font-family: 'Orbitron', sans-serif; color: var(--blue2);
+    font-family: 'Orbitron', sans-serif; color: #0066ff;
   }
   .hexdeco.tl { top: -40px; left: -40px; }
   .hexdeco.br { bottom: -40px; right: -40px; }
 
   /* ── UTR DEPOSIT ── */
   .utr-box {
-    background: var(--bg3); border: 1px solid rgba(245,166,35,0.2);
+    background: var(--bg3); border: 1px solid rgba(0,102,255,0.25);
     border-radius: 10px; padding: 16px; margin: 12px 0;
     font-size: 13px;
   }
-  .utr-box .upi { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--accent); letter-spacing: 1px; }
+  .utr-box .upi { font-family: 'Orbitron', sans-serif; font-size: 14px; color: #3b9eff; letter-spacing: 1px; }
 
   /* ── TXNS ── */
   .txn-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(30,30,58,0.5); }
@@ -344,13 +429,13 @@
 
   /* ── SLOT NUMBER BIG ── */
   .slot-badge {
-    background: linear-gradient(135deg, rgba(245,166,35,0.15), rgba(255,78,0,0.1));
-    border: 1px solid rgba(245,166,35,0.3);
+    background: linear-gradient(135deg, rgba(0,102,255,0.12), rgba(0,170,255,0.08));
+    border: 1px solid rgba(0,102,255,0.3);
     border-radius: 10px; padding: 16px; text-align: center; margin: 12px 0;
   }
   .slot-num {
     font-family: 'Orbitron', sans-serif; font-size: 40px; font-weight: 900;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    background: linear-gradient(135deg, #3b9eff, #00aaff);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
   .slot-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
@@ -373,8 +458,18 @@
     background: var(--bg3); border: 1px solid rgba(0,230,118,0.2);
     border-radius: 8px; padding: 14px; margin-top: 10px;
   }
-  .room-cred .rc-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .room-cred .rc-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .room-cred .rc-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .room-cred .rc-val { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--green); letter-spacing: 1px; }
+  .rc-copy-btn {
+    background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.25);
+    color: var(--green); border-radius: 6px; padding: 4px 10px;
+    font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px;
+    font-family: 'Rajdhani', sans-serif; white-space: nowrap;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .rc-copy-btn:hover { background: rgba(0,229,255,0.18); border-color: var(--green); }
+  .rc-copy-btn.copied { background: rgba(0,229,255,0.2); color: #fff; border-color: var(--green); }
 </style>
 </head>
 <body>
@@ -383,53 +478,43 @@
 <div class="hexdeco tl">⬡</div>
 <div class="hexdeco br">⬡</div>
 
-<!-- APP LOADER -->
-<div id="appLoader" style="position:fixed;inset:0;background:var(--bg);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
-  <div style="font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px">FF HUB</div>
-  <div style="display:flex;gap:6px">
-    <div style="width:8px;height:8px;border-radius:50%;background:var(--blue2);animation:dot 1.2s ease-in-out infinite"></div>
-    <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);animation:dot 1.2s ease-in-out 0.2s infinite"></div>
-    <div style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:dot 1.2s ease-in-out 0.4s infinite"></div>
-  </div>
-  <div style="font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase">Connecting to Firebase...</div>
-</div>
-<style>
-@keyframes dot { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
-</style>
-
 <!-- LOGIN -->
-<div id="loginScreen" style="display:none">
+<div id="loginScreen">
   <div class="login-box">
-    <div class="login-logo">FF HUB</div>
-    <div class="login-sub">Tournament Manager</div>
-    <div class="role-tabs">
-      <div class="role-tab active" onclick="selectRole('admin')">⚙ Admin</div>
-      <div class="role-tab" onclick="selectRole('captain')">🎖 Captain</div>
+    <div class="login-logo">ZONE<span class="logo-x">X</span></div>
+    <div class="login-tagline">ESPORTS PLATFORM</div>
+    <div class="login-slogan">ONE TOURNAMENT · ONE CHAMPION</div>
+
+    <!-- 2 ROLE TABS -->
+    <div class="role-tabs" style="display:flex;gap:0;margin-bottom:22px;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div class="role-tab active" id="rtab-captain" onclick="selectRole('captain')">🎖 CAPTAIN</div>
+      <div class="role-tab" id="rtab-player" onclick="selectRole('player')">👤 PLAYER</div>
     </div>
+
+    <!-- Role hint removed -->
+
     <div class="form-row">
-      <label class="form-label">Username</label>
+      <label class="form-label">📟 USERNAME</label>
       <input id="loginUser" placeholder="Enter username" />
     </div>
     <div class="form-row">
-      <label class="form-label">Password</label>
+      <label class="form-label">🔒 PASSWORD</label>
       <input id="loginPass" type="password" placeholder="Enter password" />
     </div>
-    <div id="loginCapFields" style="display:none">
-      <div class="form-row">
-        <label class="form-label">Your Free Fire UID</label>
-        <input id="loginUID" placeholder="Enter your UID" />
-      </div>
+
+    <!-- Captain code field (only for captain role) -->
+    <div id="loginCodeField" class="form-row">
+      <label class="form-label">🔑 CAPTAIN CODE</label>
+      <input id="loginCode" placeholder="Enter your captain code" />
     </div>
-    <button class="btn btn-accent btn-full" style="margin-top:8px" onclick="doLogin()">LOGIN →</button>
-    <div style="text-align:center;margin-top:10px;font-size:10px;color:var(--muted)">
-      Admin default: admin / admin123
-    </div>
+
+    <button class="btn btn-accent btn-full" style="margin-top:16px;padding:13px;font-size:14px;letter-spacing:2px" onclick="doLogin()">⚡ ENTER ZONE</button>
   </div>
 </div>
 
 <!-- HEADER -->
 <div id="header" style="display:none">
-  <div class="logo">FF<span>HUB</span></div>
+  <div class="logo">ZONE<span>X</span></div>
   <div id="userBadge"></div>
 </div>
 
@@ -492,6 +577,28 @@
   <div id="sec-adminwallet" class="section">
     <div class="page-title">💰 Wallet Manager</div>
     <div id="adminWalletContent"></div>
+  </div>
+
+  <!-- IMAGES (Admin) -->
+  <div id="sec-images" class="section">
+    <div class="page-title">🖼 Image Manager</div>
+    <div id="imagesContent"></div>
+  </div>
+
+  <!-- PLAYER VIEW SECTIONS (read-only) -->
+  <div id="sec-p-matches" class="section">
+    <div class="page-title">🎮 Matches</div>
+    <div id="playerMatchesList"></div>
+  </div>
+
+  <div id="sec-p-results" class="section">
+    <div class="page-title">🏆 Results</div>
+    <div id="playerResultsList"></div>
+  </div>
+
+  <div id="sec-p-myid" class="section">
+    <div class="page-title">🪪 My ID Info</div>
+    <div id="playerMyIdContent"></div>
   </div>
 
 </div>
@@ -751,7 +858,7 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal('adminAddCaptainModal')">✕</button>
     <div class="modal-title">➕ Create Captain Account</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Create a captain account and share the credentials with the player.</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Captain account banao aur credentials share karo.</div>
     <div class="form-row">
       <label class="form-label">Username</label>
       <input id="acUser" placeholder="Choose username" />
@@ -768,11 +875,22 @@
       <label class="form-label">Free Fire UID</label>
       <input id="acUID" placeholder="Captain's UID" />
     </div>
+    <div class="form-row">
+      <label class="form-label">🔑 Captain Login Code</label>
+      <div style="display:flex;gap:8px">
+        <input id="acCode" placeholder="e.g. ZX#4821" style="flex:1" />
+        <button class="btn btn-ghost btn-sm" onclick="genCode()">🎲 Auto</button>
+      </div>
+      <div class="form-hint">Yeh code captain ko login ke time enter karna padega. Player ko nahi chahiye.</div>
+    </div>
     <button class="btn btn-accent btn-full" onclick="adminCreateCaptain()">Create Account</button>
-    <div id="acResult" style="display:none;margin-top:14px;background:var(--bg3);border:1px solid rgba(0,230,118,0.3);border-radius:8px;padding:14px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">✓ Account Created — Share these credentials</div>
-      <div style="font-size:13px;margin-bottom:4px">Username: <strong id="acResUser" style="color:var(--blue2)"></strong></div>
-      <div style="font-size:13px">Password: <strong id="acResPass" style="color:var(--accent)"></strong></div>
+    <div id="acResult" style="display:none;margin-top:14px;background:var(--bg3);border:1px solid rgba(0,229,255,0.25);border-radius:8px;padding:14px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">✓ Account Created — Yeh details share karo</div>
+      <div style="font-size:13px;margin-bottom:5px">Username: <strong id="acResUser" style="color:var(--blue2)"></strong></div>
+      <div style="font-size:13px;margin-bottom:5px">Password: <strong id="acResPass" style="color:var(--accent)"></strong></div>
+      <div style="font-size:13px;padding-top:8px;border-top:1px solid var(--border);margin-top:8px">
+        Captain Code: <strong id="acResCode" style="color:#00e5ff;font-family:'Orbitron',sans-serif;letter-spacing:2px"></strong>
+      </div>
     </div>
   </div>
 </div>
@@ -780,155 +898,95 @@
 <!-- TOAST -->
 <div id="toast"></div>
 
-<script type="module">
-// ═══════════════════════════════════════════════
-//  FIREBASE SETUP
-// ═══════════════════════════════════════════════
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCG2UQB0O-pM3VikwhO7ovEr1DCgMifItI",
-  authDomain: "ffhub-3b5c3.firebaseapp.com",
-  projectId: "ffhub-3b5c3",
-  storageBucket: "ffhub-3b5c3.firebasestorage.app",
-  messagingSenderId: "172809979091",
-  appId: "1:172809979091:web:4cf7a080541345561a8026"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// ═══════════════════════════════════════════════
-//  IN-MEMORY DB + FIRESTORE SYNC
-//  All data lives in DB{} in-memory.
-//  Every write also pushes to Firestore.
-//  onSnapshot keeps all clients in sync.
-// ═══════════════════════════════════════════════
-const DB = {
-  admin:       { username:'admin', password:'admin123' },
-  captains:    [],
-  matches:     [],
-  registrations: [],
-  wallets:     {},
-  deposits:    [],
-  withdrawals: [],
-  txns:        {},
-  paySettings: { upiId:'tournament@upi', qrUrl:'' },
-};
-
-// Keys stored as single Firestore documents in collection "ffhub"
-const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings'];
-
-// Write one key to Firestore
-async function fsSet(key, value) {
-  DB[key] = value;
-  try {
-    await setDoc(doc(db, 'ffhub', key), { data: JSON.stringify(value) });
-  } catch(e) { console.warn('Firestore write failed:', e); }
-}
-
-// S shim — reads from in-memory DB (always instant), writes go to Firestore too
+<script>
+// ═══════ DATA STORE ═══════
 const S = {
-  get: (k) => DB[k],
-  set: (k, v) => { fsSet(k, v); },
+  get: k => { try { return JSON.parse(localStorage.getItem('ffhub_'+k)); } catch { return null; } },
+  set: (k,v) => localStorage.setItem('ffhub_'+k, JSON.stringify(v)),
 };
 
-// Load all data from Firestore on startup, then set up live listeners
-async function initData() {
-  showLoader(true);
-  try {
-    // Initial load — fetch all docs in parallel
-    await Promise.all(KEYS.map(async key => {
-      try {
-        const snap = await getDoc(doc(db, 'ffhub', key));
-        if (snap.exists()) {
-          DB[key] = JSON.parse(snap.data().data);
-        } else {
-          // First time — write defaults to Firestore
-          await setDoc(doc(db, 'ffhub', key), { data: JSON.stringify(DB[key]) });
-        }
-      } catch(e) { console.warn('Load error for', key, e); }
-    }));
-
-    // Set up real-time listeners — any change from any device updates UI
-    KEYS.forEach(key => {
-      onSnapshot(doc(db, 'ffhub', key), (snap) => {
-        if (snap.exists()) {
-          try {
-            DB[key] = JSON.parse(snap.data().data);
-            // If a section is currently shown, re-render it
-            if (CUR) {
-              const active = document.querySelector('.section.active');
-              if (active) {
-                const sec = active.id.replace('sec-','');
-                renderSection(sec);
-              }
-            }
-          } catch(e) {}
-        }
-      });
-    });
-  } catch(e) {
-    console.warn('Firebase init failed, running offline:', e);
+function initData() {
+  // Force-migrate old admin format (username:'admin') to new format
+  const existingAdmin = S.get('admin');
+  if (!existingAdmin || existingAdmin.username === 'admin') {
+    S.set('admin', { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN' });
+  } else if (!existingAdmin.adminCode) {
+    existingAdmin.adminCode = 'ZX@ADMIN';
+    S.set('admin', existingAdmin);
   }
-  showLoader(false);
-  // Show login screen
-  document.getElementById('loginScreen').style.display = 'flex';
-}
-
-function showLoader(show) {
-  document.getElementById('appLoader').style.display = show ? 'flex' : 'none';
-  document.getElementById('loginScreen').style.display = show ? 'none' : 'flex';
+  if (!S.get('captains')) S.set('captains', []);
+  if (!S.get('matches')) S.set('matches', []);
+  if (!S.get('registrations')) S.set('registrations', []);
+  if (!S.get('wallets')) S.set('wallets', {});
+  if (!S.get('deposits')) S.set('deposits', []);
+  if (!S.get('withdrawals')) S.set('withdrawals', []);
+  if (!S.get('txns')) S.set('txns', {});
+  if (!S.get('paySettings')) S.set('paySettings', { upiId:'tournament@upi', qrUrl:'' });
+  if (!S.get('matchImages')) S.set('matchImages', {});
+  if (!S.get('globalImages')) S.set('globalImages', { loginBg:'', cardBg:'' });
 }
 
 // ═══════ AUTH ═══════
 let CUR = null;
-let selectedRole = 'admin';
+let selectedRole = 'captain';
+
+const ROLE_HINTS = {
+  captain: 'Username, password aur captain code daalo. Match join & wallet access milega.',
+  player:  'Username & password daalo (captain wale hi). Sirf matches, results & ID dekh sakte ho.'
+};
 
 function selectRole(r) {
   selectedRole = r;
-  document.querySelectorAll('.role-tab').forEach((t,i) => t.classList.toggle('active', i === (r==='admin'?0:1)));
-  document.getElementById('loginCapFields').style.display = r==='captain' ? 'block' : 'none';
+  ['captain','player'].forEach(role => {
+    const el = document.getElementById('rtab-'+role);
+    if (el) el.classList.toggle('active', role === r);
+  });
+  const codeField = document.getElementById('loginCodeField');
+  if (codeField) codeField.style.display = r === 'captain' ? 'block' : 'none';
+  const hint = document.getElementById('loginRoleHint');
+  if (hint) hint.style.display = 'none';
+  ['loginUser','loginPass','loginCode'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
 }
 
 function doLogin() {
   const u = v('loginUser'), p = v('loginPass');
-  if (!u || !p) { toast('Enter username & password','error'); return; }
+  if (!u || !p) { toast('Username & password daalo','error'); return; }
 
-  if (selectedRole === 'admin') {
+  if (selectedRole === 'captain') {
+    const code = v('loginCode');
+    if (!code) { toast('Captain code daalo','error'); return; }
+
+    // Admin check — username OR password + adminCode match
     const admin = S.get('admin');
-    if (u === admin.username && p === admin.password) {
+    const adminCode = (admin.adminCode || 'ZX@ADMIN');
+    if (u === admin.username && p === admin.password && code === adminCode) {
       CUR = { role:'admin', username:'Admin', name:'Admin' };
-      startSession();
-    } else { toast('Wrong admin credentials','error'); }
-  } else {
-    const caps = S.get('captains');
-    const cap = caps.find(c => c.username === u && c.password === p);
+      startSession(); return;
+    }
+
+    // Normal captain login
+    const caps = S.get('captains') || [];
+    const cap = caps.find(c => c.username === u && c.password === p && c.code === code);
     if (cap) {
       CUR = { role:'captain', username:cap.username, name:cap.name, uid:cap.uid };
       startSession();
-    } else { toast('Captain not found','error'); }
+    } else {
+      // Better error: check if user+pass correct but wrong code
+      const capNoCode = caps.find(c => c.username === u && c.password === p);
+      if (capNoCode) toast('Code galat hai!','error');
+      else toast('Username ya password galat hai','error');
+    }
+
+  } else if (selectedRole === 'player') {
+    const caps = S.get('captains') || [];
+    const cap = caps.find(c => c.username === u && c.password === p);
+    if (cap) {
+      CUR = { role:'player', username:cap.username, name:cap.name, uid:cap.uid };
+      startSession();
+    } else { toast('Credentials galat hain','error'); }
   }
-}
-
-function showRegModal() { openModal('capRegModal'); }
-
-function doRegister() {
-  const u = v('regUser'), p = v('regPass'), n = v('regName'), uid = v('regUID');
-  if (!u||!p||!n||!uid) { toast('Fill all fields','error'); return; }
-  const caps = S.get('captains');
-  if (caps.find(c => c.username===u)) { toast('Username taken','error'); return; }
-  caps.push({ username:u, password:p, name:n, uid });
-  S.set('captains', caps);
-  const wallets = S.get('wallets');
-  wallets[u] = 0;
-  S.set('wallets', wallets);
-  const txns = S.get('txns');
-  txns[u] = [];
-  S.set('txns', txns);
-  closeModal('capRegModal');
-  toast('Registered! You can now login','success');
 }
 
 function startSession() {
@@ -938,7 +996,10 @@ function startSession() {
   document.getElementById('main').style.display = 'block';
   renderUserBadge();
   buildNav();
-  nav('dashboard');
+  const firstTab = CUR.role === 'admin' ? 'dashboard'
+    : CUR.role === 'captain' ? 'dashboard'
+    : 'p-matches';
+  nav(firstTab);
 }
 
 function doLogout() {
@@ -947,16 +1008,21 @@ function doLogout() {
   document.getElementById('header').style.display = 'none';
   document.getElementById('nav').style.display = 'none';
   document.getElementById('main').style.display = 'none';
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
+  ['loginUser','loginPass','loginCode'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  selectRole('captain');
 }
 
 function renderUserBadge() {
-  const badge = CUR.role === 'admin' ? '<span class="role-pill role-admin">Admin</span>'
-    : '<span class="role-pill role-captain">Captain</span>';
+  const badgeClass = CUR.role === 'admin' ? 'role-admin'
+    : CUR.role === 'captain' ? 'role-captain' : 'role-player';
+  const badgeLabel = CUR.role === 'admin' ? 'Admin'
+    : CUR.role === 'captain' ? 'Captain' : 'Player';
   document.getElementById('userBadge').innerHTML = `
     <span style="font-size:13px;font-family:Rajdhani,sans-serif;font-weight:600">${CUR.name}</span>
-    ${badge}
+    <span class="role-pill ${badgeClass}">${badgeLabel}</span>
     <button id="logoutBtn" onclick="doLogout()">Logout</button>
   `;
 }
@@ -969,6 +1035,7 @@ const ADMIN_TABS = [
   {id:'distribute',label:'Distribute'},
   {id:'captains',label:'Captains'},
   {id:'adminwallet',label:'💰 Wallet'},
+  {id:'images',label:'🖼 Images'},
 ];
 const CAP_TABS = [
   {id:'dashboard',label:'Dashboard'},
@@ -976,9 +1043,16 @@ const CAP_TABS = [
   {id:'myteam',label:'My Teams'},
   {id:'wallet',label:'Wallet'},
 ];
+const PLAYER_TABS = [
+  {id:'p-matches',label:'🎮 Matches'},
+  {id:'p-results',label:'🏆 Results'},
+  {id:'p-myid',label:'🪪 My ID'},
+];
 
 function buildNav() {
-  const tabs = CUR.role==='admin' ? ADMIN_TABS : CAP_TABS;
+  const tabs = CUR.role === 'admin' ? ADMIN_TABS
+    : CUR.role === 'captain' ? CAP_TABS
+    : PLAYER_TABS;
   document.getElementById('nav').innerHTML = tabs.map(t =>
     `<button class="nav-btn" id="navbtn-${t.id}" onclick="nav('${t.id}')">${t.label}</button>`
   ).join('');
@@ -1003,6 +1077,10 @@ function renderSection(sec) {
   else if (sec==='distribute') renderDistribute();
   else if (sec==='captains') renderCaptains();
   else if (sec==='adminwallet') renderAdminWallet();
+  else if (sec==='images') renderImages();
+  else if (sec==='p-matches') renderPlayerMatches();
+  else if (sec==='p-results') renderPlayerResults();
+  else if (sec==='p-myid') renderPlayerMyId();
 }
 
 // DASHBOARD
@@ -1045,32 +1123,68 @@ function matchCardHTML(m, regs) {
   const dt = new Date(m.time);
   const isCap = CUR.role==='captain';
   const myReg = isCap ? regs.find(r=>r.matchId===m.id && r.captain===CUR.username) : null;
-  const statusColor = m.status==='open' ? 'green' : m.status==='live' ? 'orange' : 'red';
-  return `<div class="match-card">
-    <div class="card-head">
+  const imgs = S.get('matchImages') || {};
+  const globalImgs = S.get('globalImages') || {};
+  const bgImg = (imgs[m.id] && imgs[m.id].cardBg) || globalImgs.cardBg || '';
+  const bgStyle = bgImg
+    ? `background-image:linear-gradient(rgba(5,18,32,0.82),rgba(2,13,26,0.92)),url('${bgImg}');background-size:cover;background-position:center;`
+    : '';
+
+  // Type short label
+  const typeShort = m.type==='Battle Royale'?'BR':m.type==='Clash Squad'?'CS':m.type==='Daily Match'?'DM':(m.type||'BR').substring(0,3).toUpperCase();
+  const typeIcon = m.type==='Battle Royale'?'🎯':m.type==='Clash Squad'?'⚔️':'🎮';
+
+  // Format short
+  const fmtShort = (m.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
+
+  // Status badge class
+  const statusCls = m.status==='live' ? 'mc-status-live' : m.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
+  const statusLabel = (m.status||'open').toUpperCase();
+
+  // Date display
+  const dateStr = isNaN(dt) ? '—' : dt.toLocaleDateString('en-GB').replace(/\//g,'/');
+  const timeStr = isNaN(dt) ? '' : dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+  // Prize display
+  const prizeDisplay = (!m.prize || m.prize==='0' || m.prize===0) ? 'TBD' : '₹'+m.prize;
+
+  // Left border color by status
+  const borderLeft = m.status==='live' ? '#fbbf24' : m.status==='completed' ? '#f43f5e' : '#00e676';
+
+  return `<div class="match-card" style="border-left-color:${borderLeft};${bgStyle}">
+    <div class="mc-body">
+      <div class="mc-top">
+        <div class="mc-badges">
+          <span class="mc-type-badge">${typeIcon} ${typeShort}</span>
+          <span class="mc-format-badge">${fmtShort.toUpperCase()}</span>
+        </div>
+        <span class="${statusCls}">${statusLabel}</span>
+      </div>
       <div class="match-name">${m.name}</div>
-      <span class="badge badge-${statusColor}">${m.status||'open'}</span>
+      <div class="mc-date-row">📅 ${dateStr}${timeStr ? ' · '+timeStr : ''} ${m.map ? `&nbsp;&nbsp;🗺️` : ''}</div>
+      ${m.map ? `<div class="mc-map-row">📍 ${m.map}</div>` : ''}
+      <div class="mc-teams-row">👥 <span style="color:var(--text);font-weight:600">${joined}/${m.slots}</span>&nbsp;teams</div>
     </div>
-    <div class="match-meta">
-      <span class="badge badge-blue">${m.type}</span>
-      <span class="badge badge-orange">${m.format||'Squad'}</span>
+    ${m.roomId && (CUR.role==='admin' || myReg) ? `<div style="padding:0 16px 12px"><div class="room-cred">
+      <div class="rc-label">Room ID</div>
+      <div class="rc-row"><div class="rc-val">${m.roomId}</div><button class="rc-copy-btn" onclick="copyRC('${m.roomId}',this)">📋 Copy</button></div>
+      <div class="rc-label" style="margin-top:10px">Password</div>
+      <div class="rc-row"><div class="rc-val">${m.roomPass}</div><button class="rc-copy-btn" onclick="copyRC('${m.roomPass}',this)">📋 Copy</button></div>
+    </div></div>` : m.roomId && isCap && !myReg ? `<div style="padding:0 16px 12px;font-size:11px;color:var(--muted)">🔑 Room ID sirf registered teams ko milega</div>` : ''}
+    <div class="mc-divider"></div>
+    <div class="mc-footer">
+      <div class="mc-prize">🏆 <span>${prizeDisplay}</span></div>
+      <div class="mc-entry">ENTRY: ${m.entry}</div>
     </div>
-    <div class="match-info">
-      <div class="match-info-item"><strong>${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</strong>Date & Time</div>
-      <div class="match-info-item"><strong>₹${m.entry}</strong>Entry Fee</div>
-      <div class="match-info-item"><strong>${joined}/${m.slots}</strong>Slots Filled</div>
-      <div class="match-info-item"><strong>₹${m.prize}</strong>Prize Pool</div>
-    </div>
-    ${m.map ? `<div style="font-size:12px;color:var(--muted);margin-top:8px">🗺 ${m.map}</div>` : ''}
-    ${m.roomId ? `<div class="room-cred"><div class="rc-label">Room ID</div><div class="rc-val">${m.roomId}</div><div class="rc-label" style="margin-top:8px">Password</div><div class="rc-val">${m.roomPass}</div></div>` : ''}
-    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-      ${isCap && !myReg && m.status!=='completed' ? `<button class="btn btn-accent btn-sm" onclick="openJoinMatch('${m.id}')">Join Match</button>` : ''}
-      ${isCap && myReg ? `<span class="badge badge-green" style="padding:6px 12px">✓ Slot #${myReg.slot}</span>` : ''}
+    ${(isCap && (!myReg && m.status!=='completed')) || CUR.role==='admin' ? `<div class="mc-actions">
+      ${isCap && !myReg && m.status!=='completed' ? `<button class="btn btn-accent btn-sm" onclick="openJoinMatch('${m.id}')">⚡ Join Match</button>` : ''}
+      ${isCap && myReg ? `<span class="badge badge-green" style="padding:6px 12px;font-size:12px">✓ Slot #${myReg.slot}</span>` : ''}
       ${CUR.role==='admin' ? `
-        <button class="btn btn-ghost btn-sm" onclick="openRoomCreds('${m.id}')">Set Room</button>
-        <button class="btn btn-ghost btn-sm" onclick="changeStatus('${m.id}','${m.status}')">Status</button>
+        <button class="btn btn-ghost btn-sm" onclick="openRoomCreds('${m.id}')">🔑 Set Room</button>
+        <button class="btn btn-ghost btn-sm" onclick="changeStatus('${m.id}','${m.status||"open"}')">⟳ Status</button>
+        <button class="btn btn-red btn-sm" onclick="deleteMatch('${m.id}','${m.name.replace(/'/g,"\\'")}')">🗑 Delete</button>
       ` : ''}
-    </div>
+    </div>` : (myReg ? `<div class="mc-actions"><span class="badge badge-green" style="padding:6px 12px;font-size:12px">✓ Slot #${myReg.slot}</span></div>` : '')}
   </div>`;
 }
 
@@ -1111,7 +1225,12 @@ function renderMyTeam() {
         <div class="match-info-item"><strong>₹${m.entry}</strong>Entry Paid</div>
         <div class="match-info-item"><strong>${m.map||'TBA'}</strong>Map</div>
       </div>
-      ${m.roomId ? `<div class="room-cred"><div class="rc-label">Room ID</div><div class="rc-val">${m.roomId}</div><div class="rc-label" style="margin-top:8px">Password</div><div class="rc-val">${m.roomPass}</div></div>` : '<div style="font-size:12px;color:var(--muted);margin-top:10px">🔑 Room credentials will appear here once admin releases them</div>'}
+      ${m.roomId ? `<div class="room-cred">
+        <div class="rc-label">Room ID</div>
+        <div class="rc-row"><div class="rc-val">${m.roomId}</div><button class="rc-copy-btn" onclick="copyRC('${m.roomId}',this)">📋 Copy</button></div>
+        <div class="rc-label" style="margin-top:10px">Password</div>
+        <div class="rc-row"><div class="rc-val">${m.roomPass}</div><button class="rc-copy-btn" onclick="copyRC('${m.roomPass}',this)">📋 Copy</button></div>
+      </div>` : '<div style="font-size:12px;color:var(--muted);margin-top:10px">🔑 Room credentials will appear here once admin releases them</div>'}
       <div class="divider"></div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Team Players</div>
       <div class="uid-list">
@@ -1166,26 +1285,61 @@ function renderSlots() {
   }
   document.getElementById('slotsContent').innerHTML = matches.map(m => {
     const regs = S.get('registrations').filter(r=>r.matchId===m.id);
-    return `<div class="card">
-      <div class="card-head">
-        <div class="card-title">${m.name}</div>
-        <span class="badge badge-blue">${regs.length}/${m.slots} slots</span>
+    const statusCls = m.status==='open'?'badge-green':m.status==='live'?'badge-gold':'badge-red';
+    return `<div class="card" style="margin-bottom:16px">
+      <!-- Match Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+        <div>
+          <div class="card-title" style="font-size:16px">${m.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px">${m.type} · ${m.format||'Squad'} · ${m.map||'—'}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="badge ${statusCls}">${m.status||'open'}</span>
+          <span class="badge badge-blue">${regs.length}/${m.slots} Slots</span>
+          <span class="badge badge-gold">Pool: ₹${m.prize}</span>
+        </div>
       </div>
-      ${regs.length ? `
-      <div style="overflow-x:auto;margin-top:10px">
-        <table class="slot-table">
-          <tr><th>Slot</th><th>Team</th><th>Captain</th><th>Players</th><th>Entry</th></tr>
-          ${regs.map(r=>`<tr>
-            <td><span class="slot-no">#${r.slot}</span></td>
-            <td style="font-weight:600">${r.teamName}</td>
-            <td>${r.captain}</td>
-            <td><div class="uid-list">
-              ${(r.players || r.uids.filter(Boolean).map((uid,i)=>({uid,ign:''}))).map((p,i)=>p?`<span class="${i<4?'uid-required':'uid-optional'}">${p.ign||'P'+(i+1)}: <span style="opacity:0.6">${p.uid}</span>${i>=4?' (sub)':''}</span>`:'').join('')}
-            </div></td>
-            <td style="color:var(--green)">₹${m.entry}</td>
-          </tr>`).join('')}
-        </table>
-      </div>` : `<div class="empty" style="padding:20px"><p>No registrations yet</p></div>`}
+
+      ${regs.length ? regs.map(r => {
+        const players = r.players || (r.uids||[]).filter(Boolean).map((uid,i)=>({uid,ign:'P'+(i+1)}));
+        const main = players.slice(0,4);
+        const subs = players.slice(4);
+        return `<div style="background:var(--bg3);border:1px solid rgba(0,102,255,0.15);border-radius:10px;padding:14px;margin-bottom:10px">
+          <!-- Slot row -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="slot-no">#${r.slot}</span>
+              <div>
+                <div style="font-size:14px;font-weight:700;color:var(--text)">${r.teamName}</div>
+                <div style="font-size:11px;color:var(--muted)">@${r.captain}</div>
+              </div>
+            </div>
+            <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--green)">₹${m.entry}</div>
+          </div>
+          <!-- Players grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            ${main.map((p,i)=>`
+              <div style="background:var(--card);border-radius:7px;padding:8px 10px;border:1px solid rgba(0,102,255,0.12)">
+                <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">P${i+1}</div>
+                <div style="font-size:13px;font-weight:600;color:var(--text)">${p.ign||'—'}</div>
+                <div style="font-size:11px;color:var(--blue2);font-family:'Orbitron',sans-serif;letter-spacing:0.5px;margin-top:2px">${p.uid}</div>
+              </div>`).join('')}
+          </div>
+          ${subs.length ? `
+          <div style="margin-top:8px">
+            <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px">Substitutes</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              ${subs.map((p,i)=>`
+                <div style="background:var(--card);border-radius:7px;padding:8px 10px;border:1px solid rgba(255,255,255,0.05);opacity:0.75">
+                  <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px">SUB ${i+1}</div>
+                  <div style="font-size:13px;font-weight:600;color:var(--muted)">${p.ign||'—'}</div>
+                  <div style="font-size:11px;color:var(--muted);font-family:'Orbitron',sans-serif;letter-spacing:0.5px;margin-top:2px">${p.uid}</div>
+                </div>`).join('')}
+            </div>
+          </div>` : ''}
+        </div>`;
+      }).join('')
+      : `<div class="empty" style="padding:20px"><p>No registrations yet</p></div>`}
     </div>`;
   }).join('');
 }
@@ -1215,7 +1369,40 @@ function renderCaptains() {
   const wallets = S.get('wallets');
   const regs = S.get('registrations');
   const matches = S.get('matches');
+  const adm = S.get('admin');
   document.getElementById('captainsContent').innerHTML = `
+
+    <!-- ADMIN LOGIN SETTINGS -->
+    <div class="card" style="border-color:rgba(0,102,255,0.35);margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">⚙ Admin Login Settings</div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleSection('adminLoginEdit')">✏ Edit</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Captain tab mein yeh credentials + code daalne se admin login hoga.</div>
+      <div class="match-info">
+        <div class="match-info-item"><strong style="color:var(--blue2)">${adm.username}</strong>Username</div>
+        <div class="match-info-item"><strong style="color:var(--muted)">••••••••</strong>Password</div>
+        <div class="match-info-item" style="grid-column:span 2"><strong style="color:#00e5ff;font-family:'Orbitron',sans-serif;letter-spacing:2px">${adm.adminCode||'ZX@ADMIN'}</strong>Admin Code</div>
+      </div>
+      <div id="adminLoginEdit" style="display:none;padding-top:14px;border-top:1px solid var(--border);margin-top:12px">
+        <div class="grid2" style="gap:10px;margin-bottom:10px">
+          <div class="form-row" style="margin:0">
+            <label class="form-label">Username</label>
+            <input id="admEditUser" value="${adm.username}" />
+          </div>
+          <div class="form-row" style="margin:0">
+            <label class="form-label">Password</label>
+            <input id="admEditPass" value="${adm.password}" />
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Admin Code (secret)</label>
+          <input id="admEditCode" value="${adm.adminCode||'ZX@ADMIN'}" placeholder="Admin login code" />
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="saveAdminLogin()">💾 Save</button>
+      </div>
+    </div>
+
     ${caps.length ? caps.map(c=>{
       const capRegs = regs.filter(r=>r.captain===c.username);
       const histHTML = capRegs.length ? capRegs.map(r=>{
@@ -1229,7 +1416,7 @@ function renderCaptains() {
             ${players.map((p,i)=>`<span style="display:inline-block;background:var(--card);border-radius:4px;padding:2px 6px;margin:2px;${i<4?'color:var(--text)':'color:var(--muted)'}">P${i+1}: ${p.ign||'—'} <span style="opacity:0.5">(${p.uid})</span></span>`).join('')}
           </div>
         </div>`;
-      }).join('') : '<div style="font-size:11px;color:var(--muted);padding:6px 0">No matches played yet</div>';
+      }).join('') : '<div style="font-size:11px;color:var(--muted);padding:6px 0">Koi match nahi khela abhi</div>';
 
       return `<div class="card">
         <div class="card-head">
@@ -1239,7 +1426,13 @@ function renderCaptains() {
           </div>
           <div style="font-family:Orbitron,sans-serif;font-size:16px;color:var(--gold)">₹${wallets[c.username]||0}</div>
         </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
+        <!-- Captain Code Badge -->
+        <div style="margin-top:10px;padding:8px 12px;background:rgba(0,102,255,0.07);border:1px solid rgba(0,102,255,0.2);border-radius:7px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">🔑 Login Code</span>
+          <span style="font-family:'Orbitron',sans-serif;font-size:14px;color:#00e5ff;letter-spacing:2px">${c.code||'—'}</span>
+          <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:3px 8px" onclick="editCaptainCode('${c.username}')">✏</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn btn-ghost btn-sm" onclick="adminAddFunds('${c.username}')">+ Add Funds</button>
           <button class="btn btn-ghost btn-sm" onclick="adminDeductFunds('${c.username}')">- Deduct</button>
         </div>
@@ -1251,7 +1444,7 @@ function renderCaptains() {
         </details>
       </div>`;
     }).join('')
-    : `<div class="empty"><div class="empty-icon">👥</div><p>No captains yet. Add one above.</p></div>`}
+    : `<div class="empty"><div class="empty-icon">👥</div><p>Koi captain nahi. Upar se add karo.</p></div>`}
   `;
 }
 
@@ -1683,12 +1876,22 @@ function savePaySettings() {
 }
 
 // ═══════ ADMIN CREATE CAPTAIN ═══════
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'ZX#';
+  for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  const el = document.getElementById('acCode');
+  if (el) el.value = code;
+}
+
 function adminCreateCaptain() {
-  const u=v('acUser'),p=v('acPass'),n=v('acName'),uid=v('acUID');
-  if (!u||!p||!n||!uid) { toast('Fill all fields','error'); return; }
+  const u=v('acUser'), p=v('acPass'), n=v('acName'), uid=v('acUID'), code=v('acCode');
+  if (!u||!p||!n||!uid) { toast('Sab fields bharo','error'); return; }
   const caps = S.get('captains');
   if (caps.find(c=>c.username===u)) { toast('Username already taken','error'); return; }
-  caps.push({ username:u, password:p, name:n, uid });
+  // Auto-generate code if empty
+  const finalCode = code || ('ZX#' + Math.random().toString(36).substring(2,6).toUpperCase());
+  caps.push({ username:u, password:p, name:n, uid, code:finalCode });
   S.set('captains', caps);
   const wallets = S.get('wallets');
   wallets[u] = 0;
@@ -1699,8 +1902,9 @@ function adminCreateCaptain() {
   // Show credentials
   document.getElementById('acResUser').textContent = u;
   document.getElementById('acResPass').textContent = p;
+  document.getElementById('acResCode').textContent = finalCode;
   document.getElementById('acResult').style.display = 'block';
-  ['acUser','acPass','acName','acUID'].forEach(id=>document.getElementById(id).value='');
+  ['acUser','acPass','acName','acUID','acCode'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   toast(`Captain @${u} created!`,'success');
   renderCaptains();
 }
@@ -1808,12 +2012,285 @@ function confirmDistribute() {
   renderDistribute();
 }
 
-// ═══════ TXN HELPER ═══════
+// ═══════ IMAGE MANAGER (Admin) ═══════
+function renderImages() {
+  const matches = S.get('matches') || [];
+  const imgs = S.get('matchImages') || {};
+  const globalImgs = S.get('globalImages') || { loginBg:'', cardBg:'' };
+
+  document.getElementById('imagesContent').innerHTML = `
+    <!-- GLOBAL IMAGES -->
+    <div class="card" style="margin-bottom:16px;border-color:rgba(0,102,255,0.3)">
+      <div class="card-head">
+        <div class="card-title">🌐 Global Images</div>
+        <span class="badge badge-blue">Site-wide</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Images that apply to the whole platform</div>
+
+      <div class="form-row">
+        <label class="form-label">🔑 Login Screen Background</label>
+        <div style="display:flex;gap:8px">
+          <input id="giLoginBg" placeholder="Image URL (https://...)" value="${globalImgs.loginBg||''}" style="flex:1" />
+          <button class="btn btn-ghost btn-sm" onclick="previewGlobalImg('giLoginBg','giLoginPreview')">Preview</button>
+        </div>
+        ${globalImgs.loginBg ? `<div style="margin-top:8px"><img src="${globalImgs.loginBg}" id="giLoginPreview" style="max-height:80px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.style.display='none'" /></div>` : `<div id="giLoginPreview" style="margin-top:8px;display:none"></div>`}
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">🃏 Default Match Card Background</label>
+        <div style="display:flex;gap:8px">
+          <input id="giCardBg" placeholder="Image URL (https://...)" value="${globalImgs.cardBg||''}" style="flex:1" />
+          <button class="btn btn-ghost btn-sm" onclick="previewGlobalImg('giCardBg','giCardPreview')">Preview</button>
+        </div>
+        ${globalImgs.cardBg ? `<div style="margin-top:8px"><img src="${globalImgs.cardBg}" id="giCardPreview" style="max-height:80px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.style.display='none'" /></div>` : `<div id="giCardPreview" style="margin-top:8px;display:none"></div>`}
+      </div>
+
+      <button class="btn btn-accent btn-sm" onclick="saveGlobalImages()">💾 Save Global Images</button>
+    </div>
+
+    <!-- PER-MATCH IMAGES -->
+    <div class="page-title" style="font-size:16px;margin-bottom:12px">📋 Per-Match Images</div>
+    ${matches.length ? matches.map(m => {
+      const mi = imgs[m.id] || {};
+      return `<div class="card" style="border-color:rgba(0,102,255,0.18)">
+        <div class="card-head">
+          <div>
+            <div class="card-title" style="font-size:14px">${m.name}</div>
+            <div style="font-size:11px;color:var(--muted)">${m.type} · ${m.format||'Squad'} · <span class="badge badge-${m.status==='open'?'green':m.status==='live'?'orange':'red'}" style="font-size:9px">${m.status||'open'}</span></div>
+          </div>
+          ${mi.cardBg ? '<span class="badge badge-green" style="font-size:9px">✓ Custom Image</span>' : '<span class="badge badge-blue" style="font-size:9px">Default</span>'}
+        </div>
+
+        <div class="form-row" style="margin-bottom:8px">
+          <label class="form-label">Match Card Background Image</label>
+          <div style="display:flex;gap:8px">
+            <input id="mi_${m.id}" placeholder="Paste image URL..." value="${mi.cardBg||''}" style="flex:1;font-size:12px" />
+            <button class="btn btn-ghost btn-sm" onclick="previewMatchImg('${m.id}')">👁</button>
+          </div>
+          <div id="mip_${m.id}" style="${mi.cardBg?'':'display:none'}margin-top:8px">
+            ${mi.cardBg ? `<img src="${mi.cardBg}" style="width:100%;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.style.display='none'" />` : ''}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-accent btn-sm" onclick="saveMatchImage('${m.id}')">💾 Save</button>
+          ${mi.cardBg ? `<button class="btn btn-red btn-sm" onclick="clearMatchImage('${m.id}')">🗑 Clear</button>` : ''}
+        </div>
+      </div>`;
+    }).join('') : '<div class="empty"><div class="empty-icon">🎮</div><p>No matches yet. Create matches first.</p></div>'}
+
+    <!-- IMGBB TIP -->
+    <div style="background:rgba(0,102,255,0.06);border:1px solid rgba(0,102,255,0.2);border-radius:10px;padding:14px;margin-top:8px">
+      <div style="font-size:12px;color:#3b9eff;font-weight:600;margin-bottom:6px">📌 How to get image URLs</div>
+      <div style="font-size:11px;color:var(--muted);line-height:1.7">
+        1. Upload image on <strong style="color:var(--text)">imgbb.com</strong> or <strong style="color:var(--text)">imgur.com</strong><br>
+        2. Copy the <strong style="color:var(--text)">Direct Link</strong> (ends with .jpg/.png/.webp)<br>
+        3. Paste it in the URL box above and save
+      </div>
+    </div>
+  `;
+}
+
+function previewGlobalImg(inputId, previewId) {
+  const url = document.getElementById(inputId)?.value?.trim();
+  const box = document.getElementById(previewId);
+  if (!url || !box) { toast('Enter URL first','error'); return; }
+  box.innerHTML = `<img src="${url}" style="max-height:80px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.parentElement.innerHTML='<span style=color:var(--red);font-size:11px>Image failed to load</span>'" />`;
+  box.style.display = 'block';
+}
+
+function saveGlobalImages() {
+  const loginBg = document.getElementById('giLoginBg')?.value?.trim() || '';
+  const cardBg = document.getElementById('giCardBg')?.value?.trim() || '';
+  S.set('globalImages', { loginBg, cardBg });
+  toast('Global images saved!','success');
+  renderImages();
+}
+
+function previewMatchImg(mid) {
+  const url = document.getElementById('mi_'+mid)?.value?.trim();
+  const box = document.getElementById('mip_'+mid);
+  if (!url || !box) { toast('Enter URL first','error'); return; }
+  box.innerHTML = `<img src="${url}" style="width:100%;max-height:120px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.parentElement.innerHTML='<span style=color:var(--red);font-size:11px>Failed to load</span>'" />`;
+  box.style.display = 'block';
+}
+
+function saveMatchImage(mid) {
+  const url = document.getElementById('mi_'+mid)?.value?.trim() || '';
+  const imgs = S.get('matchImages') || {};
+  imgs[mid] = { cardBg: url };
+  S.set('matchImages', imgs);
+  toast('Match image saved!','success');
+  renderImages();
+}
+
+function clearMatchImage(mid) {
+  const imgs = S.get('matchImages') || {};
+  delete imgs[mid];
+  S.set('matchImages', imgs);
+  toast('Image cleared','success');
+  renderImages();
+}
 function addTxn(username, txn) {
   const txns = S.get('txns');
   if (!txns[username]) txns[username] = [];
   txns[username].push(txn);
   S.set('txns', txns);
+}
+
+// ═══════ PLAYER VIEWS (read-only) ═══════
+function renderPlayerMatches() {
+  const matches = S.get('matches') || [];
+  const regs = S.get('registrations') || [];
+  const imgs = S.get('matchImages') || {};
+  const globalImgs = S.get('globalImages') || {};
+
+  if (!matches.length) {
+    document.getElementById('playerMatchesList').innerHTML = '<div class="empty"><div class="empty-icon">🎮</div><p>Koi match available nahi hai abhi</p></div>';
+    return;
+  }
+
+  document.getElementById('playerMatchesList').innerHTML = matches.map(m => {
+    const joined = regs.filter(r => r.matchId === m.id).length;
+    const dt = new Date(m.time);
+    const bgImg = (imgs[m.id] && imgs[m.id].cardBg) || globalImgs.cardBg || '';
+    const bgStyle = bgImg ? `background-image:linear-gradient(rgba(5,18,32,0.82),rgba(2,13,26,0.92)),url('${bgImg}');background-size:cover;background-position:center;` : '';
+    const typeShort = m.type==='Battle Royale'?'BR':m.type==='Clash Squad'?'CS':m.type==='Daily Match'?'DM':(m.type||'BR').substring(0,3).toUpperCase();
+    const typeIcon = m.type==='Battle Royale'?'🎯':m.type==='Clash Squad'?'⚔️':'🎮';
+    const fmtShort = (m.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
+    const statusCls = m.status==='live' ? 'mc-status-live' : m.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
+    const borderLeft = m.status==='live' ? '#fbbf24' : m.status==='completed' ? '#f43f5e' : '#00e676';
+    const dateStr = isNaN(dt) ? '—' : dt.toLocaleDateString('en-GB');
+    const timeStr = isNaN(dt) ? '' : dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const prizeDisplay = (!m.prize || m.prize==='0' || m.prize===0) ? 'TBD' : '₹'+m.prize;
+    return `<div class="match-card" style="border-left-color:${borderLeft};${bgStyle}">
+      <div class="mc-body">
+        <div class="mc-top">
+          <div class="mc-badges">
+            <span class="mc-type-badge">${typeIcon} ${typeShort}</span>
+            <span class="mc-format-badge">${fmtShort.toUpperCase()}</span>
+          </div>
+          <span class="${statusCls}">${(m.status||'open').toUpperCase()}</span>
+        </div>
+        <div class="match-name">${m.name}</div>
+        <div class="mc-date-row">📅 ${dateStr}${timeStr ? ' · '+timeStr : ''}</div>
+        ${m.map ? `<div class="mc-map-row">📍 ${m.map}</div>` : ''}
+        <div class="mc-teams-row">👥 <span style="color:var(--text);font-weight:600">${joined}/${m.slots}</span>&nbsp;teams</div>
+      </div>
+      <div style="padding:0 16px 12px;font-size:11px;color:var(--muted)">🔑 Room credentials captain ke through milenge</div>
+      <div class="mc-divider"></div>
+      <div class="mc-footer">
+        <div class="mc-prize">🏆 <span>${prizeDisplay}</span></div>
+        <div class="mc-entry">ENTRY: ${m.entry}</div>
+      </div>
+      <div style="padding:0 16px 12px;font-size:11px;color:rgba(0,102,255,0.5);letter-spacing:0.5px">👁 VIEW ONLY — Captain se join karo</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPlayerResults() {
+  const matches = S.get('matches') || [];
+  const regs = S.get('registrations') || [];
+  const completed = matches.filter(m => m.status === 'completed');
+
+  if (!completed.length) {
+    document.getElementById('playerResultsList').innerHTML = '<div class="empty"><div class="empty-icon">🏆</div><p>Abhi tak koi match complete nahi hua</p></div>';
+    return;
+  }
+
+  document.getElementById('playerResultsList').innerHTML = completed.map(m => {
+    const mRegs = regs.filter(r => r.matchId === m.id);
+    const dt = new Date(m.time);
+    return `<div class="card">
+      <div class="card-head">
+        <div class="card-title">${m.name}</div>
+        <span class="badge badge-red">Completed</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${dt.toLocaleDateString()} • ${m.map||''} • ${m.type}</div>
+      ${mRegs.length ? `
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Registered Teams (${mRegs.length})</div>
+        ${mRegs.map(r => `
+          <div style="background:var(--bg3);border-radius:6px;padding:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:13px;font-weight:600">${r.teamName}</div>
+              <div style="font-size:11px;color:var(--muted)">Slot #${r.slot} • @${r.captain}</div>
+            </div>
+            <span class="badge badge-blue">Slot ${r.slot}</span>
+          </div>`).join('')}
+      ` : '<div style="font-size:12px;color:var(--muted)">Koi team register nahi hua tha</div>'}
+    </div>`;
+  }).join('');
+}
+
+function renderPlayerMyId() {
+  // Player apni team ka data dekh sakta hai (jis captain ki creds se login kiya)
+  const regs = S.get('registrations') || [];
+  const matches = S.get('matches') || [];
+  const myRegs = regs.filter(r => r.captain === CUR.username);
+
+  document.getElementById('playerMyIdContent').innerHTML = `
+    <div class="card" style="border-color:rgba(0,102,255,0.3);margin-bottom:16px">
+      <div class="card-title" style="margin-bottom:10px">👤 Profile</div>
+      <div class="match-info">
+        <div class="match-info-item"><strong>${CUR.name}</strong>In-Game Name</div>
+        <div class="match-info-item"><strong>${CUR.uid||'—'}</strong>Free Fire UID</div>
+        <div class="match-info-item"><strong>@${CUR.username}</strong>Username</div>
+        <div class="match-info-item"><strong>${myRegs.length}</strong>Matches Played</div>
+      </div>
+    </div>
+
+    ${myRegs.length ? `
+      <div class="page-title" style="font-size:15px;margin-bottom:12px">🎯 Match History</div>
+      ${myRegs.map(r => {
+        const m = matches.find(x => x.id === r.matchId);
+        if (!m) return '';
+        return `<div class="card">
+          <div class="card-head">
+            <div class="card-title" style="font-size:14px">${m.name}</div>
+            <span class="badge badge-${m.status==='open'?'green':m.status==='live'?'orange':'red'}">${m.status||'open'}</span>
+          </div>
+          <div class="slot-badge">
+            <div class="slot-num">#${r.slot}</div>
+            <div class="slot-label">Slot Number</div>
+          </div>
+          <div class="match-info">
+            <div class="match-info-item"><strong>${r.teamName}</strong>Team Name</div>
+            <div class="match-info-item"><strong>${m.map||'TBA'}</strong>Map</div>
+          </div>
+          <div style="margin-top:12px">
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Team Players</div>
+            <div class="uid-list">
+              ${(r.players||[]).map((p,i) => p ? `<span class="${i<4?'uid-required':'uid-optional'}">P${i+1}: <strong>${p.ign||'—'}</strong> <span style="opacity:0.5">(${p.uid})</span>${i>=4?' (sub)':''}</span>` : '').join('')}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    ` : '<div class="empty"><div class="empty-icon">📋</div><p>Abhi kisi match mein join nahi kiya</p></div>'}
+  `;
+}
+
+// ═══════ CAPTAIN CODE MANAGEMENT ═══════
+function saveAdminLogin() {
+  const u = document.getElementById('admEditUser')?.value?.trim();
+  const p = document.getElementById('admEditPass')?.value?.trim();
+  const code = document.getElementById('admEditCode')?.value?.trim();
+  if (!u||!p||!code) { toast('Sab fields bharo','error'); return; }
+  S.set('admin', { username:u, password:p, adminCode:code });
+  toast('Admin login settings saved!','success');
+  renderCaptains();
+}
+
+function editCaptainCode(username) {
+  const newCode = prompt(`@${username} ka naya login code:`) ;
+  if (!newCode) return;
+  const caps = S.get('captains');
+  const cap = caps.find(c => c.username === username);
+  if (cap) {
+    cap.code = newCode.trim().toUpperCase();
+    S.set('captains', caps);
+    toast(`Code updated: ${cap.code}`,'success');
+    renderCaptains();
+  }
 }
 
 // ═══════ UTILS ═══════
@@ -1834,24 +2311,38 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
   o.addEventListener('click', e=>{ if (e.target===o) o.classList.remove('open'); });
 });
 
-// ═══════ EXPOSE TO WINDOW (required for type=module + onclick) ═══════
-Object.assign(window, {
-  selectRole, doLogin, doLogout, doRegister, nav,
-  openModal, closeModal, toggleSection,
-  renderAdminWallet,
-  createMatch, openJoinMatch, joinMatch,
-  openRoomCreds, saveRoomCreds, changeStatus,
-  openDepositModal, submitDeposit,
-  submitWithdraw, renderPendingWds,
-  approveWd, rejectWd,
-  approveDep, rejectDep, renderPendingDeps,
-  adminAddFunds, adminDeductFunds,
-  adminCreateCaptain,
-  openDistribute, confirmDistribute,
-  filterDeps, filterWds,
-  previewAwQr, saveAwPaySettings,
-  previewQr, savePaySettings, openPaySettings,
-});
+// ═══════ DELETE MATCH ═══════
+function deleteMatch(mid, mname) {
+  if (!confirm(`"${mname}" match delete karna chahte ho?\n\nSaari registrations bhi delete ho jayengi!`)) return;
+  let matches = S.get('matches');
+  matches = matches.filter(x => x.id !== mid);
+  S.set('matches', matches);
+  let regs = S.get('registrations');
+  regs = regs.filter(r => r.matchId !== mid);
+  S.set('registrations', regs);
+  let imgs = S.get('matchImages') || {};
+  delete imgs[mid];
+  S.set('matchImages', imgs);
+  toast('Match deleted!', 'success');
+  renderSection('matches');
+}
+
+function copyRC(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    // fallback
+    const el = document.createElement('textarea');
+    el.value = text; document.body.appendChild(el);
+    el.select(); document.execCommand('copy');
+    document.body.removeChild(el);
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
 
 // ═══════ INIT ═══════
 initData();
