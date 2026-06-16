@@ -898,32 +898,122 @@
 <!-- TOAST -->
 <div id="toast"></div>
 
-<script>
-// ═══════ DATA STORE ═══════
-const S = {
-  get: k => { try { return JSON.parse(localStorage.getItem('ffhub_'+k)); } catch { return null; } },
-  set: (k,v) => localStorage.setItem('ffhub_'+k, JSON.stringify(v)),
+<script type="module">
+// ═══════ FIREBASE SETUP ═══════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCG2UQB0O-pM3VikwhO7ovEr1DCgMifItI",
+  authDomain: "ffhub-3b5c3.firebaseapp.com",
+  projectId: "ffhub-3b5c3",
+  storageBucket: "ffhub-3b5c3.firebasestorage.app",
+  messagingSenderId: "172809979091",
+  appId: "1:172809979091:web:4cf7a080541345561a8026"
 };
 
-function initData() {
-  // Force-migrate old admin format (username:'admin') to new format
-  const existingAdmin = S.get('admin');
-  if (!existingAdmin || existingAdmin.username === 'admin') {
-    S.set('admin', { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN' });
-  } else if (!existingAdmin.adminCode) {
-    existingAdmin.adminCode = 'ZX@ADMIN';
-    S.set('admin', existingAdmin);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ═══════ DATA STORE (Firestore) ═══════
+// In-memory cache — sab S.get/S.set synchronously kaam karte hain
+const _cache = {};
+
+const S = {
+  get: k => (_cache[k] !== undefined ? _cache[k] : null),
+  set: async (k, v) => {
+    _cache[k] = v;
+    try {
+      await setDoc(doc(db, 'ffhub', k), { value: JSON.stringify(v) });
+    } catch(e) { console.error('Firestore write error:', k, e); }
   }
-  if (!S.get('captains')) S.set('captains', []);
-  if (!S.get('matches')) S.set('matches', []);
-  if (!S.get('registrations')) S.set('registrations', []);
-  if (!S.get('wallets')) S.set('wallets', {});
-  if (!S.get('deposits')) S.set('deposits', []);
-  if (!S.get('withdrawals')) S.set('withdrawals', []);
-  if (!S.get('txns')) S.set('txns', {});
-  if (!S.get('paySettings')) S.set('paySettings', { upiId:'tournament@upi', qrUrl:'' });
-  if (!S.get('matchImages')) S.set('matchImages', {});
-  if (!S.get('globalImages')) S.set('globalImages', { loginBg:'', cardBg:'' });
+};
+
+const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages'];
+
+const DEFAULTS = {
+  admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN' },
+  captains:      [],
+  matches:       [],
+  registrations: [],
+  wallets:       {},
+  deposits:      [],
+  withdrawals:   [],
+  txns:          {},
+  paySettings:   { upiId:'tournament@upi', qrUrl:'' },
+  matchImages:   {},
+  globalImages:  { loginBg:'', cardBg:'' }
+};
+
+// ═══════ INIT ═══════
+async function initData() {
+  showLoader(true);
+  try {
+    // Load all docs from Firestore
+    for (const k of KEYS) {
+      try {
+        const snap = await getDoc(doc(db, 'ffhub', k));
+        if (snap.exists()) {
+          _cache[k] = JSON.parse(snap.data().value);
+        } else {
+          // First time — set defaults
+          _cache[k] = DEFAULTS[k];
+          await setDoc(doc(db, 'ffhub', k), { value: JSON.stringify(DEFAULTS[k]) });
+        }
+      } catch(e) {
+        _cache[k] = DEFAULTS[k];
+      }
+    }
+
+    // Fix admin if old format
+    const adm = _cache['admin'];
+    if (!adm || adm.username === 'admin') {
+      _cache['admin'] = DEFAULTS.admin;
+      await setDoc(doc(db, 'ffhub', 'admin'), { value: JSON.stringify(DEFAULTS.admin) });
+    } else if (!adm.adminCode) {
+      adm.adminCode = 'ZX@ADMIN';
+      _cache['admin'] = adm;
+      await setDoc(doc(db, 'ffhub', 'admin'), { value: JSON.stringify(adm) });
+    }
+
+    // Real-time listener — dusre device pe change hone par auto refresh
+    for (const k of KEYS) {
+      onSnapshot(doc(db, 'ffhub', k), snap => {
+        if (snap.exists()) {
+          try { _cache[k] = JSON.parse(snap.data().value); } catch(e) {}
+        }
+        // Logged in hain toh UI refresh karo
+        if (CUR) {
+          const activeBtn = document.querySelector('.nav-btn.active');
+          if (activeBtn) {
+            const sec = activeBtn.id.replace('navbtn-','');
+            renderSection(sec);
+          }
+        }
+      });
+    }
+
+  } catch(e) {
+    console.error('Firestore load error:', e);
+    alert('Database se connect nahi ho paya. Internet check karo aur page reload karo.');
+  }
+  showLoader(false);
+}
+
+function showLoader(show) {
+  let el = document.getElementById('fbLoader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'fbLoader';
+    el.style.cssText = 'position:fixed;inset:0;background:#020d1a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+    el.innerHTML = `
+      <div style="font-family:Orbitron,sans-serif;font-size:28px;font-weight:900;color:#fff">ZONE<span style="color:#0066ff">X</span></div>
+      <div style="width:48px;height:48px;border:3px solid rgba(0,102,255,0.2);border-top-color:#0066ff;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+      <div style="font-size:13px;color:#64748b;letter-spacing:1px">Connecting...</div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+    document.body.appendChild(el);
+  }
+  el.style.display = show ? 'flex' : 'none';
 }
 
 // ═══════ AUTH ═══════
@@ -1662,12 +1752,12 @@ function saveAwPaySettings() {
 }
 
 // ═══════ CREATE MATCH ═══════
-function createMatch() {
+async function createMatch() {
   const name=v('mName'),type=v('mType'),format=v('mFormat'),time=v('mTime'),entry=v('mEntry'),slots=v('mSlots'),prize=v('mPrize'),map=v('mMap');
   if (!name||!time||!entry||!slots||!prize) { toast('Fill required fields','error'); return; }
-  const matches = S.get('matches');
+  const matches = S.get('matches') || [];
   matches.push({ id:'m'+Date.now(), name, type, format, time, entry, slots, prize, map, status:'open', roomId:'', roomPass:'' });
-  S.set('matches', matches);
+  await S.set('matches', matches);
   closeModal('createMatchModal');
   toast('Match created!','success');
   renderMatches();
@@ -1694,7 +1784,7 @@ function openJoinMatch(mid) {
   openModal('joinMatchModal');
 }
 
-function joinMatch() {
+async function joinMatch() {
   const m = S.get('matches').find(x=>x.id===joinMatchId);
   const wallets = S.get('wallets');
   const regs = S.get('registrations');
@@ -1715,16 +1805,20 @@ function joinMatch() {
 
   // Deduct
   wallets[CUR.username] = bal - fee;
-  S.set('wallets', wallets);
-  addTxn(CUR.username, { type:'debit', amount:fee, label:`Entry: ${m.name}`, date:now() });
-
   const slot = joined + 1;
   const players = [
     {uid:uid1,ign:ign1},{uid:uid2,ign:ign2},{uid:uid3,ign:ign3},{uid:uid4,ign:ign4},
     uid5?{uid:uid5,ign:ign5}:null, uid6?{uid:uid6,ign:ign6}:null
   ].filter(Boolean);
   regs.push({ id:'r'+Date.now(), matchId:joinMatchId, captain:CUR.username, teamName, uids:[uid1,uid2,uid3,uid4,uid5,uid6], players, slot });
-  S.set('registrations', regs);
+  const txns = S.get('txns') || {};
+  if (!txns[CUR.username]) txns[CUR.username] = [];
+  txns[CUR.username].push({ type:'debit', amount:fee, label:`Entry: ${m.name}`, date:now() });
+  await Promise.all([
+    S.set('wallets', wallets),
+    S.set('registrations', regs),
+    S.set('txns', txns)
+  ]);
   closeModal('joinMatchModal');
   toast(`Registered! Your slot is #${slot}`,'success');
   renderSection('matches');
@@ -1740,25 +1834,25 @@ function openRoomCreds(mid) {
   openModal('roomCredModal');
 }
 
-function saveRoomCreds() {
+async function saveRoomCreds() {
   const rid=v('rcRoomId'),rp=v('rcRoomPass');
   if (!rid||!rp) { toast('Enter room ID and password','error'); return; }
   const matches = S.get('matches');
   const m = matches.find(x=>x.id===roomCredMatchId);
   m.roomId = rid; m.roomPass = rp;
-  S.set('matches', matches);
+  await S.set('matches', matches);
   closeModal('roomCredModal');
   toast('Room credentials set!','success');
   renderSection('matches');
 }
 
 // ═══════ STATUS ═══════
-function changeStatus(mid, cur) {
+async function changeStatus(mid, cur) {
   const statuses = ['open','live','completed'];
   const next = statuses[(statuses.indexOf(cur)+1)%statuses.length];
   const matches = S.get('matches');
   matches.find(x=>x.id===mid).status = next;
-  S.set('matches', matches);
+  await S.set('matches', matches);
   toast(`Status → ${next}`,'success');
   renderSection('matches');
 }
@@ -1884,22 +1978,23 @@ function genCode() {
   if (el) el.value = code;
 }
 
-function adminCreateCaptain() {
+async function adminCreateCaptain() {
   const u=v('acUser'), p=v('acPass'), n=v('acName'), uid=v('acUID'), code=v('acCode');
   if (!u||!p||!n||!uid) { toast('Sab fields bharo','error'); return; }
-  const caps = S.get('captains');
+  const caps = S.get('captains') || [];
   if (caps.find(c=>c.username===u)) { toast('Username already taken','error'); return; }
-  // Auto-generate code if empty
   const finalCode = code || ('ZX#' + Math.random().toString(36).substring(2,6).toUpperCase());
   caps.push({ username:u, password:p, name:n, uid, code:finalCode });
-  S.set('captains', caps);
-  const wallets = S.get('wallets');
+  const wallets = S.get('wallets') || {};
   wallets[u] = 0;
-  S.set('wallets', wallets);
-  const txns = S.get('txns');
+  const txns = S.get('txns') || {};
   txns[u] = [];
-  S.set('txns', txns);
-  // Show credentials
+  // Await all three saves together
+  await Promise.all([
+    S.set('captains', caps),
+    S.set('wallets', wallets),
+    S.set('txns', txns)
+  ]);
   document.getElementById('acResUser').textContent = u;
   document.getElementById('acResPass').textContent = p;
   document.getElementById('acResCode').textContent = finalCode;
@@ -2312,17 +2407,19 @@ document.querySelectorAll('.modal-overlay').forEach(o=>{
 });
 
 // ═══════ DELETE MATCH ═══════
-function deleteMatch(mid, mname) {
+async function deleteMatch(mid, mname) {
   if (!confirm(`"${mname}" match delete karna chahte ho?\n\nSaari registrations bhi delete ho jayengi!`)) return;
   let matches = S.get('matches');
   matches = matches.filter(x => x.id !== mid);
-  S.set('matches', matches);
   let regs = S.get('registrations');
   regs = regs.filter(r => r.matchId !== mid);
-  S.set('registrations', regs);
   let imgs = S.get('matchImages') || {};
   delete imgs[mid];
-  S.set('matchImages', imgs);
+  await Promise.all([
+    S.set('matches', matches),
+    S.set('registrations', regs),
+    S.set('matchImages', imgs)
+  ]);
   toast('Match deleted!', 'success');
   renderSection('matches');
 }
@@ -2346,6 +2443,52 @@ function copyRC(text, btn) {
 
 // ═══════ INIT ═══════
 initData();
+
+// Make all functions global (needed because type="module" scopes them)
+window.selectRole = selectRole;
+window.doLogin = doLogin;
+window.doLogout = doLogout;
+window.nav = nav;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.createMatch = createMatch;
+window.openJoinMatch = openJoinMatch;
+window.joinMatch = joinMatch;
+window.openRoomCreds = openRoomCreds;
+window.saveRoomCreds = saveRoomCreds;
+window.changeStatus = changeStatus;
+window.deleteMatch = deleteMatch;
+window.openDepositModal = openDepositModal;
+window.submitDeposit = submitDeposit;
+window.submitWithdraw = submitWithdraw;
+window.approveDep = approveDep;
+window.rejectDep = rejectDep;
+window.approveWd = approveWd;
+window.rejectWd = rejectWd;
+window.adminAddFunds = adminAddFunds;
+window.adminDeductFunds = adminDeductFunds;
+window.openDistribute = openDistribute;
+window.confirmDistribute = confirmDistribute;
+window.renderPendingDeps = renderPendingDeps;
+window.renderPendingWds = renderPendingWds;
+window.filterDeps = filterDeps;
+window.filterWds = filterWds;
+window.adminCreateCaptain = adminCreateCaptain;
+window.editCaptainCode = editCaptainCode;
+window.saveAdminLogin = saveAdminLogin;
+window.genCode = genCode;
+window.savePaySettings = savePaySettings;
+window.previewQr = previewQr;
+window.saveGlobalImages = saveGlobalImages;
+window.previewGlobalImg = previewGlobalImg;
+window.saveMatchImage = saveMatchImage;
+window.clearMatchImage = clearMatchImage;
+window.previewMatchImg = previewMatchImg;
+window.previewAwQr = previewAwQr;
+window.saveAwPaySettings = saveAwPaySettings;
+window.toggleSection = toggleSection;
+window.copyRC = copyRC;
+window.doRegister = typeof doRegister !== 'undefined' ? doRegister : ()=>{};
 </script>
 </body>
 </html>
