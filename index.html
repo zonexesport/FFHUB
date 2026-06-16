@@ -667,35 +667,12 @@
     <div class="modal-title">🏆 Register Team</div>
     <div id="joinMatchInfo"></div>
     <div class="divider"></div>
-    <div class="form-row">
+    <div class="form-row" id="jTeamNameRow">
       <label class="form-label">Team Name</label>
       <input id="jTeamName" placeholder="Your team name" />
     </div>
     <div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Players (UID + In-Game Name)</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <input id="jUID1" placeholder="P1 UID *" />
-      <input id="jIGN1" placeholder="P1 In-Game Name *" />
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <input id="jUID2" placeholder="P2 UID *" />
-      <input id="jIGN2" placeholder="P2 In-Game Name *" />
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <input id="jUID3" placeholder="P3 UID *" />
-      <input id="jIGN3" placeholder="P3 In-Game Name *" />
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <input id="jUID4" placeholder="P4 UID *" />
-      <input id="jIGN4" placeholder="P4 In-Game Name *" />
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <input id="jUID5" placeholder="P5 UID (opt)" />
-      <input id="jIGN5" placeholder="P5 In-Game Name" />
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <input id="jUID6" placeholder="P6 UID (opt)" />
-      <input id="jIGN6" placeholder="P6 In-Game Name" />
-    </div>
+    <div id="jPlayersContainer"></div>
     <div id="joinFeeNote" style="font-size:12px;color:var(--muted);margin-bottom:12px"></div>
     <button class="btn btn-accent btn-full" onclick="joinMatch()">Pay Entry & Get Slot</button>
   </div>
@@ -1765,18 +1742,56 @@ function openJoinMatch(mid) {
   joinMatchId = mid;
   const m = S.get('matches').find(x=>x.id===mid);
   const regs = S.get('registrations').filter(r=>r.matchId===mid);
+
+  // Determine player count from format
+  const fmt = (m.format||'Squad').toLowerCase();
+  const isSolo = fmt.includes('solo');
+  const isDuo  = fmt.includes('duo');
+  const isSquad6 = fmt.includes('6');
+  const mainCount = isSolo ? 1 : isDuo ? 2 : 4;
+  const subCount  = isSquad6 ? 2 : 0;
+
   document.getElementById('joinMatchInfo').innerHTML = `
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
       <div class="card-title">${m.name}</div>
       <span class="badge badge-blue">${m.type}</span>
+      <span class="badge badge-orange">${m.format||'Squad'}</span>
     </div>
     <div class="match-info" style="margin-top:10px">
       <div class="match-info-item"><strong>₹${m.entry}</strong>Entry Fee</div>
       <div class="match-info-item"><strong>${regs.length}/${m.slots}</strong>Slots</div>
-    </div>
-  `;
-  document.getElementById('joinFeeNote').textContent = `Entry fee ₹${m.entry} will be deducted from your wallet`;
-  ['jTeamName','jUID1','jUID2','jUID3','jUID4','jUID5','jUID6','jIGN1','jIGN2','jIGN3','jIGN4','jIGN5','jIGN6'].forEach(id=>document.getElementById(id).value='');
+    </div>`;
+
+  // Team name row — hide for solo
+  document.getElementById('jTeamNameRow').style.display = isSolo ? 'none' : '';
+
+  // Dynamically build player fields
+  let html = '';
+  for (let i = 1; i <= mainCount; i++) {
+    const label = isSolo ? 'Your' : `P${i}`;
+    const req = '*';
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="jUID${i}" placeholder="${label} UID ${req}" />
+      <input id="jIGN${i}" placeholder="${label} IGN ${req}" />
+    </div>`;
+  }
+  if (subCount > 0) {
+    html += `<div style="font-size:11px;color:var(--muted);margin:8px 0 6px;text-transform:uppercase;letter-spacing:0.5px">Substitutes (Optional)</div>`;
+    for (let i = mainCount+1; i <= mainCount+subCount; i++) {
+      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="jUID${i}" placeholder="Sub ${i-mainCount} UID" />
+        <input id="jIGN${i}" placeholder="Sub ${i-mainCount} IGN" />
+      </div>`;
+    }
+  }
+  // Always create hidden inputs up to 6 so joinMatch() reads them safely
+  for (let i = mainCount+subCount+1; i <= 6; i++) {
+    html += `<input id="jUID${i}" type="hidden" value="" /><input id="jIGN${i}" type="hidden" value="" />`;
+  }
+  document.getElementById('jPlayersContainer').innerHTML = html;
+
+  document.getElementById('joinFeeNote').textContent = `Entry fee ₹${m.entry} wallet se deduct hoga`;
+  document.getElementById('jTeamName').value = '';
   openModal('joinMatchModal');
 }
 
@@ -1786,14 +1801,27 @@ async function joinMatch() {
   const regs = S.get('registrations');
   const bal = wallets[CUR.username] || 0;
   const fee = Number(m.entry);
-  const teamName = v('jTeamName');
-  const uid1=v('jUID1'),uid2=v('jUID2'),uid3=v('jUID3'),uid4=v('jUID4');
-  const uid5=v('jUID5'),uid6=v('jUID6');
-  const ign1=v('jIGN1'),ign2=v('jIGN2'),ign3=v('jIGN3'),ign4=v('jIGN4');
-  const ign5=v('jIGN5'),ign6=v('jIGN6');
-  if (!teamName) { toast('Enter team name','error'); return; }
-  if (!uid1||!uid2||!uid3||!uid4) { toast('4 UIDs are required','error'); return; }
-  if (!ign1||!ign2||!ign3||!ign4) { toast('4 In-Game Names are required','error'); return; }
+
+  const fmt = (m.format||'Squad').toLowerCase();
+  const isSolo = fmt.includes('solo');
+  const isDuo  = fmt.includes('duo');
+  const mainCount = isSolo ? 1 : isDuo ? 2 : 4;
+
+  const teamName = isSolo ? (CUR.name || CUR.username) : v('jTeamName');
+  if (!isSolo && !teamName) { toast('Team name daalo','error'); return; }
+
+  const uid1=v('jUID1'), ign1=v('jIGN1');
+  const uid2=v('jUID2'), ign2=v('jIGN2');
+  const uid3=v('jUID3'), ign3=v('jIGN3');
+  const uid4=v('jUID4'), ign4=v('jIGN4');
+  const uid5=v('jUID5'), ign5=v('jIGN5');
+  const uid6=v('jUID6'), ign6=v('jIGN6');
+
+  // Validate required fields based on format
+  for (let i = 1; i <= mainCount; i++) {
+    if (!v(`jUID${i}`)) { toast(`P${i} UID daalo`, 'error'); return; }
+    if (!v(`jIGN${i}`)) { toast(`P${i} In-Game Name daalo`, 'error'); return; }
+  }
   if (regs.find(r=>r.matchId===joinMatchId&&r.captain===CUR.username)) { toast('Already registered in this match','error'); return; }
   const joined = regs.filter(r=>r.matchId===joinMatchId).length;
   if (joined >= Number(m.slots)) { toast('Match is full!','error'); return; }
