@@ -1243,16 +1243,17 @@ function applyBranding(b) {
   const tagline = b.appTagline || 'ESPORTS PLATFORM';
   const slogan = b.appSlogan || '';
 
-  // Header logo - color only, name stays ZONEX
+  // Header logo - update name + color
   const headerLogo = document.getElementById('headerLogoText');
-  if (headerLogo) headerLogo.querySelector('span').style.color = a1;
+  if (headerLogo) headerLogo.innerHTML = `${whitePart}<span style="color:${a1}">${coloredPart}</span>`;
 
-  // Login logo - color only, name stays ZONEX
+  // Login logo - color only, name stays as-is (login page excluded from branding name)
   const loginLogoDiv = document.getElementById('loginLogoText');
   if (loginLogoDiv) loginLogoDiv.querySelector('span').style.color = a1;
 
+  // Loader logo - update name + color
   const loaderLogo = document.getElementById('loaderLogo');
-  if (loaderLogo) loaderLogo.querySelector('span').style.color = a1;
+  if (loaderLogo) loaderLogo.innerHTML = `${whitePart}<span style="color:${a1}">${coloredPart}</span>`;
   const taglineEl = document.querySelector('.login-tagline');
   if (taglineEl) taglineEl.textContent = tagline;
   const sloganEl = document.querySelector('.login-slogan');
