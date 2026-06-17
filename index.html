@@ -23,6 +23,8 @@
     --text: #e2e8f0;
     --muted: #64748b;
     --gold: #fbbf24;
+    --brand: #0066ff;
+    --brand2: #00c3ff;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -364,52 +366,93 @@
   /* ── LOGIN SCREEN ── */
   #loginScreen {
     position: fixed; inset: 0;
-    background: radial-gradient(ellipse at 30% 20%, rgba(0,102,255,0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 70% 80%, rgba(0,170,255,0.1) 0%, transparent 60%),
-                #020d1a;
-    z-index: 300; display: flex; align-items: center; justify-content: center;
+    background: #020d1a;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-y: auto;
   }
-  .login-box {
-    width: 100%; max-width: 380px; padding: 24px;
-    background: rgba(12,12,24,0.85);
-    border: 1px solid rgba(0,102,255,0.35);
-    border-radius: 16px;
-    box-shadow: 0 0 60px rgba(0,102,255,0.15), 0 0 0 1px rgba(0,102,255,0.1);
-    backdrop-filter: blur(10px);
-    margin: 16px;
+  /* top image section */
+  .login-img-wrap {
+    position: relative;
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .login-img-wrap img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  /* gradient fade at bottom of image into dark */
+  .login-img-wrap::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, transparent 0%, #020d1a 100%);
+    pointer-events: none;
+  }
+  /* logo sits at bottom of image section, overlapping the fade */
+  .login-logo-wrap {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    text-align: center;
+    padding-bottom: 16px;
+    z-index: 2;
   }
   .login-logo {
     font-family: 'Orbitron', sans-serif;
-    font-size: 42px; font-weight: 900;
-    color: #fff;
-    text-align: center; margin-bottom: 4px; letter-spacing: 4px;
+    font-size: 52px; font-weight: 900; color: #fff;
+    letter-spacing: 6px;
+    text-shadow: 0 0 40px rgba(0,102,255,0.6), 0 2px 16px rgba(0,0,0,1);
+    line-height: 1;
   }
   .login-logo .logo-x { color: #0066ff; }
   .login-tagline {
-    text-align: center; color: var(--muted); font-size: 11px;
-    margin-bottom: 6px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.55); font-size: 11px;
+    letter-spacing: 4px; text-transform: uppercase;
     font-family: 'Rajdhani', sans-serif;
+    margin-top: 4px;
   }
   .login-slogan {
-    text-align: center; color: #3b9eff; font-size: 12px;
-    margin-bottom: 24px; letter-spacing: 2px; text-transform: uppercase;
-    font-family: 'Rajdhani', sans-serif; font-weight: 600;
+    color: #3b9eff; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    margin-top: 3px;
   }
-  .role-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  /* bottom form card */
+  .login-box {
+    margin: 0 16px 28px;
+    padding: 22px 20px 24px;
+    background: rgba(7,15,30,0.95);
+    border: 1px solid rgba(0,102,255,0.35);
+    border-radius: 18px;
+    box-shadow: 0 0 0 1px rgba(0,102,255,0.1), 0 4px 40px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+  .login-welcome {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: #3b9eff; letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 2px;
+  }
+  .login-role-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 26px; font-weight: 900;
+    color: #fff; letter-spacing: 2px;
+    margin-bottom: 18px;
+  }
+  .role-tabs { display: flex; gap: 0; margin-bottom: 18px; border: 1px solid rgba(0,102,255,0.25); border-radius: 10px; overflow: hidden; }
   .role-tab {
-    flex: 1; padding: 10px; border-radius: 0; border: none;
-    background: transparent; color: var(--muted); cursor: pointer;
-    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px;
+    flex: 1; padding: 11px; border-radius: 0; border: none;
+    background: rgba(0,102,255,0.05); color: var(--muted); cursor: pointer;
+    font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px;
     text-align: center; transition: all 0.2s; letter-spacing: 1px;
   }
   .role-tab.active { background: rgba(0,102,255,0.2); color: #3b9eff; border-bottom: 2px solid #0066ff; }
-  .hexdeco {
-    position: fixed; opacity: 0.04; font-size: 200px;
-    pointer-events: none; user-select: none;
-    font-family: 'Orbitron', sans-serif; color: #0066ff;
-  }
-  .hexdeco.tl { top: -40px; left: -40px; }
-  .hexdeco.br { bottom: -40px; right: -40px; }
+  .hexdeco { display: none; }
+  .login-top { display: none; }
 
   /* ── UTR DEPOSIT ── */
   .utr-box {
@@ -481,18 +524,30 @@
 
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">ZONE<span class="logo-x">X</span></div>
-    <div class="login-tagline">ESPORTS PLATFORM</div>
-    <div class="login-slogan">ONE TOURNAMENT · ONE CHAMPION</div>
 
-    <!-- 2 ROLE TABS -->
-    <div class="role-tabs" style="display:flex;gap:0;margin-bottom:22px;border:1px solid var(--border);border-radius:8px;overflow:hidden">
+  <!-- Top: bg image with logo overlay -->
+  <div class="login-img-wrap" id="loginImgWrap">
+    <img id="loginBgImg" src="" alt="" style="display:none;min-height:260px;background:#020d1a" />
+    <!-- fallback dark gradient when no image -->
+    <div id="loginImgFallback" style="width:100%;height:300px;background:radial-gradient(ellipse at 40% 60%,rgba(0,102,255,0.18) 0%,transparent 70%),radial-gradient(ellipse at 80% 20%,rgba(255,80,0,0.1) 0%,transparent 60%),#020d1a"></div>
+
+    <!-- ZONEX logo overlapping the bottom of image -->
+    <div class="login-logo-wrap">
+      <div class="login-logo">ZONE<span class="logo-x">X</span></div>
+      <div class="login-tagline">ESPORTS PLATFORM</div>
+      <div class="login-slogan">ONE TOURNAMENT · ONE CHAMPION</div>
+    </div>
+  </div>
+
+  <!-- Bottom: form card -->
+  <div class="login-box">
+    <div class="login-welcome" id="loginWelcomeLabel">WELCOME BACK,</div>
+    <div class="login-role-title" id="loginRoleTitle">CAPTAIN</div>
+
+    <div class="role-tabs">
       <div class="role-tab" id="rtab-admin" onclick="selectRole('admin')">🛡 ADMIN</div>
       <div class="role-tab active" id="rtab-captain" onclick="selectRole('captain')">🎖 CAPTAIN</div>
     </div>
-
-    <!-- Role hint removed -->
 
     <div class="form-row">
       <label class="form-label">📟 USERNAME</label>
@@ -503,15 +558,14 @@
       <input id="loginPass" type="password" placeholder="Enter password" />
     </div>
 
-    <!-- Admin/Viewer code field -->
     <div id="loginCodeField" class="form-row" style="display:none">
       <label class="form-label" id="loginCodeLabel">🔑 ADMIN CODE</label>
       <input id="loginCode" placeholder="Enter code" />
     </div>
 
-    <button class="btn btn-accent btn-full" style="margin-top:16px;padding:13px;font-size:14px;letter-spacing:2px" onclick="doLogin()">⚡ ENTER ZONE</button>
+    <button class="btn btn-accent btn-full" style="margin-top:18px;padding:14px;font-size:14px;letter-spacing:2px;font-weight:700" onclick="doLogin()">⚡ ENTER ZONE</button>
 
-    <div style="text-align:center;margin-top:18px;font-size:13px;color:var(--muted)">
+    <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">
       Naya captain ho? <a href="javascript:void(0)" onclick="openModal('capRegModal')" style="color:#3b9eff;font-weight:600;text-decoration:none">Create New Account</a>
     </div>
   </div>
@@ -601,9 +655,10 @@
     <div id="playerResultsList"></div>
   </div>
 
-  <div id="sec-p-myid" class="section">
-    <div class="page-title">🪪 My ID Info</div>
-    <div id="playerMyIdContent"></div>
+  <!-- BRANDING (Admin) -->
+  <div id="sec-branding" class="section">
+    <div class="page-title">🎨 Branding Settings</div>
+    <div id="brandingContent"></div>
   </div>
 
 </div>
@@ -908,7 +963,7 @@ const S = {
   }
 };
 
-const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages'];
+const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages','branding'];
 
 const DEFAULTS = {
   admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN', viewerCode:'ZX@VIEW' },
@@ -921,7 +976,8 @@ const DEFAULTS = {
   txns:          {},
   paySettings:   { upiId:'tournament@upi', qrUrl:'' },
   matchImages:   {},
-  globalImages:  { loginBg:'', cardBg:'' }
+  globalImages:  { loginBg:'', cardBg:'' },
+  branding:      { appName:'ZONEX', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff', logoAccentChar:'X' }
 };
 
 // ═══════ INIT ═══════
@@ -964,6 +1020,8 @@ async function initData() {
             const sec = activeBtn.id.replace('navbtn-','');
             renderSection(sec);
           }
+          // Branding update on any device
+          if (k === 'branding') applyBranding(_cache['branding'] || {});
         }
       });
     }
@@ -974,6 +1032,264 @@ async function initData() {
   }
   tryAutoLogin();
   showLoader(false);
+  // Apply saved login background
+  const gi = S.get('globalImages') || {};
+  applyLoginBg(gi.loginBg || '');
+  // Apply saved branding
+  applyBranding(S.get('branding') || {});
+}
+
+
+// ═══════ BRANDING ═══════
+const THEME_PRESETS = {
+  blue:   { accent:'#0066ff', accent2:'#00c3ff', label:'Blue (Default)' },
+  green:  { accent:'#00c853', accent2:'#69f0ae', label:'Green' },
+  orange: { accent:'#ff6d00', accent2:'#ffab40', label:'Orange' },
+  red:    { accent:'#e53935', accent2:'#ff5252', label:'Red' },
+  purple: { accent:'#7c3aed', accent2:'#c084fc', label:'Purple' },
+  gold:   { accent:'#f59e0b', accent2:'#fde68a', label:'Gold' },
+  pink:   { accent:'#db2777', accent2:'#f9a8d4', label:'Pink' },
+  cyan:   { accent:'#0891b2', accent2:'#22d3ee', label:'Cyan' },
+};
+
+function applyBranding(b) {
+  if (!b) return;
+  const root = document.documentElement;
+  const preset = (b.themePreset && THEME_PRESETS[b.themePreset]) ? THEME_PRESETS[b.themePreset] : null;
+  const a1 = (b.themePreset === 'custom' ? b.accentColor : (preset ? preset.accent : '#0066ff')) || '#0066ff';
+  const a2 = (b.themePreset === 'custom' ? b.accent2Color : (preset ? preset.accent2 : '#00c3ff')) || '#00c3ff';
+
+  root.style.setProperty('--accent', a1);
+  root.style.setProperty('--accent2', a2);
+  root.style.setProperty('--brand', a1);
+  root.style.setProperty('--brand2', a2);
+  root.style.setProperty('--blue', a1);
+  root.style.setProperty('--blue2', a2);
+
+  let dyn = document.getElementById('dynBrandStyle');
+  if (!dyn) { dyn = document.createElement('style'); dyn.id = 'dynBrandStyle'; document.head.appendChild(dyn); }
+  dyn.textContent = `
+    #header { background: linear-gradient(90deg, var(--bg), #041020, var(--bg)) !important; border-bottom-color: ${a1}55 !important; }
+    .btn-primary { background: linear-gradient(135deg, ${a1}cc, ${a2}) !important; }
+    .btn-accent { background: linear-gradient(135deg, ${a1}, ${a2}aa) !important; }
+    .nav-btn.active { color: ${a2} !important; border-bottom-color: ${a1} !important; }
+    .stat-val { background: linear-gradient(135deg, ${a2}, ${a1}) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+    .slot-no { color: ${a2} !important; background: ${a1}20 !important; }
+    .wallet-bal { background: linear-gradient(135deg, ${a2}, ${a1}) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+    .mc-type-badge { background: ${a1}30 !important; border-color: ${a2}66 !important; color: ${a2} !important; }
+    .logo span, .login-logo .logo-x { color: ${a1} !important; }
+    .login-slogan { color: ${a2} !important; }
+    .role-tab.active { background: ${a1}33 !important; color: ${a2} !important; border-bottom-color: ${a1} !important; }
+    input:focus, select:focus, textarea:focus { border-color: ${a1} !important; box-shadow: 0 0 0 2px ${a1}20 !important; }
+    .page-title::before { background: linear-gradient(${a1}, ${a2}) !important; }
+    ::-webkit-scrollbar-thumb { background: ${a1} !important; }
+    .login-box { border-color: ${a1}55 !important; }
+    .login-welcome { color: ${a2} !important; }
+    .wallet-box { border-color: ${a1}55 !important; }
+    .badge-orange { background: ${a1}25 !important; color: ${a2} !important; }
+    .badge-blue { background: ${a1}18 !important; color: ${a2} !important; }
+    .role-admin { color: ${a2} !important; border-color: ${a1}66 !important; background: ${a1}20 !important; }
+  `;
+
+  const appName = (b.appName || 'ZONEX').toUpperCase();
+  const accentChar = (b.logoAccentChar || 'X').toUpperCase();
+  const baseName = appName.endsWith(accentChar) ? appName.slice(0, -accentChar.length) : appName;
+  const tagline = b.appTagline || 'ESPORTS PLATFORM';
+  const slogan = b.appSlogan || '';
+
+  const headerLogo = document.querySelector('#header .logo');
+  if (headerLogo) headerLogo.innerHTML = `${baseName}<span>${accentChar}</span>`;
+
+  const loginLogoDiv = document.querySelector('.login-logo');
+  if (loginLogoDiv) loginLogoDiv.innerHTML = `${baseName}<span class="logo-x">${accentChar}</span>`;
+  const taglineEl = document.querySelector('.login-tagline');
+  if (taglineEl) taglineEl.textContent = tagline;
+  const sloganEl = document.querySelector('.login-slogan');
+  if (sloganEl) sloganEl.textContent = slogan;
+
+  document.title = appName + ' Hub';
+}
+
+function renderBranding() {
+  const b = S.get('branding') || {};
+  const isAdmin = CUR.role === 'admin';
+  const curPreset = b.themePreset || 'blue';
+  const curA1 = curPreset === 'custom' ? (b.accentColor||'#0066ff') : (THEME_PRESETS[curPreset]?.accent||'#0066ff');
+  const curA2 = curPreset === 'custom' ? (b.accent2Color||'#00c3ff') : (THEME_PRESETS[curPreset]?.accent2||'#00c3ff');
+  const appName = (b.appName||'ZONEX').toUpperCase();
+  const accentChar = (b.logoAccentChar||'X').toUpperCase();
+  const baseName = appName.endsWith(accentChar) ? appName.slice(0,-accentChar.length) : appName;
+
+  document.getElementById('brandingContent').innerHTML = `
+    <div class="card" style="border-color:${curA1}55;margin-bottom:18px">
+      <div class="card-head">
+        <div class="card-title">👁 Current Branding</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:10px;padding:16px;text-align:center;margin-bottom:12px">
+        <div style="font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:4px">${baseName}<span style="color:${curA1}">${accentChar}</span></div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:3px;margin-top:4px">${b.appTagline||'ESPORTS PLATFORM'}</div>
+        <div style="font-size:11px;color:${curA2};letter-spacing:2px;margin-top:2px">${b.appSlogan||''}</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:8px;padding:10px 14px;flex:1">
+          <div style="width:28px;height:28px;border-radius:6px;background:${curA1}"></div>
+          <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Primary</div><div style="font-size:12px;font-family:monospace;color:var(--text)">${curA1}</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:8px;padding:10px 14px;flex:1">
+          <div style="width:28px;height:28px;border-radius:6px;background:${curA2}"></div>
+          <div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Secondary</div><div style="font-size:12px;font-family:monospace;color:var(--text)">${curA2}</div></div>
+        </div>
+      </div>
+    </div>
+
+    ${isAdmin ? `
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px">✏ Edit Branding</div>
+
+      <div style="font-size:11px;color:${curA2};text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">App Name & Text</div>
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="form-row" style="margin:0">
+          <label class="form-label">App Name</label>
+          <input id="bAppName" value="${b.appName||'ZONEX'}" placeholder="e.g. ZONEX" />
+          <div class="form-hint">Displayed in header & login screen</div>
+        </div>
+        <div class="form-row" style="margin:0">
+          <label class="form-label">Accent Char (colored)</label>
+          <input id="bLogoChar" value="${b.logoAccentChar||'X'}" placeholder="X" maxlength="3" />
+          <div class="form-hint">Last letter shown in color</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Tagline</label>
+        <input id="bTagline" value="${b.appTagline||'ESPORTS PLATFORM'}" placeholder="e.g. ESPORTS PLATFORM" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Slogan</label>
+        <input id="bSlogan" value="${b.appSlogan||'ONE TOURNAMENT · ONE CHAMPION'}" placeholder="e.g. ONE TOURNAMENT · ONE CHAMPION" />
+      </div>
+
+      <div style="font-size:11px;color:${curA2};text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;margin-top:4px">Color Theme</div>
+      <div class="form-row">
+        <label class="form-label">Theme Preset</label>
+        <select id="bPreset" onchange="onPresetChange()">
+          ${Object.entries(THEME_PRESETS).map(([k,v])=>`<option value="${k}" ${curPreset===k?'selected':''}>${v.label}</option>`).join('')}
+          <option value="custom" ${curPreset==='custom'?'selected':''}>Custom (Pick Colors)</option>
+        </select>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        ${Object.entries(THEME_PRESETS).map(([k,v])=>`
+          <div onclick="document.getElementById('bPreset').value='${k}';onPresetChange()" title="${v.label}"
+            style="width:36px;height:36px;border-radius:8px;cursor:pointer;background:linear-gradient(135deg,${v.accent},${v.accent2});
+            border:2px solid ${curPreset===k?'#fff':'transparent'};transition:all 0.2s;flex-shrink:0" id="swatch-${k}"></div>
+        `).join('')}
+      </div>
+
+      <div id="customColorFields" style="display:${curPreset==='custom'?'block':'none'}">
+        <div class="grid2">
+          <div class="form-row">
+            <label class="form-label">Primary Color</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="color" id="bAccent" value="${b.accentColor||'#0066ff'}" style="width:50px;height:40px;padding:2px;cursor:pointer;border-radius:6px" oninput="document.getElementById('bAccentHex').value=this.value;onPresetChange()" />
+              <input id="bAccentHex" value="${b.accentColor||'#0066ff'}" placeholder="#0066ff" style="flex:1;min-width:0" oninput="document.getElementById('bAccent').value=this.value;onPresetChange()" />
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Secondary Color</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="color" id="bAccent2" value="${b.accent2Color||'#00c3ff'}" style="width:50px;height:40px;padding:2px;cursor:pointer;border-radius:6px" oninput="document.getElementById('bAccent2Hex').value=this.value;onPresetChange()" />
+              <input id="bAccent2Hex" value="${b.accent2Color||'#00c3ff'}" placeholder="#00c3ff" style="flex:1;min-width:0" oninput="document.getElementById('bAccent2').value=this.value;onPresetChange()" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Live Preview</div>
+        <div id="brandPreviewLogo" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;letter-spacing:3px;margin-bottom:3px">${baseName}<span id="bPreviewX" style="color:${curA1}">${accentChar}</span></div>
+        <div id="brandPreviewTag" style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:3px;margin-bottom:10px">${b.appTagline||'ESPORTS PLATFORM'}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div id="bPreviewBtn" style="padding:7px 14px;border-radius:7px;font-family:Rajdhani,sans-serif;font-weight:700;font-size:13px;background:linear-gradient(135deg,${curA1},${curA2});color:#fff;display:inline-block">⚡ Button</div>
+          <div id="bPreviewBadge" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:0.5px;background:${curA1}25;color:${curA2};border:1px solid ${curA1}44;display:inline-block">BADGE</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-accent btn-full" onclick="saveBranding()">💾 Save & Apply</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetBranding()" style="white-space:nowrap">↺ Reset</button>
+      </div>
+    </div>
+    ` : `<div class="card"><span style="font-size:12px;color:var(--muted)">👁 Viewer: Branding settings edit nahi kar sakte</span></div>`}
+  `;
+}
+
+function onPresetChange() {
+  const preset = document.getElementById('bPreset')?.value;
+  const customFields = document.getElementById('customColorFields');
+  if (customFields) customFields.style.display = preset === 'custom' ? 'block' : 'none';
+  Object.keys(THEME_PRESETS).forEach(k => {
+    const sw = document.getElementById('swatch-' + k);
+    if (sw) sw.style.borderColor = preset === k ? '#fff' : 'transparent';
+  });
+  const p = THEME_PRESETS[preset];
+  const a1 = p ? p.accent : (document.getElementById('bAccentHex')?.value || '#0066ff');
+  const a2 = p ? p.accent2 : (document.getElementById('bAccent2Hex')?.value || '#00c3ff');
+
+  const name = (document.getElementById('bAppName')?.value || 'ZONEX').toUpperCase();
+  const char = (document.getElementById('bLogoChar')?.value || 'X').toUpperCase();
+  const base = name.endsWith(char) ? name.slice(0, -char.length) : name;
+  const tag = document.getElementById('bTagline')?.value || 'ESPORTS PLATFORM';
+
+  const logo = document.getElementById('brandPreviewLogo');
+  if (logo) logo.innerHTML = `${base}<span id="bPreviewX" style="color:${a1}">${char}</span>`;
+  const tagEl = document.getElementById('brandPreviewTag');
+  if (tagEl) tagEl.textContent = tag;
+  const btn = document.getElementById('bPreviewBtn');
+  if (btn) btn.style.background = `linear-gradient(135deg, ${a1}, ${a2})`;
+  const badge = document.getElementById('bPreviewBadge');
+  if (badge) { badge.style.color = a2; badge.style.borderColor = a1+'44'; badge.style.background = a1+'25'; }
+}
+
+async function saveBranding() {
+  const preset = document.getElementById('bPreset')?.value || 'blue';
+  const b = {
+    appName: (document.getElementById('bAppName')?.value?.trim() || 'ZONEX').toUpperCase(),
+    logoAccentChar: (document.getElementById('bLogoChar')?.value?.trim() || 'X').toUpperCase(),
+    appTagline: document.getElementById('bTagline')?.value?.trim() || 'ESPORTS PLATFORM',
+    appSlogan: document.getElementById('bSlogan')?.value?.trim() || '',
+    themePreset: preset,
+    accentColor: document.getElementById('bAccentHex')?.value?.trim() || '#0066ff',
+    accent2Color: document.getElementById('bAccent2Hex')?.value?.trim() || '#00c3ff',
+  };
+  await S.set('branding', b);
+  applyBranding(b);
+  toast('Branding saved & applied! 🎨', 'success');
+  renderBranding();
+}
+
+async function resetBranding() {
+  if (!confirm('Branding reset karna chahte ho? Default ZoneX theme wapas aayegi.')) return;
+  const def = { appName:'ZONEX', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff', logoAccentChar:'X' };
+  await S.set('branding', def);
+  applyBranding(def);
+  toast('Branding reset to default!', 'success');
+  renderBranding();
+}
+
+
+function applyLoginBg(url) {
+  const img = document.getElementById('loginBgImg');
+  const fallback = document.getElementById('loginImgFallback');
+  if (!img) return;
+  if (url) {
+    img.src = url;
+    img.style.display = 'block';
+    if (fallback) fallback.style.display = 'none';
+  } else {
+    img.src = '';
+    img.style.display = 'none';
+    if (fallback) fallback.style.display = 'block';
+  }
 }
 
 function showLoader(show) {
@@ -1014,6 +1330,8 @@ function selectRole(r) {
   if (codeLabel) codeLabel.textContent = '🔑 ADMIN CODE';
   const hint = document.getElementById('loginRoleHint');
   if (hint) hint.style.display = 'none';
+  const title = document.getElementById('loginRoleTitle');
+  if (title) title.textContent = r === 'admin' ? 'ADMIN' : 'CAPTAIN';
   ['loginUser','loginPass','loginCode'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
@@ -1155,6 +1473,7 @@ const ADMIN_TABS = [
   {id:'captains',label:'Captains'},
   {id:'adminwallet',label:'💰 Wallet'},
   {id:'images',label:'🖼 Images'},
+  {id:'branding',label:'🎨 Branding'},
 ];
 const CAP_TABS = [
   {id:'dashboard',label:'Dashboard'},
@@ -1197,6 +1516,7 @@ function renderSection(sec) {
   else if (sec==='captains') renderCaptains();
   else if (sec==='adminwallet') renderAdminWallet();
   else if (sec==='images') renderImages();
+  else if (sec==='branding') renderBranding();
   else if (sec==='p-matches') renderPlayerMatches();
   else if (sec==='p-results') renderPlayerResults();
   else if (sec==='p-myid') renderPlayerMyId();
@@ -1246,7 +1566,7 @@ function matchCardHTML(m, regs) {
   const globalImgs = S.get('globalImages') || {};
   const bgImg = (imgs[m.id] && imgs[m.id].cardBg) || globalImgs.cardBg || '';
   const bgStyle = bgImg
-    ? `background-image:linear-gradient(rgba(5,18,32,0.82),rgba(2,13,26,0.92)),url('${bgImg}');background-size:cover;background-position:center;`
+    ? `background-image:url('${bgImg}');background-size:cover;background-position:center;`
     : '';
 
   // Type short label
@@ -2313,6 +2633,7 @@ function saveGlobalImages() {
   const loginBg = document.getElementById('giLoginBg')?.value?.trim() || '';
   const cardBg = document.getElementById('giCardBg')?.value?.trim() || '';
   S.set('globalImages', { loginBg, cardBg });
+  applyLoginBg(loginBg);
   toast('Global images saved!','success');
   renderImages();
 }
@@ -2364,7 +2685,7 @@ function renderPlayerMatches() {
     const joined = regs.filter(r => r.matchId === m.id).length;
     const dt = new Date(m.time);
     const bgImg = (imgs[m.id] && imgs[m.id].cardBg) || globalImgs.cardBg || '';
-    const bgStyle = bgImg ? `background-image:linear-gradient(rgba(5,18,32,0.82),rgba(2,13,26,0.92)),url('${bgImg}');background-size:cover;background-position:center;` : '';
+    const bgStyle = bgImg ? `background-image:url('${bgImg}');background-size:cover;background-position:center;` : '';
     const typeShort = m.type==='Battle Royale'?'BR':m.type==='Clash Squad'?'CS':m.type==='Daily Match'?'DM':(m.type||'BR').substring(0,3).toUpperCase();
     const typeIcon = m.type==='Battle Royale'?'🎯':m.type==='Clash Squad'?'⚔️':'🎮';
     const fmtShort = (m.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
@@ -2609,6 +2930,9 @@ window.saveAwPaySettings = saveAwPaySettings;
 window.toggleSection = toggleSection;
 window.copyRC = copyRC;
 window.doRegister = doRegister;
+window.saveBranding = saveBranding;
+window.resetBranding = resetBranding;
+window.onPresetChange = onPresetChange;
 </script>
 </body>
 </html>
