@@ -533,7 +533,7 @@
 
     <!-- ZONEX logo overlapping the bottom of image -->
     <div class="login-logo-wrap">
-      <div class="login-logo">ZONE<span class="logo-x">X</span></div>
+      <div class="login-logo" id="loginLogoText">ZONE<span class="logo-x">X</span></div>
       <div class="login-tagline">ESPORTS PLATFORM</div>
       <div class="login-slogan">ONE TOURNAMENT · ONE CHAMPION</div>
     </div>
@@ -573,7 +573,7 @@
 
 <!-- HEADER -->
 <div id="header" style="display:none">
-  <div class="logo">ZONE<span>X</span></div>
+  <div class="logo" id="headerLogoText">ZONE<span>X</span></div>
   <div id="userBadge"></div>
 </div>
 
@@ -597,6 +597,15 @@
       <button class="btn btn-accent btn-sm" id="createMatchBtn" style="display:none" onclick="openModal('createMatchModal')">+ Create Match</button>
     </div>
     <div id="matchesList"></div>
+  </div>
+
+  <!-- TOURNAMENTS (Admin create / Captain register) -->
+  <div id="sec-tournaments" class="section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="page-title" style="margin:0">Tournaments</div>
+      <button class="btn btn-accent btn-sm" id="createTournamentBtnWrap" style="display:none" onclick="openModal('createTournamentModal')">+ Create Tournament</button>
+    </div>
+    <div id="tournamentsList"></div>
   </div>
 
   <!-- MY TEAMS (Captain) -->
@@ -735,6 +744,139 @@
     <div id="jPlayersContainer"></div>
     <div id="joinFeeNote" style="font-size:12px;color:var(--muted);margin-bottom:12px"></div>
     <button class="btn btn-accent btn-full" onclick="joinMatch()">Pay Entry & Get Slot</button>
+  </div>
+</div>
+
+<!-- CREATE TOURNAMENT (Admin) -->
+<div class="modal-overlay" id="createTournamentModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('createTournamentModal')">✕</button>
+    <div class="modal-title">🏆 Create Tournament</div>
+    <div class="form-row">
+      <label class="form-label">Tournament Name</label>
+      <input id="tName" placeholder="e.g. ZoneX Champions Cup" />
+    </div>
+    <div class="grid2">
+      <div class="form-row">
+        <label class="form-label">Format</label>
+        <select id="tFormat">
+          <option>Squad (6 players)</option>
+          <option>Duo (2 players)</option>
+          <option>Solo</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Max Teams</label>
+        <input id="tMaxTeams" type="number" placeholder="16" />
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="form-row">
+        <label class="form-label">Entry Fee</label>
+        <input id="tEntry" placeholder="e.g. Free / ₹100 / 50 Diamonds" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Prize Pool</label>
+        <input id="tPrize" placeholder="e.g. ₹5000 / Winner takes all" />
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">Start Date</label>
+      <input id="tStart" type="datetime-local" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Description / Rules (optional)</label>
+      <textarea id="tDesc" rows="3" placeholder="Rules, notes etc."></textarea>
+    </div>
+    <div class="form-row" style="display:flex;align-items:center;gap:8px">
+      <input type="checkbox" id="tCodeRequired" style="width:auto" onchange="document.getElementById('tCodeRow').style.display=this.checked?'block':'none'" />
+      <label class="form-label" style="margin:0;text-transform:none;font-size:13px">🔒 Private — sirf code waalon ko register karne do</label>
+    </div>
+    <div class="form-row" id="tCodeRow" style="display:none">
+      <label class="form-label">Registration Code</label>
+      <input id="tCode" placeholder="e.g. ZX-INVITE2026" />
+    </div>
+    <button class="btn btn-accent btn-full" onclick="createTournament()">Create Tournament</button>
+  </div>
+</div>
+
+<!-- REGISTER TOURNAMENT TEAM (Captain) -->
+<div class="modal-overlay" id="registerTournamentModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('registerTournamentModal')">✕</button>
+    <div class="modal-title">⚡ Register Team</div>
+    <div id="regTourneyInfo"></div>
+    <div class="divider"></div>
+    <div class="form-row" id="rtTeamNameRow">
+      <label class="form-label">Team Name</label>
+      <input id="rtTeamName" placeholder="Your team name" />
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Players (UID + In-Game Name)</div>
+    <div id="rtPlayersContainer"></div>
+    <div class="form-row" id="rtCodeRow" style="display:none">
+      <label class="form-label">🔑 Tournament Code</label>
+      <input id="rtCode" placeholder="Enter invite code" />
+    </div>
+    <button class="btn btn-accent btn-full" onclick="registerTourneyTeam()">Submit Registration</button>
+  </div>
+</div>
+
+<!-- TOURNAMENT DETAIL (Admin / Captain / Viewer) -->
+<div class="modal-overlay" id="tournamentDetailModal">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('tournamentDetailModal')">✕</button>
+    <div id="tourneyDetailContent"></div>
+  </div>
+</div>
+
+<!-- CREATE TOURNAMENT MATCH (Admin) -->
+<div class="modal-overlay" id="createTourneyMatchModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('createTourneyMatchModal')">✕</button>
+    <div class="modal-title">🎮 Create Tournament Match</div>
+    <div class="form-row">
+      <label class="form-label">Match Name</label>
+      <input id="tmName" placeholder="e.g. Group A - Round 1" />
+    </div>
+    <div class="grid2">
+      <div class="form-row">
+        <label class="form-label">Date & Time</label>
+        <input id="tmTime" type="datetime-local" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Map</label>
+        <input id="tmMap" placeholder="e.g. Bermuda" />
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin:10px 0 8px;text-transform:uppercase;letter-spacing:0.5px">Select Teams (sirf confirmed teams dikhengi)</div>
+    <div id="tmTeamsContainer" style="max-height:240px;overflow-y:auto;margin-bottom:14px"></div>
+    <button class="btn btn-accent btn-full" onclick="createTourneyMatch()">Create Match & Notify Teams</button>
+  </div>
+</div>
+
+<!-- SET ROOM CREDS — TOURNAMENT MATCH (Admin) -->
+<div class="modal-overlay" id="tourneyRoomCredModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('tourneyRoomCredModal')">✕</button>
+    <div class="modal-title">🔑 Set Room Credentials</div>
+    <div class="form-row">
+      <label class="form-label">Room ID</label>
+      <input id="trcRoomId" placeholder="Room ID" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Room Password</label>
+      <input id="trcRoomPass" placeholder="Password" />
+    </div>
+    <button class="btn btn-green btn-full" onclick="saveTourneyRoomCreds()">Save & Reveal to Teams</button>
+  </div>
+</div>
+
+<!-- NOTIFICATIONS (Captain) -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('notifModal')">✕</button>
+    <div class="modal-title">🔔 Notifications</div>
+    <div id="notifList"></div>
   </div>
 </div>
 
@@ -963,7 +1105,7 @@ const S = {
   }
 };
 
-const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages','branding'];
+const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages','branding','tournaments','tournamentTeams','tournamentMatches','notifications'];
 
 const DEFAULTS = {
   admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN', viewerCode:'ZX@VIEW' },
@@ -977,7 +1119,11 @@ const DEFAULTS = {
   paySettings:   { upiId:'tournament@upi', qrUrl:'' },
   matchImages:   {},
   globalImages:  { loginBg:'', cardBg:'' },
-  branding:      { appName:'ZONEX', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff', logoAccentChar:'X' }
+  branding:      { appName:'ZONEX', coloredPart:'', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff' },
+  tournaments:      [],
+  tournamentTeams:  [],
+  tournamentMatches:[],
+  notifications:    []
 };
 
 // ═══════ INIT ═══════
@@ -1022,6 +1168,7 @@ async function initData() {
           }
           // Branding update on any device
           if (k === 'branding') applyBranding(_cache['branding'] || {});
+          if (CUR.role === 'captain') renderNotifBell();
         }
       });
     }
@@ -1091,23 +1238,27 @@ function applyBranding(b) {
     .role-admin { color: ${a2} !important; border-color: ${a1}66 !important; background: ${a1}20 !important; }
   `;
 
-  const appName = (b.appName || 'ZONEX').toUpperCase();
-  const accentChar = (b.logoAccentChar || 'X').toUpperCase();
-  const baseName = appName.endsWith(accentChar) ? appName.slice(0, -accentChar.length) : appName;
+  const whitePart = (b.appName || 'ZONE');
+  const coloredPart = (b.coloredPart || '');
   const tagline = b.appTagline || 'ESPORTS PLATFORM';
   const slogan = b.appSlogan || '';
 
-  const headerLogo = document.querySelector('#header .logo');
-  if (headerLogo) headerLogo.innerHTML = `${baseName}<span>${accentChar}</span>`;
+  // Header logo - color only, name stays ZONEX
+  const headerLogo = document.getElementById('headerLogoText');
+  if (headerLogo) headerLogo.querySelector('span').style.color = a1;
 
-  const loginLogoDiv = document.querySelector('.login-logo');
-  if (loginLogoDiv) loginLogoDiv.innerHTML = `${baseName}<span class="logo-x">${accentChar}</span>`;
+  // Login logo - color only, name stays ZONEX
+  const loginLogoDiv = document.getElementById('loginLogoText');
+  if (loginLogoDiv) loginLogoDiv.querySelector('span').style.color = a1;
+
+  const loaderLogo = document.getElementById('loaderLogo');
+  if (loaderLogo) loaderLogo.querySelector('span').style.color = a1;
   const taglineEl = document.querySelector('.login-tagline');
   if (taglineEl) taglineEl.textContent = tagline;
   const sloganEl = document.querySelector('.login-slogan');
   if (sloganEl) sloganEl.textContent = slogan;
 
-  document.title = appName + ' Hub';
+  // title stays fixed
 }
 
 function renderBranding() {
@@ -1116,9 +1267,8 @@ function renderBranding() {
   const curPreset = b.themePreset || 'blue';
   const curA1 = curPreset === 'custom' ? (b.accentColor||'#0066ff') : (THEME_PRESETS[curPreset]?.accent||'#0066ff');
   const curA2 = curPreset === 'custom' ? (b.accent2Color||'#00c3ff') : (THEME_PRESETS[curPreset]?.accent2||'#00c3ff');
-  const appName = (b.appName||'ZONEX').toUpperCase();
-  const accentChar = (b.logoAccentChar||'X').toUpperCase();
-  const baseName = appName.endsWith(accentChar) ? appName.slice(0,-accentChar.length) : appName;
+  const baseName = (b.appName||'ZONE');
+  const accentChar = (b.coloredPart||'');
 
   document.getElementById('brandingContent').innerHTML = `
     <div class="card" style="border-color:${curA1}55;margin-bottom:18px">
@@ -1127,6 +1277,7 @@ function renderBranding() {
       </div>
       <div style="background:var(--bg3);border-radius:10px;padding:16px;text-align:center;margin-bottom:12px">
         <div style="font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:4px">${baseName}<span style="color:${curA1}">${accentChar}</span></div>
+        <!-- full name = baseName + accentChar -->
         <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:3px;margin-top:4px">${b.appTagline||'ESPORTS PLATFORM'}</div>
         <div style="font-size:11px;color:${curA2};letter-spacing:2px;margin-top:2px">${b.appSlogan||''}</div>
       </div>
@@ -1149,14 +1300,14 @@ function renderBranding() {
       <div style="font-size:11px;color:${curA2};text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">App Name & Text</div>
       <div class="grid2" style="margin-bottom:12px">
         <div class="form-row" style="margin:0">
-          <label class="form-label">App Name</label>
-          <input id="bAppName" value="${b.appName||'ZONEX'}" placeholder="e.g. ZONEX" />
-          <div class="form-hint">Displayed in header & login screen</div>
+          <label class="form-label">Logo — Base Text (white)</label>
+          <input id="bAppName" value="${b.appName||'ZONE'}" placeholder="e.g. ZONE" oninput="onPresetChange()" />
+          <div class="form-hint">White part of the logo</div>
         </div>
         <div class="form-row" style="margin:0">
-          <label class="form-label">Accent Char (colored)</label>
-          <input id="bLogoChar" value="${b.logoAccentChar||'X'}" placeholder="X" maxlength="3" />
-          <div class="form-hint">Last letter shown in color</div>
+          <label class="form-label">Logo — Colored Part</label>
+          <input id="bLogoChar" value="${b.coloredPart||''}" placeholder="X" maxlength="5" oninput="onPresetChange()" />
+          <div class="form-hint">This part shows in accent color</div>
         </div>
       </div>
       <div class="form-row">
@@ -1207,6 +1358,7 @@ function renderBranding() {
       <div style="background:var(--bg3);border-radius:10px;padding:14px;margin-bottom:14px">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Live Preview</div>
         <div id="brandPreviewLogo" style="font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#fff;letter-spacing:3px;margin-bottom:3px">${baseName}<span id="bPreviewX" style="color:${curA1}">${accentChar}</span></div>
+        <!-- preview: white=baseName, colored=accentChar -->
         <div id="brandPreviewTag" style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:3px;margin-bottom:10px">${b.appTagline||'ESPORTS PLATFORM'}</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <div id="bPreviewBtn" style="padding:7px 14px;border-radius:7px;font-family:Rajdhani,sans-serif;font-weight:700;font-size:13px;background:linear-gradient(135deg,${curA1},${curA2});color:#fff;display:inline-block">⚡ Button</div>
@@ -1235,9 +1387,8 @@ function onPresetChange() {
   const a1 = p ? p.accent : (document.getElementById('bAccentHex')?.value || '#0066ff');
   const a2 = p ? p.accent2 : (document.getElementById('bAccent2Hex')?.value || '#00c3ff');
 
-  const name = (document.getElementById('bAppName')?.value || 'ZONEX').toUpperCase();
-  const char = (document.getElementById('bLogoChar')?.value || 'X').toUpperCase();
-  const base = name.endsWith(char) ? name.slice(0, -char.length) : name;
+  const base = (document.getElementById('bAppName')?.value || 'ZONE');
+  const char = (document.getElementById('bLogoChar')?.value || '');
   const tag = document.getElementById('bTagline')?.value || 'ESPORTS PLATFORM';
 
   const logo = document.getElementById('brandPreviewLogo');
@@ -1253,8 +1404,8 @@ function onPresetChange() {
 async function saveBranding() {
   const preset = document.getElementById('bPreset')?.value || 'blue';
   const b = {
-    appName: (document.getElementById('bAppName')?.value?.trim() || 'ZONEX').toUpperCase(),
-    logoAccentChar: (document.getElementById('bLogoChar')?.value?.trim() || 'X').toUpperCase(),
+    appName: (document.getElementById('bAppName')?.value || 'ZONE'),
+    coloredPart: (document.getElementById('bLogoChar')?.value || ''),
     appTagline: document.getElementById('bTagline')?.value?.trim() || 'ESPORTS PLATFORM',
     appSlogan: document.getElementById('bSlogan')?.value?.trim() || '',
     themePreset: preset,
@@ -1269,7 +1420,7 @@ async function saveBranding() {
 
 async function resetBranding() {
   if (!confirm('Branding reset karna chahte ho? Default ZoneX theme wapas aayegi.')) return;
-  const def = { appName:'ZONEX', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff', logoAccentChar:'X' };
+  const def = { appName:'ZONEX', coloredPart:'', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff' };
   await S.set('branding', def);
   applyBranding(def);
   toast('Branding reset to default!', 'success');
@@ -1299,7 +1450,7 @@ function showLoader(show) {
     el.id = 'fbLoader';
     el.style.cssText = 'position:fixed;inset:0;background:#020d1a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
     el.innerHTML = `
-      <div style="font-family:Orbitron,sans-serif;font-size:28px;font-weight:900;color:#fff">ZONE<span style="color:#0066ff">X</span></div>
+      <div id="loaderLogo" style="font-family:Orbitron,sans-serif;font-size:28px;font-weight:900;color:#fff">ZONE<span style="color:#0066ff">X</span></div>
       <div style="width:48px;height:48px;border:3px solid rgba(0,102,255,0.2);border-top-color:#0066ff;border-radius:50%;animation:spin 0.8s linear infinite"></div>
       <div style="font-size:13px;color:#64748b;letter-spacing:1px">Connecting...</div>
       <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
@@ -1457,17 +1608,21 @@ function renderUserBadge() {
   const badgeLabel = CUR.role === 'admin' ? 'Admin'
     : CUR.role === 'viewer' ? 'Viewer'
     : CUR.role === 'captain' ? 'Captain' : 'Player';
+  const bellHTML = CUR.role==='captain' ? `<button id="notifBellBtn" onclick="openNotifications()" style="position:relative;background:transparent;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔔<span id="notifBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 4px;min-width:14px;text-align:center;line-height:1.3">0</span></button>` : '';
   document.getElementById('userBadge').innerHTML = `
+    ${bellHTML}
     <span style="font-size:13px;font-family:Rajdhani,sans-serif;font-weight:600">${CUR.name}</span>
     <span class="role-pill ${badgeClass}">${badgeLabel}</span>
     <button id="logoutBtn" onclick="doLogout()">Logout</button>
   `;
+  if (CUR.role === 'captain') renderNotifBell();
 }
 
 // ═══════ NAV ═══════
 const ADMIN_TABS = [
   {id:'dashboard',label:'Dashboard'},
   {id:'matches',label:'Matches'},
+  {id:'tournaments',label:'🏆 Tournaments'},
   {id:'slots',label:'Slots'},
   {id:'distribute',label:'Distribute'},
   {id:'captains',label:'Captains'},
@@ -1478,6 +1633,7 @@ const ADMIN_TABS = [
 const CAP_TABS = [
   {id:'dashboard',label:'Dashboard'},
   {id:'matches',label:'Matches'},
+  {id:'tournaments',label:'🏆 Tournaments'},
   {id:'myteam',label:'My Teams'},
   {id:'wallet',label:'Wallet'},
 ];
@@ -1509,6 +1665,7 @@ function nav(sec) {
 function renderSection(sec) {
   if (sec==='dashboard') renderDashboard();
   else if (sec==='matches') renderMatches();
+  else if (sec==='tournaments') renderTournaments();
   else if (sec==='myteam') renderMyTeam();
   else if (sec==='wallet') renderWallet();
   else if (sec==='slots') renderSlots();
@@ -2830,6 +2987,464 @@ async function editCaptainWhatsapp(username) {
   renderCaptains();
 }
 
+// ═══════ TOURNAMENTS ═══════
+
+// ── List ──
+function renderTournaments() {
+  const btn = document.getElementById('createTournamentBtnWrap');
+  if (btn) btn.style.display = CUR.role==='admin' ? 'inline-flex' : 'none';
+  const tours = S.get('tournaments') || [];
+  document.getElementById('tournamentsList').innerHTML = tours.length
+    ? tours.map(t => tournamentCardHTML(t)).join('')
+    : `<div class="empty"><div class="empty-icon">🏆</div><p>No tournaments yet${CUR.role==='admin' ? '. Create one!' : ''}</p></div>`;
+}
+
+function tournamentCardHTML(t) {
+  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===t.id);
+  const confirmed = teams.filter(x=>x.status==='confirmed');
+  const myTeam = CUR.role==='captain' ? teams.find(x=>x.captain===CUR.username) : null;
+  const statusCls = t.status==='ongoing' ? 'mc-status-live' : t.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
+  const borderLeft = t.status==='ongoing' ? '#fbbf24' : t.status==='completed' ? '#f43f5e' : '#00e676';
+  const dt = new Date(t.startDate);
+  const fmtShort = (t.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
+
+  return `<div class="match-card" style="border-left-color:${borderLeft}">
+    <div class="mc-body">
+      <div class="mc-top">
+        <div class="mc-badges">
+          <span class="mc-type-badge">🏆 ${fmtShort.toUpperCase()}</span>
+          ${t.codeRequired ? `<span class="mc-format-badge">🔒 PRIVATE</span>` : ''}
+        </div>
+        <span class="${statusCls}">${(t.status||'upcoming').toUpperCase()}</span>
+      </div>
+      <div class="match-name">${t.name}</div>
+      ${!isNaN(dt) ? `<div class="mc-date-row">📅 ${dt.toLocaleDateString('en-GB')} · ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+      <div class="mc-teams-row">👥 <span style="color:var(--text);font-weight:600">${confirmed.length}${t.maxTeams?'/'+t.maxTeams:''}</span>&nbsp;teams confirmed</div>
+    </div>
+    <div class="mc-divider"></div>
+    <div class="mc-footer">
+      <div class="mc-prize">🏆 <span style="font-size:15px">${t.prizePool||'TBD'}</span></div>
+      <div class="mc-entry">ENTRY: ${t.entryFee||'Free'}</div>
+    </div>
+    <div class="mc-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openTournamentDetail('${t.id}')">📋 View Details</button>
+      ${CUR.role==='captain' && !myTeam && t.status!=='completed' ? `<button class="btn btn-accent btn-sm" onclick="openRegisterTournament('${t.id}')">⚡ Register Team</button>` : ''}
+      ${myTeam ? `<span class="badge badge-${myTeam.status==='confirmed'?'green':'orange'}" style="padding:6px 12px;font-size:12px">${myTeam.status==='confirmed'?'✓ Confirmed':'⏳ Pending'}${myTeam.group?' • Grp '+myTeam.group:''}</span>` : ''}
+      ${CUR.role==='admin' ? `<button class="btn btn-red btn-sm" onclick="deleteTournament('${t.id}','${t.name.replace(/'/g,"\\'")}')">🗑 Delete</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// ── Create / Delete Tournament ──
+async function createTournament() {
+  const name=v('tName'), format=v('tFormat'), maxTeams=v('tMaxTeams'),
+        entryFee=v('tEntry')||'Free', prizePool=v('tPrize')||'TBD',
+        startDate=v('tStart'), desc=v('tDesc'),
+        codeRequired = document.getElementById('tCodeRequired').checked,
+        code = v('tCode');
+  if (!name) { toast('Tournament name daalo','error'); return; }
+  if (codeRequired && !code) { toast('Code required ON hai toh code bhi daalo','error'); return; }
+
+  const tours = S.get('tournaments') || [];
+  tours.push({ id:'t'+Date.now(), name, format, maxTeams, entryFee, prizePool, startDate, description:desc, codeRequired, code, status:'upcoming', createdAt:now() });
+  await S.set('tournaments', tours);
+
+  closeModal('createTournamentModal');
+  ['tName','tMaxTeams','tEntry','tPrize','tStart','tDesc','tCode'].forEach(id=>{ const el=document.getElementById(id); if (el) el.value=''; });
+  document.getElementById('tCodeRequired').checked = false;
+  document.getElementById('tCodeRow').style.display = 'none';
+  toast('Tournament created!','success');
+  renderTournaments();
+}
+
+async function deleteTournament(tid, tname) {
+  if (!confirm(`"${tname}" tournament delete karna chahte ho?\n\nSaari team registrations aur matches bhi delete ho jayengi!`)) return;
+  const tours = (S.get('tournaments')||[]).filter(x=>x.id!==tid);
+  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId!==tid);
+  const tmatches = (S.get('tournamentMatches')||[]).filter(x=>x.tournamentId!==tid);
+  await Promise.all([
+    S.set('tournaments', tours),
+    S.set('tournamentTeams', teams),
+    S.set('tournamentMatches', tmatches)
+  ]);
+  toast('Tournament deleted','success');
+  renderTournaments();
+}
+
+// ── Tournament Detail ──
+let currentTourneyId = null;
+function openTournamentDetail(tid) {
+  currentTourneyId = tid;
+  renderTournamentDetail();
+  openModal('tournamentDetailModal');
+}
+
+function renderTournamentDetail() {
+  const t = (S.get('tournaments')||[]).find(x=>x.id===currentTourneyId);
+  if (!t) { closeModal('tournamentDetailModal'); return; }
+  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===t.id);
+  const tmatches = (S.get('tournamentMatches')||[]).filter(x=>x.tournamentId===t.id);
+  const myTeam = CUR.role==='captain' ? teams.find(x=>x.captain===CUR.username) : null;
+  const confirmed = teams.filter(x=>x.status==='confirmed');
+  const pending = teams.filter(x=>x.status==='pending');
+  const fmtShort = (t.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
+
+  let html = `
+    <div class="modal-title">🏆 ${t.name}</div>
+    <div class="match-info" style="margin-bottom:12px">
+      <div class="match-info-item"><strong>${t.entryFee||'Free'}</strong>Entry Fee</div>
+      <div class="match-info-item"><strong>${t.prizePool||'TBD'}</strong>Prize Pool</div>
+      <div class="match-info-item"><strong>${fmtShort}</strong>Format</div>
+      <div class="match-info-item"><strong>${confirmed.length}${t.maxTeams?'/'+t.maxTeams:''}</strong>Confirmed Teams</div>
+    </div>
+    ${t.description ? `<div style="font-size:12px;color:var(--muted);margin-bottom:12px;white-space:pre-wrap">${t.description}</div>` : ''}
+    ${t.codeRequired && CUR.role!=='captain' ? `<div style="font-size:11px;color:var(--muted);margin-bottom:12px">🔒 Registration Code: <strong style="color:var(--accent2);font-family:'Orbitron',sans-serif;letter-spacing:1px">${t.code}</strong></div>` : ''}
+    <div class="divider"></div>`;
+
+  if (CUR.role === 'admin') {
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted)">Teams (${teams.length})</div>
+      <button class="btn btn-accent btn-sm" onclick="openCreateTourneyMatch('${t.id}')">+ Create Match</button>
+    </div>`;
+    if (pending.length) {
+      html += `<div style="font-size:11px;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">⏳ Pending Approval (${pending.length})</div>`;
+      html += pending.map(team => tourneyTeamRowHTML(team)).join('');
+    }
+    if (confirmed.length) {
+      html += `<div style="font-size:11px;color:var(--green);margin:10px 0 6px;text-transform:uppercase;letter-spacing:0.5px">✓ Confirmed Teams (${confirmed.length})</div>`;
+      html += confirmed.map(team => tourneyTeamRowHTML(team)).join('');
+    }
+    if (!teams.length) html += `<div class="empty" style="padding:16px"><p>Koi team register nahi hui abhi</p></div>`;
+
+    html += `<div class="divider"></div>
+      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Matches (${tmatches.length})</div>`;
+    html += tmatches.length ? tmatches.map(tm => tourneyMatchCardHTML(tm, t, teams)).join('') : `<div class="empty" style="padding:16px"><p>Koi match create nahi hua abhi</p></div>`;
+
+  } else if (CUR.role === 'viewer') {
+    html += `<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Confirmed Teams (${confirmed.length})</div>`;
+    html += confirmed.length ? confirmed.map(team => tourneyTeamRowHTML(team, true)).join('') : `<div class="empty" style="padding:16px"><p>No confirmed teams yet</p></div>`;
+    html += `<div class="divider"></div>
+      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Matches (${tmatches.length})</div>`;
+    html += tmatches.length ? tmatches.map(tm => tourneyMatchCardHTML(tm, t, teams)).join('') : `<div class="empty" style="padding:16px"><p>No matches yet</p></div>`;
+
+  } else { // captain
+    if (!myTeam) {
+      html += t.status==='completed'
+        ? `<div class="empty" style="padding:16px"><p>Tournament khatam ho gaya</p></div>`
+        : `<button class="btn btn-accent btn-full" onclick="closeModal('tournamentDetailModal');openRegisterTournament('${t.id}')">⚡ Register Your Team</button>`;
+    } else {
+      html += tourneyTeamRowHTML(myTeam, true);
+      const myMatches = tmatches.filter(tm => tm.teamIds.includes(myTeam.id));
+      html += `<div class="divider"></div>
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Your Matches (${myMatches.length})</div>`;
+      html += myMatches.length ? myMatches.map(tm => tourneyMatchCardHTML(tm, t, teams)).join('') : `<div class="empty" style="padding:16px"><p>Abhi koi match assign nahi hua. Jab admin match banayega, notification mil jayegi.</p></div>`;
+    }
+  }
+
+  document.getElementById('tourneyDetailContent').innerHTML = html;
+}
+
+function tourneyTeamRowHTML(team, readonly) {
+  return `<div style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:10px">
+      ${team.slot ? `<span class="slot-no">#${team.slot}</span>` : ''}
+      <div>
+        <div style="font-size:13px;font-weight:600">${team.teamName}</div>
+        <div style="font-size:11px;color:var(--muted)">@${team.captain}${team.group?' • Group '+team.group:''}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span class="badge badge-${team.status==='confirmed'?'green':'orange'}">${team.status==='confirmed'?'✓ Confirmed':'⏳ Pending'}</span>
+      ${readonly ? '' : `
+        <button class="btn btn-ghost btn-sm" onclick="assignTeamGroup('${team.id}')">${team.group?'✏ Group':'+ Group'}</button>
+        ${team.status==='pending' ? `<button class="btn btn-green btn-sm" onclick="approveTourneyTeam('${team.id}')">✓ Approve</button>` : ''}
+        <button class="btn btn-red btn-sm" onclick="removeTourneyTeam('${team.id}')">🗑</button>
+      `}
+    </div>
+  </div>`;
+}
+
+async function assignTeamGroup(teamId) {
+  const teams = S.get('tournamentTeams');
+  const team = teams.find(x=>x.id===teamId);
+  const g = prompt(`${team.teamName} ke liye group naam:`, team.group||'');
+  if (g===null) return;
+  team.group = g.trim();
+  await S.set('tournamentTeams', teams);
+  toast('Group updated','success');
+  renderTournamentDetail();
+}
+
+async function approveTourneyTeam(teamId) {
+  const teams = S.get('tournamentTeams');
+  teams.find(x=>x.id===teamId).status = 'confirmed';
+  await S.set('tournamentTeams', teams);
+  toast('Team confirmed!','success');
+  renderTournamentDetail();
+}
+
+async function removeTourneyTeam(teamId) {
+  if (!confirm('Team ko tournament se remove karna hai?')) return;
+  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.id!==teamId);
+  await S.set('tournamentTeams', teams);
+  toast('Team removed','success');
+  renderTournamentDetail();
+}
+
+// ── Register Team (Captain) ──
+let regTourneyId = null;
+function openRegisterTournament(tid) {
+  regTourneyId = tid;
+  const t = (S.get('tournaments')||[]).find(x=>x.id===tid);
+  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===tid);
+
+  document.getElementById('regTourneyInfo').innerHTML = `
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div class="card-title">${t.name}</div>
+      <span class="badge badge-orange">${t.format||'Squad'}</span>
+      ${t.codeRequired ? `<span class="badge badge-red">🔒 Code Required</span>` : ''}
+    </div>
+    <div class="match-info" style="margin-top:10px">
+      <div class="match-info-item"><strong>${t.entryFee||'Free'}</strong>Entry Fee</div>
+      <div class="match-info-item"><strong>${teams.length}${t.maxTeams?'/'+t.maxTeams:''}</strong>Teams Registered</div>
+    </div>`;
+
+  const fmt = (t.format||'Squad').toLowerCase();
+  const isSolo = fmt.includes('solo');
+  const isDuo  = fmt.includes('duo');
+  const isSquad6 = fmt.includes('6');
+  const mainCount = isSolo ? 1 : isDuo ? 2 : 4;
+  const subCount  = isSquad6 ? 2 : 0;
+
+  document.getElementById('rtTeamNameRow').style.display = isSolo ? 'none' : '';
+
+  let html = '';
+  for (let i=1; i<=mainCount; i++) {
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <input id="rtUID${i}" placeholder="${isSolo?'Your':'P'+i} UID *" />
+      <input id="rtIGN${i}" placeholder="${isSolo?'Your':'P'+i} IGN *" />
+    </div>`;
+  }
+  if (subCount > 0) {
+    html += `<div style="font-size:11px;color:var(--muted);margin:8px 0 6px;text-transform:uppercase;letter-spacing:0.5px">Substitutes (Optional)</div>`;
+    for (let i=mainCount+1; i<=mainCount+subCount; i++) {
+      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="rtUID${i}" placeholder="Sub ${i-mainCount} UID" />
+        <input id="rtIGN${i}" placeholder="Sub ${i-mainCount} IGN" />
+      </div>`;
+    }
+  }
+  for (let i=mainCount+subCount+1; i<=6; i++) {
+    html += `<input id="rtUID${i}" type="hidden" value="" /><input id="rtIGN${i}" type="hidden" value="" />`;
+  }
+  document.getElementById('rtPlayersContainer').innerHTML = html;
+  document.getElementById('rtCodeRow').style.display = t.codeRequired ? 'block' : 'none';
+  document.getElementById('rtTeamName').value = '';
+  document.getElementById('rtCode').value = '';
+  openModal('registerTournamentModal');
+}
+
+async function registerTourneyTeam() {
+  const t = (S.get('tournaments')||[]).find(x=>x.id===regTourneyId);
+  const teams = S.get('tournamentTeams') || [];
+
+  if (teams.find(x=>x.tournamentId===regTourneyId && x.captain===CUR.username)) {
+    toast('Aap already register ho is tournament mein','error'); return;
+  }
+  if (t.maxTeams && teams.filter(x=>x.tournamentId===regTourneyId).length >= Number(t.maxTeams)) {
+    toast('Tournament full hai!','error'); return;
+  }
+  if (t.codeRequired) {
+    const code = v('rtCode');
+    if (!code || code !== t.code) { toast('Galat ya missing tournament code','error'); return; }
+  }
+
+  const fmt = (t.format||'Squad').toLowerCase();
+  const isSolo = fmt.includes('solo');
+  const isDuo  = fmt.includes('duo');
+  const mainCount = isSolo ? 1 : isDuo ? 2 : 4;
+
+  const teamName = isSolo ? (CUR.name||CUR.username) : v('rtTeamName');
+  if (!isSolo && !teamName) { toast('Team name daalo','error'); return; }
+
+  for (let i=1; i<=mainCount; i++) {
+    if (!v(`rtUID${i}`)) { toast(`P${i} UID daalo`,'error'); return; }
+    if (!v(`rtIGN${i}`)) { toast(`P${i} In-Game Name daalo`,'error'); return; }
+  }
+
+  const players = [];
+  for (let i=1; i<=6; i++) {
+    const uid=v(`rtUID${i}`), ign=v(`rtIGN${i}`);
+    if (uid) players.push({uid,ign});
+  }
+
+  const slot = teams.filter(x=>x.tournamentId===regTourneyId).length + 1;
+  teams.push({ id:'tt'+Date.now(), tournamentId:regTourneyId, captain:CUR.username, teamName, players, group:'', status:'pending', slot, registeredAt:now() });
+  await S.set('tournamentTeams', teams);
+  closeModal('registerTournamentModal');
+  toast('Registration submitted! Admin approval ka wait karo.','success');
+  renderTournaments();
+}
+
+// ── Create Tournament Match (Admin) ──
+let createMatchTourneyId = null;
+function openCreateTourneyMatch(tid) {
+  createMatchTourneyId = tid;
+  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===tid && x.status==='confirmed');
+  document.getElementById('tmTeamsContainer').innerHTML = teams.length
+    ? teams.map(team => `<label style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;cursor:pointer">
+        <input type="checkbox" value="${team.id}" class="tmTeamChk" style="width:auto" />
+        <span>${team.teamName} <span style="color:var(--muted);font-size:11px">@${team.captain}${team.group?' • Grp '+team.group:''}</span></span>
+      </label>`).join('')
+    : `<div style="font-size:12px;color:var(--muted)">Koi confirmed team nahi hai. Pehle teams approve karo.</div>`;
+  document.getElementById('tmName').value = '';
+  document.getElementById('tmTime').value = '';
+  document.getElementById('tmMap').value = '';
+  openModal('createTourneyMatchModal');
+}
+
+async function createTourneyMatch() {
+  const name=v('tmName'), time=v('tmTime'), map=v('tmMap');
+  const checked = Array.from(document.querySelectorAll('.tmTeamChk:checked')).map(c=>c.value);
+  if (!name) { toast('Match name daalo','error'); return; }
+  if (!checked.length) { toast('Kam se kam ek team select karo','error'); return; }
+
+  const tmatches = S.get('tournamentMatches') || [];
+  const tm = { id:'tm'+Date.now(), tournamentId:createMatchTourneyId, name, time, map, teamIds:checked, status:'open', roomId:'', roomPass:'', createdAt:now() };
+  tmatches.push(tm);
+
+  const t = (S.get('tournaments')||[]).find(x=>x.id===createMatchTourneyId);
+  const teams = S.get('tournamentTeams') || [];
+  const notifs = S.get('notifications') || [];
+  checked.forEach(teamId => {
+    const team = teams.find(x=>x.id===teamId);
+    if (team) {
+      notifs.push({ id:'n'+Date.now()+Math.random().toString(36).slice(2,6), captain:team.captain, title:'🎮 Match Assigned', message:`Your team "${team.teamName}" has been added to "${name}" in tournament "${t.name}"`, tournamentId:createMatchTourneyId, matchId:tm.id, time:now(), read:false });
+    }
+  });
+
+  await Promise.all([
+    S.set('tournamentMatches', tmatches),
+    S.set('notifications', notifs)
+  ]);
+  closeModal('createTourneyMatchModal');
+  toast(`Match created! ${checked.length} team(s) notified`,'success');
+  renderTournamentDetail();
+}
+
+function tourneyMatchCardHTML(tm, t, teams) {
+  const involvedTeams = tm.teamIds.map(id => teams.find(x=>x.id===id)).filter(Boolean);
+  const myTeam = CUR.role==='captain' ? teams.find(x=>x.captain===CUR.username) : null;
+  const isMine = myTeam && tm.teamIds.includes(myTeam.id);
+  const dt = new Date(tm.time);
+  const statusCls = tm.status==='live' ? 'mc-status-live' : tm.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
+  const borderLeft = tm.status==='live' ? '#fbbf24' : tm.status==='completed' ? '#f43f5e' : '#00e676';
+
+  return `<div class="match-card" style="border-left-color:${borderLeft}">
+    <div class="mc-body">
+      <div class="mc-top">
+        <div class="mc-badges"><span class="mc-type-badge">🎮 ${involvedTeams.length} Teams</span></div>
+        <span class="${statusCls}">${(tm.status||'open').toUpperCase()}</span>
+      </div>
+      <div class="match-name">${tm.name}</div>
+      ${!isNaN(dt) ? `<div class="mc-date-row">📅 ${dt.toLocaleDateString('en-GB')} · ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+      ${tm.map ? `<div class="mc-map-row">📍 ${tm.map}</div>` : ''}
+      <details style="margin-top:8px">
+        <summary style="font-size:11px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.5px">👥 Team Rosters (${involvedTeams.length})</summary>
+        ${involvedTeams.map(team => `
+          <div style="background:var(--bg3);border-radius:7px;padding:8px 10px;margin-top:8px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              ${team.slot ? `<span class="slot-no">#${team.slot}</span>` : ''}
+              <span style="font-size:12px;font-weight:700;color:var(--text)">${team.teamName}</span>
+            </div>
+            <div class="uid-list">
+              ${(team.players||[]).map((p,i) => p ? `<span class="${i<4?'uid-required':'uid-optional'}">P${i+1}: <strong>${p.ign||'—'}</strong> <span style="opacity:0.5">(${p.uid})</span>${i>=4?' (sub)':''}</span>` : '').join('')}
+            </div>
+          </div>`).join('') || '<div style="font-size:11px;color:var(--muted);margin-top:6px">—</div>'}
+      </details>
+    </div>
+    ${tm.roomId && (CUR.role==='admin' || CUR.role==='viewer' || isMine) ? `<div style="padding:0 16px 12px"><div class="room-cred">
+      <div class="rc-label">Room ID</div>
+      <div class="rc-row"><div class="rc-val">${tm.roomId}</div><button class="rc-copy-btn" onclick="copyRC('${tm.roomId}',this)">📋 Copy</button></div>
+      <div class="rc-label" style="margin-top:10px">Password</div>
+      <div class="rc-row"><div class="rc-val">${tm.roomPass}</div><button class="rc-copy-btn" onclick="copyRC('${tm.roomPass}',this)">📋 Copy</button></div>
+    </div></div>` : (tm.roomId && CUR.role==='captain' && !isMine ? `<div style="padding:0 16px 12px;font-size:11px;color:var(--muted)">🔑 Room ID sirf assigned teams ko milega</div>` : '')}
+    ${CUR.role==='admin' ? `<div class="mc-divider"></div><div class="mc-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openTourneyRoomCreds('${tm.id}')">🔑 Set Room</button>
+      <button class="btn btn-ghost btn-sm" onclick="changeTourneyMatchStatus('${tm.id}','${tm.status||"open"}')">⟳ Status</button>
+      <button class="btn btn-red btn-sm" onclick="deleteTourneyMatch('${tm.id}')">🗑 Delete</button>
+    </div>` : ''}
+  </div>`;
+}
+
+let roomCredTMId = null;
+function openTourneyRoomCreds(tmid) {
+  roomCredTMId = tmid;
+  const tm = (S.get('tournamentMatches')||[]).find(x=>x.id===tmid);
+  document.getElementById('trcRoomId').value = tm.roomId||'';
+  document.getElementById('trcRoomPass').value = tm.roomPass||'';
+  openModal('tourneyRoomCredModal');
+}
+
+async function saveTourneyRoomCreds() {
+  const rid=v('trcRoomId'), rp=v('trcRoomPass');
+  if (!rid||!rp) { toast('Enter room ID and password','error'); return; }
+  const tmatches = S.get('tournamentMatches');
+  const tm = tmatches.find(x=>x.id===roomCredTMId);
+  tm.roomId = rid; tm.roomPass = rp;
+  await S.set('tournamentMatches', tmatches);
+  closeModal('tourneyRoomCredModal');
+  toast('Room credentials set!','success');
+  renderTournamentDetail();
+}
+
+async function changeTourneyMatchStatus(tmid, cur) {
+  const statuses = ['open','live','completed'];
+  const next = statuses[(statuses.indexOf(cur)+1)%statuses.length];
+  const tmatches = S.get('tournamentMatches');
+  tmatches.find(x=>x.id===tmid).status = next;
+  await S.set('tournamentMatches', tmatches);
+  toast(`Status → ${next}`,'success');
+  renderTournamentDetail();
+}
+
+async function deleteTourneyMatch(tmid) {
+  if (!confirm('Match delete karna hai?')) return;
+  const tmatches = (S.get('tournamentMatches')||[]).filter(x=>x.id!==tmid);
+  await S.set('tournamentMatches', tmatches);
+  toast('Match deleted','success');
+  renderTournamentDetail();
+}
+
+// ── Notifications (Captain) ──
+function renderNotifBell() {
+  const badge = document.getElementById('notifBadge');
+  if (!badge || !CUR) return;
+  const unread = (S.get('notifications')||[]).filter(n=>n.captain===CUR.username && !n.read);
+  if (unread.length) { badge.style.display='block'; badge.textContent = unread.length>9 ? '9+' : unread.length; }
+  else { badge.style.display='none'; }
+}
+
+function openNotifications() {
+  const notifs = (S.get('notifications')||[]).filter(n=>n.captain===CUR.username).slice().reverse();
+  document.getElementById('notifList').innerHTML = notifs.length
+    ? notifs.map(n => `<div class="card" style="margin-bottom:8px;${n.read?'opacity:0.65':''}">
+        <div style="font-size:13px;font-weight:700">${n.title}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">${n.message}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px">${n.time}</div>
+      </div>`).join('')
+    : `<div class="empty" style="padding:16px"><div class="empty-icon">🔔</div><p>Koi notification nahi hai</p></div>`;
+  openModal('notifModal');
+  markAllNotifRead();
+}
+
+async function markAllNotifRead() {
+  const notifs = S.get('notifications') || [];
+  let changed = false;
+  notifs.forEach(n => { if (n.captain===CUR.username && !n.read) { n.read = true; changed = true; } });
+  if (changed) { await S.set('notifications', notifs); renderNotifBell(); }
+}
+
 // ═══════ UTILS ═══════
 function v(id) { return document.getElementById(id)?.value?.trim()||''; }
 function now() { return new Date().toLocaleString(); }
@@ -2933,6 +3548,23 @@ window.doRegister = doRegister;
 window.saveBranding = saveBranding;
 window.resetBranding = resetBranding;
 window.onPresetChange = onPresetChange;
+window.renderTournaments = renderTournaments;
+window.createTournament = createTournament;
+window.deleteTournament = deleteTournament;
+window.openTournamentDetail = openTournamentDetail;
+window.assignTeamGroup = assignTeamGroup;
+window.approveTourneyTeam = approveTourneyTeam;
+window.removeTourneyTeam = removeTourneyTeam;
+window.openRegisterTournament = openRegisterTournament;
+window.registerTourneyTeam = registerTourneyTeam;
+window.openCreateTourneyMatch = openCreateTourneyMatch;
+window.createTourneyMatch = createTourneyMatch;
+window.openTourneyRoomCreds = openTourneyRoomCreds;
+window.saveTourneyRoomCreds = saveTourneyRoomCreds;
+window.changeTourneyMatchStatus = changeTourneyMatchStatus;
+window.deleteTourneyMatch = deleteTourneyMatch;
+window.openNotifications = openNotifications;
+window.renderNotifBell = renderNotifBell;
 </script>
 </body>
 </html>
