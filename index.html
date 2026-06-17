@@ -72,6 +72,7 @@
   .role-admin { background: rgba(0,102,255,0.15); color: #3b9eff; border: 1px solid rgba(0,102,255,0.4); }
   .role-captain { background: rgba(0,102,255,0.1); color: var(--blue2); border: 1px solid rgba(0,102,255,0.5); }
   .role-player { background: rgba(0,229,255,0.1); color: var(--green); border: 1px solid rgba(0,229,255,0.3); }
+  .role-viewer { background: rgba(251,191,36,0.12); color: var(--gold); border: 1px solid rgba(251,191,36,0.4); }
   #logoutBtn {
     background: transparent; border: 1px solid var(--border);
     color: var(--muted); padding: 5px 12px; border-radius: 6px;
@@ -502,10 +503,10 @@
       <input id="loginPass" type="password" placeholder="Enter password" />
     </div>
 
-    <!-- Admin code field (only for admin role) -->
+    <!-- Admin/Viewer code field -->
     <div id="loginCodeField" class="form-row" style="display:none">
-      <label class="form-label">🔑 ADMIN CODE</label>
-      <input id="loginCode" placeholder="Enter admin code" />
+      <label class="form-label" id="loginCodeLabel">🔑 ADMIN CODE</label>
+      <input id="loginCode" placeholder="Enter code" />
     </div>
 
     <button class="btn btn-accent btn-full" style="margin-top:16px;padding:13px;font-size:14px;letter-spacing:2px" onclick="doLogin()">⚡ ENTER ZONE</button>
@@ -572,7 +573,7 @@
   <div id="sec-captains" class="section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
       <div class="page-title" style="margin:0">Captains</div>
-      <button class="btn btn-accent btn-sm" onclick="openModal('adminAddCaptainModal')">+ Add Captain</button>
+      <div id="addCaptainBtnWrap"></div>
     </div>
     <div id="captainsContent"></div>
   </div>
@@ -910,7 +911,7 @@ const S = {
 const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages'];
 
 const DEFAULTS = {
-  admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN' },
+  admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN', viewerCode:'ZX@VIEW' },
   captains:      [],
   matches:       [],
   registrations: [],
@@ -997,7 +998,8 @@ let selectedRole = 'captain'; // default tab on login screen
 
 const ROLE_HINTS = {
   admin:   'Username, password aur admin code daalo. Full control milega.',
-  captain: 'Username & password daalo. Match join & wallet access milega.'
+  captain: 'Username & password daalo. Match join & wallet access milega.',
+  viewer:  'Viewer code daalo. Sab kuch dekh sakte ho, kuch change nahi kar sakte.'
 };
 
 function selectRole(r) {
@@ -1008,6 +1010,8 @@ function selectRole(r) {
   });
   const codeField = document.getElementById('loginCodeField');
   if (codeField) codeField.style.display = r === 'admin' ? 'block' : 'none';
+  const codeLabel = document.getElementById('loginCodeLabel');
+  if (codeLabel) codeLabel.textContent = '🔑 ADMIN CODE';
   const hint = document.getElementById('loginRoleHint');
   if (hint) hint.style.display = 'none';
   ['loginUser','loginPass','loginCode'].forEach(id => {
@@ -1037,9 +1041,15 @@ function doLogin() {
 
     const admin = S.get('admin');
     const adminCode = (admin.adminCode || 'ZX@ADMIN');
+    const viewerCode = (admin.viewerCode || 'ZX@VIEW');
+
     if (u === admin.username && p === admin.password && code === adminCode) {
       CUR = { role:'admin', username:'Admin', name:'Admin' };
       saveLoginLocally('admin', u, p, code);
+      startSession();
+    } else if (u === admin.username && p === admin.password && code === viewerCode) {
+      CUR = { role:'viewer', username:'Viewer', name:'Viewer' };
+      saveLoginLocally('viewer', u, p, code);
       startSession();
     } else {
       toast('Admin credentials ya code galat hai','error');
@@ -1072,6 +1082,14 @@ function tryAutoLogin() {
       startSession();
       return true;
     }
+  } else if (saved.role === 'viewer') {
+    const admin = S.get('admin');
+    const viewerCode = (admin.viewerCode || 'ZX@VIEW');
+    if (saved.u === admin.username && saved.p === admin.password && saved.code === viewerCode) {
+      CUR = { role:'viewer', username:'Viewer', name:'Viewer' };
+      startSession();
+      return true;
+    }
   } else if (saved.role === 'captain') {
     const caps = S.get('captains') || [];
     const cap = caps.find(c => c.username === saved.u && c.password === saved.p);
@@ -1094,6 +1112,7 @@ function startSession() {
   renderUserBadge();
   buildNav();
   const firstTab = CUR.role === 'admin' ? 'dashboard'
+    : CUR.role === 'viewer' ? 'dashboard'
     : CUR.role === 'captain' ? 'dashboard'
     : 'p-matches';
   nav(firstTab);
@@ -1115,8 +1134,10 @@ function doLogout() {
 
 function renderUserBadge() {
   const badgeClass = CUR.role === 'admin' ? 'role-admin'
+    : CUR.role === 'viewer' ? 'role-viewer'
     : CUR.role === 'captain' ? 'role-captain' : 'role-player';
   const badgeLabel = CUR.role === 'admin' ? 'Admin'
+    : CUR.role === 'viewer' ? 'Viewer'
     : CUR.role === 'captain' ? 'Captain' : 'Player';
   document.getElementById('userBadge').innerHTML = `
     <span style="font-size:13px;font-family:Rajdhani,sans-serif;font-weight:600">${CUR.name}</span>
@@ -1148,7 +1169,7 @@ const PLAYER_TABS = [
 ];
 
 function buildNav() {
-  const tabs = CUR.role === 'admin' ? ADMIN_TABS
+  const tabs = (CUR.role === 'admin' || CUR.role === 'viewer') ? ADMIN_TABS
     : CUR.role === 'captain' ? CAP_TABS
     : PLAYER_TABS;
   document.getElementById('nav').innerHTML = tabs.map(t =>
@@ -1263,7 +1284,7 @@ function matchCardHTML(m, regs) {
       ${m.map ? `<div class="mc-map-row">📍 ${m.map}</div>` : ''}
       <div class="mc-teams-row">👥 <span style="color:var(--text);font-weight:600">${joined}/${m.slots}</span>&nbsp;teams</div>
     </div>
-    ${m.roomId && (CUR.role==='admin' || myReg) ? `<div style="padding:0 16px 12px"><div class="room-cred">
+    ${m.roomId && (CUR.role==='admin' || CUR.role==='viewer' || myReg) ? `<div style="padding:0 16px 12px"><div class="room-cred">
       <div class="rc-label">Room ID</div>
       <div class="rc-row"><div class="rc-val">${m.roomId}</div><button class="rc-copy-btn" onclick="copyRC('${m.roomId}',this)">📋 Copy</button></div>
       <div class="rc-label" style="margin-top:10px">Password</div>
@@ -1281,6 +1302,8 @@ function matchCardHTML(m, regs) {
         <button class="btn btn-ghost btn-sm" onclick="openRoomCreds('${m.id}')">🔑 Set Room</button>
         <button class="btn btn-ghost btn-sm" onclick="changeStatus('${m.id}','${m.status||"open"}')">⟳ Status</button>
         <button class="btn btn-red btn-sm" onclick="deleteMatch('${m.id}','${m.name.replace(/'/g,"\\'")}')">🗑 Delete</button>
+      ` : CUR.role==='viewer' ? `
+        <span style="font-size:11px;color:var(--muted);padding:4px 8px">👁 Read Only</span>
       ` : ''}
     </div>` : (myReg ? `<div class="mc-actions"><span class="badge badge-green" style="padding:6px 12px;font-size:12px">✓ Slot #${myReg.slot}</span></div>` : '')}
   </div>`;
@@ -1289,6 +1312,7 @@ function matchCardHTML(m, regs) {
 // MATCHES
 function renderMatches() {
   if (CUR.role==='admin') document.getElementById('createMatchBtn').style.display='inline-flex';
+  else document.getElementById('createMatchBtn').style.display='none';
   const matches = S.get('matches');
   const regs = S.get('registrations');
   document.getElementById('matchesList').innerHTML = matches.length
@@ -1455,7 +1479,7 @@ function renderDistribute() {
             <span class="badge badge-gold">Pool: ₹${pot}</span>
           </div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:10px">${regs.length} teams registered • Prize: ₹${m.prize}</div>
-          ${regs.length ? `<button class="btn btn-accent btn-sm" onclick="openDistribute('${m.id}')">Distribute Winnings</button>` : '<span style="font-size:12px;color:var(--muted)">No registrations</span>'}
+          ${regs.length ? (CUR.role==='admin' ? `<button class="btn btn-accent btn-sm" onclick="openDistribute('${m.id}')">Distribute Winnings</button>` : `<span style="font-size:11px;color:var(--muted)">👁 Read Only</span>`) : '<span style="font-size:12px;color:var(--muted)">No registrations</span>'}
         </div>`;
       }).join('')
     : `<div class="empty"><div class="empty-icon">🏅</div><p>No matches yet</p></div>`;
@@ -1463,6 +1487,8 @@ function renderDistribute() {
 
 // CAPTAINS (Admin)
 function renderCaptains() {
+  const wrap = document.getElementById('addCaptainBtnWrap');
+  if (wrap) wrap.innerHTML = CUR.role==='admin' ? `<button class="btn btn-accent btn-sm" onclick="openModal('adminAddCaptainModal')">+ Add Captain</button>` : '';
   const caps = S.get('captains');
   const wallets = S.get('wallets');
   const regs = S.get('registrations');
@@ -1474,15 +1500,17 @@ function renderCaptains() {
     <div class="card" style="border-color:rgba(0,102,255,0.35);margin-bottom:18px">
       <div class="card-head">
         <div class="card-title">⚙ Admin Login Settings</div>
-        <button class="btn btn-ghost btn-sm" onclick="toggleSection('adminLoginEdit')">✏ Edit</button>
+        ${CUR.role==='admin' ? `<button class="btn btn-ghost btn-sm" onclick="toggleSection('adminLoginEdit')">✏ Edit</button>` : ''}
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Admin tab mein yeh credentials + code daalne se admin login hoga.</div>
       <div class="match-info">
         <div class="match-info-item"><strong style="color:var(--blue2)">${adm.username}</strong>Username</div>
         <div class="match-info-item"><strong style="color:var(--muted)">••••••••</strong>Password</div>
-        <div class="match-info-item" style="grid-column:span 2"><strong style="color:#00e5ff;font-family:'Orbitron',sans-serif;letter-spacing:2px">${adm.adminCode||'ZX@ADMIN'}</strong>Admin Code</div>
+        <div class="match-info-item"><strong style="color:#00e5ff;font-family:'Orbitron',sans-serif;letter-spacing:2px">${adm.adminCode||'ZX@ADMIN'}</strong>Admin Code</div>
+        <div class="match-info-item"><strong style="color:var(--gold);font-family:'Orbitron',sans-serif;letter-spacing:2px">${adm.viewerCode||'ZX@VIEW'}</strong>Viewer Code</div>
       </div>
       <div id="adminLoginEdit" style="display:none;padding-top:14px;border-top:1px solid var(--border);margin-top:12px">
+        ${CUR.role==='admin' ? `
         <div class="grid2" style="gap:10px;margin-bottom:10px">
           <div class="form-row" style="margin:0">
             <label class="form-label">Username</label>
@@ -1497,7 +1525,12 @@ function renderCaptains() {
           <label class="form-label">Admin Code (secret)</label>
           <input id="admEditCode" value="${adm.adminCode||'ZX@ADMIN'}" placeholder="Admin login code" />
         </div>
+        <div class="form-row">
+          <label class="form-label">👁 Viewer Code (read-only access)</label>
+          <input id="admEditViewerCode" value="${adm.viewerCode||'ZX@VIEW'}" placeholder="Viewer login code" />
+        </div>
         <button class="btn btn-accent btn-sm" onclick="saveAdminLogin()">💾 Save</button>
+        ` : `<span style="font-size:11px;color:var(--muted)">👁 Viewer: Settings edit nahi kar sakte</span>`}
       </div>
     </div>
 
@@ -1523,14 +1556,16 @@ function renderCaptains() {
             <div style="font-size:11px;color:var(--muted)">@${c.username} • UID: ${c.uid}</div>
             <div style="font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px">
               <span style="color:${c.whatsapp?'var(--green)':'var(--muted)'}">📱 ${c.whatsapp||'No WhatsApp number'}</span>
-              <button class="btn btn-ghost btn-sm" style="padding:1px 7px;font-size:10px" onclick="editCaptainWhatsapp('${c.username}')">✏</button>
+              ${CUR.role==='admin' ? `<button class="btn btn-ghost btn-sm" style="padding:1px 7px;font-size:10px" onclick="editCaptainWhatsapp('${c.username}')">✏</button>` : ''}
             </div>
           </div>
           <div style="font-family:Orbitron,sans-serif;font-size:16px;color:var(--gold)">₹${wallets[c.username]||0}</div>
         </div>
         <div style="display:flex;gap:8px;margin-top:10px">
+          ${CUR.role==='admin' ? `
           <button class="btn btn-ghost btn-sm" onclick="adminAddFunds('${c.username}')">+ Add Funds</button>
           <button class="btn btn-ghost btn-sm" onclick="adminDeductFunds('${c.username}')">- Deduct</button>
+          ` : `<span style="font-size:11px;color:var(--muted)">👁 Read Only</span>`}
         </div>
         <details style="margin-top:12px">
           <summary style="font-size:11px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.5px">
@@ -1589,7 +1624,7 @@ function renderAdminWallet() {
     <div class="card" style="margin-bottom:14px">
       <div class="card-head">
         <div class="card-title">📱 Payment Settings</div>
-        <button class="btn btn-ghost btn-sm" onclick="toggleSection('awPayEdit')">Edit</button>
+        ${CUR.role==='admin' ? `<button class="btn btn-ghost btn-sm" onclick="toggleSection('awPayEdit')">Edit</button>` : ''}
       </div>
       <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
         <div style="flex:1;min-width:160px">
@@ -1687,10 +1722,10 @@ function renderDepList(status) {
         </div>
         <div style="font-family:Orbitron,sans-serif;font-size:15px;color:var(--gold)">₹${d.amount}</div>
       </div>
-      ${status==='pending' ? `<div style="display:flex;gap:6px;margin-top:8px">
+      ${status==='pending' ? (CUR.role==='admin' ? `<div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-green btn-sm" onclick="approveDep('${d.id}');renderAdminWallet()">✓ Approve</button>
         <button class="btn btn-red btn-sm" onclick="rejectDep('${d.id}');renderAdminWallet()">✕ Reject</button>
-      </div>` : `<div style="margin-top:6px"><span class="badge ${status==='approved'?'badge-green':'badge-red'}">${status}</span></div>`}
+      </div>` : `<div style="margin-top:6px"><span style="font-size:11px;color:var(--muted)">👁 Read Only</span></div>`) : `<div style="margin-top:6px"><span class="badge ${status==='approved'?'badge-green':'badge-red'}">${status}</span></div>`}
     </div>`).join('');
 }
 
@@ -1707,10 +1742,10 @@ function renderWdList(status) {
         </div>
         <div style="font-family:Orbitron,sans-serif;font-size:15px;color:var(--red)">₹${w.amount}</div>
       </div>
-      ${status==='pending' ? `<div style="display:flex;gap:6px;margin-top:8px">
+      ${status==='pending' ? (CUR.role==='admin' ? `<div style="display:flex;gap:6px;margin-top:8px">
         <button class="btn btn-green btn-sm" onclick="approveWd('${w.id}');renderAdminWallet()">✓ Approve</button>
         <button class="btn btn-red btn-sm" onclick="rejectWd('${w.id}');renderAdminWallet()">✕ Reject</button>
-      </div>` : `<div style="margin-top:6px"><span class="badge ${status==='approved'?'badge-green':'badge-red'}">${status}</span></div>`}
+      </div>` : `<div style="margin-top:6px"><span style="font-size:11px;color:var(--muted)">👁 Read Only</span></div>`) : `<div style="margin-top:6px"><span class="badge ${status==='approved'?'badge-green':'badge-red'}">${status}</span></div>`}
     </div>`).join('');
 }
 
@@ -2218,7 +2253,7 @@ function renderImages() {
         ${globalImgs.cardBg ? `<div style="margin-top:8px"><img src="${globalImgs.cardBg}" id="giCardPreview" style="max-height:80px;border-radius:8px;border:1px solid var(--border);object-fit:cover" onerror="this.style.display='none'" /></div>` : `<div id="giCardPreview" style="margin-top:8px;display:none"></div>`}
       </div>
 
-      <button class="btn btn-accent btn-sm" onclick="saveGlobalImages()">💾 Save Global Images</button>
+      ${CUR.role==='admin' ? `<button class="btn btn-accent btn-sm" onclick="saveGlobalImages()">💾 Save Global Images</button>` : `<span style="font-size:11px;color:var(--muted)">👁 Read Only</span>`}
     </div>
 
     <!-- PER-MATCH IMAGES -->
@@ -2246,8 +2281,10 @@ function renderImages() {
         </div>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${CUR.role==='admin' ? `
           <button class="btn btn-accent btn-sm" onclick="saveMatchImage('${m.id}')">💾 Save</button>
           ${mi.cardBg ? `<button class="btn btn-red btn-sm" onclick="clearMatchImage('${m.id}')">🗑 Clear</button>` : ''}
+          ` : `<span style="font-size:11px;color:var(--muted)">👁 Read Only</span>`}
         </div>
       </div>`;
     }).join('') : '<div class="empty"><div class="empty-icon">🎮</div><p>No matches yet. Create matches first.</p></div>'}
@@ -2448,8 +2485,9 @@ function saveAdminLogin() {
   const u = document.getElementById('admEditUser')?.value?.trim();
   const p = document.getElementById('admEditPass')?.value?.trim();
   const code = document.getElementById('admEditCode')?.value?.trim();
+  const vcode = document.getElementById('admEditViewerCode')?.value?.trim();
   if (!u||!p||!code) { toast('Sab fields bharo','error'); return; }
-  S.set('admin', { username:u, password:p, adminCode:code });
+  S.set('admin', { username:u, password:p, adminCode:code, viewerCode:vcode||'ZX@VIEW' });
   toast('Admin login settings saved!','success');
   renderCaptains();
 }
