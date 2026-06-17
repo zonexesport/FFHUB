@@ -830,6 +830,10 @@
       <label class="form-label">Free Fire UID</label>
       <input id="regUID" placeholder="Your UID" />
     </div>
+    <div class="form-row">
+      <label class="form-label">📱 WhatsApp Number</label>
+      <input id="regWhatsapp" type="tel" placeholder="e.g. 9876543210" />
+    </div>
     <button class="btn btn-accent btn-full" onclick="doRegister()">Register as Captain</button>
   </div>
 </div>
@@ -855,6 +859,10 @@
     <div class="form-row">
       <label class="form-label">Free Fire UID</label>
       <input id="acUID" placeholder="Captain's UID" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">📱 WhatsApp Number</label>
+      <input id="acWhatsapp" type="tel" placeholder="e.g. 9876543210" />
     </div>
     <button class="btn btn-accent btn-full" onclick="adminCreateCaptain()">Create Account</button>
     <div id="acResult" style="display:none;margin-top:14px;background:var(--bg3);border:1px solid rgba(0,229,255,0.25);border-radius:8px;padding:14px">
@@ -963,6 +971,7 @@ async function initData() {
     console.error('Firestore load error:', e);
     alert('Database se connect nahi ho paya. Internet check karo aur page reload karo.');
   }
+  tryAutoLogin();
   showLoader(false);
 }
 
@@ -1006,6 +1015,18 @@ function selectRole(r) {
   });
 }
 
+const SAVED_LOGIN_KEY = 'zonex_saved_login';
+
+function saveLoginLocally(role, u, p, code) {
+  try {
+    localStorage.setItem(SAVED_LOGIN_KEY, JSON.stringify({ role, u, p, code: code || '' }));
+  } catch(e) {}
+}
+
+function clearSavedLogin() {
+  try { localStorage.removeItem(SAVED_LOGIN_KEY); } catch(e) {}
+}
+
 function doLogin() {
   const u = v('loginUser'), p = v('loginPass');
   if (!u || !p) { toast('Username & password daalo','error'); return; }
@@ -1018,6 +1039,7 @@ function doLogin() {
     const adminCode = (admin.adminCode || 'ZX@ADMIN');
     if (u === admin.username && p === admin.password && code === adminCode) {
       CUR = { role:'admin', username:'Admin', name:'Admin' };
+      saveLoginLocally('admin', u, p, code);
       startSession();
     } else {
       toast('Admin credentials ya code galat hai','error');
@@ -1027,12 +1049,41 @@ function doLogin() {
     const caps = S.get('captains') || [];
     const cap = caps.find(c => c.username === u && c.password === p);
     if (cap) {
-      CUR = { role:'captain', username:cap.username, name:cap.name, uid:cap.uid };
+      CUR = { role:'captain', username:cap.username, name:cap.name, uid:cap.uid, whatsapp:cap.whatsapp };
+      saveLoginLocally('captain', u, p);
       startSession();
     } else {
       toast('Username ya password galat hai','error');
     }
   }
+}
+
+// Tries to log in silently using credentials saved in this browser. Returns true if successful.
+function tryAutoLogin() {
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem(SAVED_LOGIN_KEY) || 'null'); } catch(e) { saved = null; }
+  if (!saved || !saved.u || !saved.p) return false;
+
+  if (saved.role === 'admin') {
+    const admin = S.get('admin');
+    const adminCode = (admin.adminCode || 'ZX@ADMIN');
+    if (saved.u === admin.username && saved.p === admin.password && saved.code === adminCode) {
+      CUR = { role:'admin', username:'Admin', name:'Admin' };
+      startSession();
+      return true;
+    }
+  } else if (saved.role === 'captain') {
+    const caps = S.get('captains') || [];
+    const cap = caps.find(c => c.username === saved.u && c.password === saved.p);
+    if (cap) {
+      CUR = { role:'captain', username:cap.username, name:cap.name, uid:cap.uid, whatsapp:cap.whatsapp };
+      startSession();
+      return true;
+    }
+  }
+  // Saved login no longer valid (password changed, account deleted, etc.)
+  clearSavedLogin();
+  return false;
 }
 
 function startSession() {
@@ -1050,6 +1101,7 @@ function startSession() {
 
 function doLogout() {
   CUR = null;
+  clearSavedLogin();
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('header').style.display = 'none';
   document.getElementById('nav').style.display = 'none';
@@ -1424,7 +1476,7 @@ function renderCaptains() {
         <div class="card-title">⚙ Admin Login Settings</div>
         <button class="btn btn-ghost btn-sm" onclick="toggleSection('adminLoginEdit')">✏ Edit</button>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Captain tab mein yeh credentials + code daalne se admin login hoga.</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Admin tab mein yeh credentials + code daalne se admin login hoga.</div>
       <div class="match-info">
         <div class="match-info-item"><strong style="color:var(--blue2)">${adm.username}</strong>Username</div>
         <div class="match-info-item"><strong style="color:var(--muted)">••••••••</strong>Password</div>
@@ -1469,6 +1521,10 @@ function renderCaptains() {
           <div>
             <div class="card-title">${c.name}</div>
             <div style="font-size:11px;color:var(--muted)">@${c.username} • UID: ${c.uid}</div>
+            <div style="font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px">
+              <span style="color:${c.whatsapp?'var(--green)':'var(--muted)'}">📱 ${c.whatsapp||'No WhatsApp number'}</span>
+              <button class="btn btn-ghost btn-sm" style="padding:1px 7px;font-size:10px" onclick="editCaptainWhatsapp('${c.username}')">✏</button>
+            </div>
           </div>
           <div style="font-family:Orbitron,sans-serif;font-size:16px;color:var(--gold)">₹${wallets[c.username]||0}</div>
         </div>
@@ -1972,11 +2028,11 @@ function savePaySettings() {
 
 // ═══════ ADMIN CREATE CAPTAIN ═══════
 async function adminCreateCaptain() {
-  const u=v('acUser'), p=v('acPass'), n=v('acName'), uid=v('acUID');
-  if (!u||!p||!n||!uid) { toast('Sab fields bharo','error'); return; }
+  const u=v('acUser'), p=v('acPass'), n=v('acName'), uid=v('acUID'), wa=v('acWhatsapp');
+  if (!u||!p||!n||!uid||!wa) { toast('Sab fields bharo','error'); return; }
   const caps = S.get('captains') || [];
   if (caps.find(c=>c.username===u)) { toast('Username already taken','error'); return; }
-  caps.push({ username:u, password:p, name:n, uid });
+  caps.push({ username:u, password:p, name:n, uid, whatsapp:wa });
   const wallets = S.get('wallets') || {};
   wallets[u] = 0;
   const txns = S.get('txns') || {};
@@ -1990,20 +2046,21 @@ async function adminCreateCaptain() {
   document.getElementById('acResUser').textContent = u;
   document.getElementById('acResPass').textContent = p;
   document.getElementById('acResult').style.display = 'block';
-  ['acUser','acPass','acName','acUID'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['acUser','acPass','acName','acUID','acWhatsapp'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   toast(`Captain @${u} created!`,'success');
   renderCaptains();
 }
 
 // ═══════ PUBLIC SELF REGISTRATION (anyone can create a captain account) ═══════
 async function doRegister() {
-  const u = v('regUser'), p = v('regPass'), n = v('regName'), uid = v('regUID');
-  if (!u || !p || !n || !uid) { toast('Sab fields bharo','error'); return; }
+  const u = v('regUser'), p = v('regPass'), n = v('regName'), uid = v('regUID'), wa = v('regWhatsapp');
+  if (!u || !p || !n || !uid || !wa) { toast('Sab fields bharo','error'); return; }
+  if (!/^\d{10}$/.test(wa.replace(/\D/g,'').slice(-10))) { toast('Valid WhatsApp number daalo','error'); return; }
 
   const caps = S.get('captains') || [];
   if (caps.find(c => c.username === u)) { toast('Username already taken','error'); return; }
 
-  caps.push({ username:u, password:p, name:n, uid });
+  caps.push({ username:u, password:p, name:n, uid, whatsapp:wa });
   const wallets = S.get('wallets') || {};
   wallets[u] = 0;
   const txns = S.get('txns') || {};
@@ -2015,7 +2072,7 @@ async function doRegister() {
     S.set('txns', txns)
   ]);
 
-  ['regUser','regPass','regName','regUID'].forEach(id => { const el = document.getElementById(id); if (el) el.value=''; });
+  ['regUser','regPass','regName','regUID','regWhatsapp'].forEach(id => { const el = document.getElementById(id); if (el) el.value=''; });
   closeModal('capRegModal');
   toast(`Account @${u} created! Ab login karo.`,'success');
 
@@ -2351,6 +2408,7 @@ function renderPlayerMyId() {
         <div class="match-info-item"><strong>${CUR.name}</strong>In-Game Name</div>
         <div class="match-info-item"><strong>${CUR.uid||'—'}</strong>Free Fire UID</div>
         <div class="match-info-item"><strong>@${CUR.username}</strong>Username</div>
+        <div class="match-info-item"><strong>${CUR.whatsapp||'—'}</strong>WhatsApp Number</div>
         <div class="match-info-item"><strong>${myRegs.length}</strong>Matches Played</div>
       </div>
     </div>
@@ -2393,6 +2451,23 @@ function saveAdminLogin() {
   if (!u||!p||!code) { toast('Sab fields bharo','error'); return; }
   S.set('admin', { username:u, password:p, adminCode:code });
   toast('Admin login settings saved!','success');
+  renderCaptains();
+}
+
+async function editCaptainWhatsapp(username) {
+  const caps = S.get('captains') || [];
+  const cap = caps.find(c => c.username === username);
+  if (!cap) return;
+  const newNum = prompt(`@${username} ka WhatsApp number:`, cap.whatsapp || '');
+  if (newNum === null) return; // cancelled
+  const cleaned = newNum.trim();
+  if (cleaned && !/^\d{10}$/.test(cleaned.replace(/\D/g,'').slice(-10))) {
+    toast('Valid 10-digit number daalo','error');
+    return;
+  }
+  cap.whatsapp = cleaned;
+  await S.set('captains', caps);
+  toast(`WhatsApp number updated for @${username}`,'success');
   renderCaptains();
 }
 
@@ -2483,6 +2558,7 @@ window.filterDeps = filterDeps;
 window.filterWds = filterWds;
 window.adminCreateCaptain = adminCreateCaptain;
 window.saveAdminLogin = saveAdminLogin;
+window.editCaptainWhatsapp = editCaptainWhatsapp;
 window.savePaySettings = savePaySettings;
 window.previewQr = previewQr;
 window.saveGlobalImages = saveGlobalImages;
