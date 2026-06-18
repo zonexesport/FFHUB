@@ -312,6 +312,12 @@
     font-size: 20px; cursor: pointer; line-height: 1;
   }
   .modal { position: relative; }
+  .modal-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; width: 100%; max-width: 480px;
+    max-height: 88vh; overflow-y: auto; overflow-x: hidden;
+    animation: slideUp 0.25s ease;
+  }
 
   /* ── WALLET ── */
   .wallet-box {
@@ -590,6 +596,11 @@
     <div style="margin-top:18px" id="dashMatches"></div>
   </div>
 
+  <!-- TOURNAMENT -->
+  <div id="sec-tournament" class="section">
+    <div id="tournamentContent"></div>
+  </div>
+
   <!-- MATCHES (Admin create / Captain view) -->
   <div id="sec-matches" class="section">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
@@ -597,15 +608,6 @@
       <button class="btn btn-accent btn-sm" id="createMatchBtn" style="display:none" onclick="openModal('createMatchModal')">+ Create Match</button>
     </div>
     <div id="matchesList"></div>
-  </div>
-
-  <!-- TOURNAMENTS (Admin create / Captain register) -->
-  <div id="sec-tournaments" class="section">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-      <div class="page-title" style="margin:0">Tournaments</div>
-      <button class="btn btn-accent btn-sm" id="createTournamentBtnWrap" style="display:none" onclick="openModal('createTournamentModal')">+ Create Tournament</button>
-    </div>
-    <div id="tournamentsList"></div>
   </div>
 
   <!-- MY TEAMS (Captain) -->
@@ -744,139 +746,6 @@
     <div id="jPlayersContainer"></div>
     <div id="joinFeeNote" style="font-size:12px;color:var(--muted);margin-bottom:12px"></div>
     <button class="btn btn-accent btn-full" onclick="joinMatch()">Pay Entry & Get Slot</button>
-  </div>
-</div>
-
-<!-- CREATE TOURNAMENT (Admin) -->
-<div class="modal-overlay" id="createTournamentModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('createTournamentModal')">✕</button>
-    <div class="modal-title">🏆 Create Tournament</div>
-    <div class="form-row">
-      <label class="form-label">Tournament Name</label>
-      <input id="tName" placeholder="e.g. ZoneX Champions Cup" />
-    </div>
-    <div class="grid2">
-      <div class="form-row">
-        <label class="form-label">Format</label>
-        <select id="tFormat">
-          <option>Squad (6 players)</option>
-          <option>Duo (2 players)</option>
-          <option>Solo</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <label class="form-label">Max Teams</label>
-        <input id="tMaxTeams" type="number" placeholder="16" />
-      </div>
-    </div>
-    <div class="grid2">
-      <div class="form-row">
-        <label class="form-label">Entry Fee</label>
-        <input id="tEntry" placeholder="e.g. Free / ₹100 / 50 Diamonds" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Prize Pool</label>
-        <input id="tPrize" placeholder="e.g. ₹5000 / Winner takes all" />
-      </div>
-    </div>
-    <div class="form-row">
-      <label class="form-label">Start Date</label>
-      <input id="tStart" type="datetime-local" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">Description / Rules (optional)</label>
-      <textarea id="tDesc" rows="3" placeholder="Rules, notes etc."></textarea>
-    </div>
-    <div class="form-row" style="display:flex;align-items:center;gap:8px">
-      <input type="checkbox" id="tCodeRequired" style="width:auto" onchange="document.getElementById('tCodeRow').style.display=this.checked?'block':'none'" />
-      <label class="form-label" style="margin:0;text-transform:none;font-size:13px">🔒 Private — sirf code waalon ko register karne do</label>
-    </div>
-    <div class="form-row" id="tCodeRow" style="display:none">
-      <label class="form-label">Registration Code</label>
-      <input id="tCode" placeholder="e.g. ZX-INVITE2026" />
-    </div>
-    <button class="btn btn-accent btn-full" onclick="createTournament()">Create Tournament</button>
-  </div>
-</div>
-
-<!-- REGISTER TOURNAMENT TEAM (Captain) -->
-<div class="modal-overlay" id="registerTournamentModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('registerTournamentModal')">✕</button>
-    <div class="modal-title">⚡ Register Team</div>
-    <div id="regTourneyInfo"></div>
-    <div class="divider"></div>
-    <div class="form-row" id="rtTeamNameRow">
-      <label class="form-label">Team Name</label>
-      <input id="rtTeamName" placeholder="Your team name" />
-    </div>
-    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Players (UID + In-Game Name)</div>
-    <div id="rtPlayersContainer"></div>
-    <div class="form-row" id="rtCodeRow" style="display:none">
-      <label class="form-label">🔑 Tournament Code</label>
-      <input id="rtCode" placeholder="Enter invite code" />
-    </div>
-    <button class="btn btn-accent btn-full" onclick="registerTourneyTeam()">Submit Registration</button>
-  </div>
-</div>
-
-<!-- TOURNAMENT DETAIL (Admin / Captain / Viewer) -->
-<div class="modal-overlay" id="tournamentDetailModal">
-  <div class="modal" style="max-width:640px">
-    <button class="modal-close" onclick="closeModal('tournamentDetailModal')">✕</button>
-    <div id="tourneyDetailContent"></div>
-  </div>
-</div>
-
-<!-- CREATE TOURNAMENT MATCH (Admin) -->
-<div class="modal-overlay" id="createTourneyMatchModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('createTourneyMatchModal')">✕</button>
-    <div class="modal-title">🎮 Create Tournament Match</div>
-    <div class="form-row">
-      <label class="form-label">Match Name</label>
-      <input id="tmName" placeholder="e.g. Group A - Round 1" />
-    </div>
-    <div class="grid2">
-      <div class="form-row">
-        <label class="form-label">Date & Time</label>
-        <input id="tmTime" type="datetime-local" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">Map</label>
-        <input id="tmMap" placeholder="e.g. Bermuda" />
-      </div>
-    </div>
-    <div style="font-size:11px;color:var(--muted);margin:10px 0 8px;text-transform:uppercase;letter-spacing:0.5px">Select Teams (sirf confirmed teams dikhengi)</div>
-    <div id="tmTeamsContainer" style="max-height:240px;overflow-y:auto;margin-bottom:14px"></div>
-    <button class="btn btn-accent btn-full" onclick="createTourneyMatch()">Create Match & Notify Teams</button>
-  </div>
-</div>
-
-<!-- SET ROOM CREDS — TOURNAMENT MATCH (Admin) -->
-<div class="modal-overlay" id="tourneyRoomCredModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('tourneyRoomCredModal')">✕</button>
-    <div class="modal-title">🔑 Set Room Credentials</div>
-    <div class="form-row">
-      <label class="form-label">Room ID</label>
-      <input id="trcRoomId" placeholder="Room ID" />
-    </div>
-    <div class="form-row">
-      <label class="form-label">Room Password</label>
-      <input id="trcRoomPass" placeholder="Password" />
-    </div>
-    <button class="btn btn-green btn-full" onclick="saveTourneyRoomCreds()">Save & Reveal to Teams</button>
-  </div>
-</div>
-
-<!-- NOTIFICATIONS (Captain) -->
-<div class="modal-overlay" id="notifModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('notifModal')">✕</button>
-    <div class="modal-title">🔔 Notifications</div>
-    <div id="notifList"></div>
   </div>
 </div>
 
@@ -1105,7 +974,7 @@ const S = {
   }
 };
 
-const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages','branding','tournaments','tournamentTeams','tournamentMatches','notifications'];
+const KEYS = ['admin','captains','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','globalImages','branding','tournaments','tournamentRegs','notifications'];
 
 const DEFAULTS = {
   admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN', viewerCode:'ZX@VIEW' },
@@ -1120,10 +989,9 @@ const DEFAULTS = {
   matchImages:   {},
   globalImages:  { loginBg:'', cardBg:'' },
   branding:      { appName:'ZONEX', coloredPart:'', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff' },
-  tournaments:      [],
-  tournamentTeams:  [],
-  tournamentMatches:[],
-  notifications:    []
+  tournaments:   [],
+  tournamentRegs:[],
+  notifications: {}
 };
 
 // ═══════ INIT ═══════
@@ -1168,7 +1036,6 @@ async function initData() {
           }
           // Branding update on any device
           if (k === 'branding') applyBranding(_cache['branding'] || {});
-          if (CUR.role === 'captain') renderNotifBell();
         }
       });
     }
@@ -1243,15 +1110,14 @@ function applyBranding(b) {
   const tagline = b.appTagline || 'ESPORTS PLATFORM';
   const slogan = b.appSlogan || '';
 
-  // Header logo - update name + color
+  // Header logo - update from branding (white part + colored part)
   const headerLogo = document.getElementById('headerLogoText');
   if (headerLogo) headerLogo.innerHTML = `${whitePart}<span style="color:${a1}">${coloredPart}</span>`;
 
-  // Login logo - color only, name stays as-is (login page excluded from branding name)
+  // Login logo - update from branding
   const loginLogoDiv = document.getElementById('loginLogoText');
-  if (loginLogoDiv) loginLogoDiv.querySelector('span').style.color = a1;
+  if (loginLogoDiv) loginLogoDiv.innerHTML = `${whitePart}<span class="logo-x" style="color:${a1}">${coloredPart}</span>`;
 
-  // Loader logo - update name + color
   const loaderLogo = document.getElementById('loaderLogo');
   if (loaderLogo) loaderLogo.innerHTML = `${whitePart}<span style="color:${a1}">${coloredPart}</span>`;
   const taglineEl = document.querySelector('.login-tagline');
@@ -1261,6 +1127,1435 @@ function applyBranding(b) {
 
   // title stays fixed
 }
+
+
+// ═══════════════════════════════════════════════
+// TOURNAMENT SYSTEM
+// ═══════════════════════════════════════════════
+
+function renderTournament() {
+  const isAdmin = CUR.role === 'admin';
+  const isCap = CUR.role === 'captain';
+  const tournaments = S.get('tournaments') || [];
+  const tRegs = S.get('tournamentRegs') || [];
+
+  document.getElementById('tournamentContent').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+      <div class="page-title" style="margin:0">🏆 Tournaments</div>
+      ${isAdmin ? `<button class="btn btn-accent btn-sm" onclick="openTournamentCreate()">+ Create</button>` : ''}
+    </div>
+    <div id="tournamentList"></div>
+    <div id="tournamentDetail" style="display:none"></div>
+  `;
+  renderTournamentList();
+}
+
+function renderTournamentList() {
+  const tournaments = S.get('tournaments') || [];
+  const tRegs = S.get('tournamentRegs') || [];
+  const isAdmin = CUR.role === 'admin';
+  const isCap = CUR.role === 'captain';
+  const el = document.getElementById('tournamentList');
+  if (!el) return;
+
+  if (!tournaments.length) {
+    el.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);padding:32px">No tournaments yet</div>`;
+    return;
+  }
+
+  el.innerHTML = tournaments.map(t => {
+    const myReg = isCap ? tRegs.find(r => r.captain === CUR.username && r.tId === t.id) : null;
+    const approvedCount = tRegs.filter(r => r.tId === t.id && r.status === 'approved').length;
+    const isPaid = t.entry > 0;
+    const statusColors = { open:'#00e5ff', active:'#00c853', completed:'#888', upcoming:'#00e5ff' };
+    const sColor = statusColors[t.status] || '#00e5ff';
+    const statusLabel = (t.status || 'upcoming').toUpperCase();
+
+    // Badge colors like image
+    const formatBg = '#3d2200'; const formatColor = '#fbbf24';
+    const entryBg = isPaid ? '#1a0a2e' : '#0a2e0a';
+    const entryColor = isPaid ? '#a855f7' : '#00c853';
+    const entryIcon = isPaid ? '🔒' : '🔓';
+    const entryLabel = isPaid ? 'PAID' : 'FREE';
+
+    return `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;border-left:3px solid ${sColor}">
+      <!-- Top badges -->
+      <div style="padding:14px 14px 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="display:inline-flex;align-items:center;gap:5px;background:${formatBg};color:${formatColor};border:1px solid ${formatColor}44;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:1px">
+          🏆 ${(t.teamFormat||'SQUAD').toUpperCase()}
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:5px;background:${entryBg};color:${entryColor};border:1px solid ${entryColor}44;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:1px">
+          ${entryIcon} ${entryLabel}
+        </span>
+        ${t.isPrivate ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#7c3aed22;color:#c084fc;border:1px solid #c084fc44;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:1px">🔒 PRIVATE</span>` : ''}
+        <span style="display:inline-flex;align-items:center;gap:5px;background:transparent;color:${sColor};border:2px solid ${sColor};border-radius:8px;padding:5px 12px;font-size:11px;font-weight:800;letter-spacing:1px;margin-left:auto">
+          ${statusLabel}
+        </span>
+      </div>
+
+      <!-- Name -->
+      <div style="padding:4px 14px 10px">
+        <div style="font-family:Orbitron,sans-serif;font-size:18px;font-weight:900;color:#fff;line-height:1.25;text-transform:uppercase">${t.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">${t.format||'BR'} · ${t.game||'Free Fire'}</div>
+      </div>
+
+      <!-- Schedule -->
+      ${t.schedule ? `<div style="padding:0 14px 8px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px">
+        <span>📅</span><span>${new Date(t.schedule).toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+      </div>` : ''}
+
+      <!-- Teams count -->
+      <div style="padding:0 14px 10px;font-size:14px;color:var(--text);display:flex;align-items:center;gap:8px">
+        <span>👥</span>
+        <span style="font-weight:700">${approvedCount}/${t.maxTeams||'∞'}</span>
+        <span style="color:var(--muted)">teams confirmed</span>
+        ${myReg ? `<span style="margin-left:auto;font-size:11px;font-weight:700;color:${myReg.status==='approved'?'#00c853':myReg.status==='pending'?'#fbbf24':'#f43f5e'}">${myReg.status==='approved'?'✅ Joined':myReg.status==='pending'?'⏳ Pending':'❌ Rejected'}</span>` : ''}
+      </div>
+
+      <!-- Divider -->
+      <div style="height:1px;background:var(--border);margin:0 14px"></div>
+
+      <!-- Bottom: Prize + Entry + Actions -->
+      <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px">
+          ${t.prizePool ? `<span style="font-size:20px">🏆</span><span style="font-size:18px;font-weight:800;color:#fbbf24">₹${t.prizePool}</span>` : '<span style="font-size:12px;color:var(--muted)">No prize pool</span>'}
+        </div>
+        <div style="font-size:14px;font-weight:800;color:#fbbf24">
+          ENTRY: ${t.entry > 0 ? '₹'+t.entry : 'Free'}
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="padding:0 14px 14px;display:flex;gap:8px">
+        <button onclick="openTournamentDetail('${t.id}')" style="flex:1;background:none;border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          📋 Details
+        </button>
+        ${isCap && !myReg ? `
+        <button onclick="joinTournament('${t.id}')" style="flex:1;background:linear-gradient(135deg,var(--accent),var(--accent2)99);border:none;border-radius:8px;padding:9px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          ⚡ Join ${t.entry>0?'(₹'+t.entry+')':'Free'}
+        </button>` : ''}
+        ${isCap && myReg ? `
+        <div style="flex:1;background:${myReg.status==='approved'?'#00c85322':'#fbbf2422'};border:1px solid ${myReg.status==='approved'?'#00c85344':'#fbbf2444'};border-radius:8px;padding:9px;color:${myReg.status==='approved'?'#00c853':'#fbbf24'};font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px">
+          ${myReg.status==='approved'?'✅ Joined':myReg.status==='pending'?'⏳ Pending':'❌ Rejected'}
+        </div>` : ''}
+        ${isAdmin ? `<button onclick="deleteTournament('${t.id}')" style="background:#f43f5e22;border:1px solid #f43f5e44;border-radius:8px;padding:9px 14px;color:#f43f5e;font-size:12px;font-weight:600;cursor:pointer">🗑</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openTournamentDetail(tId) {
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  if (!t) return;
+  document.getElementById('tournamentList').style.display = 'none';
+  const det = document.getElementById('tournamentDetail');
+  det.style.display = 'block';
+  renderTournamentDetailView(t);
+}
+
+function closeTournamentDetail() {
+  document.getElementById('tournamentList').style.display = 'block';
+  document.getElementById('tournamentDetail').style.display = 'none';
+}
+
+function renderTournamentDetailView(t) {
+  const isAdmin = CUR.role === 'admin';
+  const isCap = CUR.role === 'captain';
+  const tRegs = S.get('tournamentRegs') || [];
+  const approvedRegs = tRegs.filter(r => r.tId === t.id && r.status === 'approved');
+  const pendingRegs = tRegs.filter(r => r.tId === t.id && r.status === 'pending');
+  const myReg = isCap ? tRegs.find(r => r.tId === t.id && r.captain === CUR.username) : null;
+  const caps = S.get('captains') || [];
+  const tMatches = (S.get('matches') || []).filter(m => m.tournamentId === t.id);
+  const groups = t.groups || [];
+
+  document.getElementById('tournamentDetail').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="closeTournamentDetail()" style="margin-bottom:14px">← Back</button>
+
+    <!-- Header -->
+    <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,var(--bg2),var(--card))">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-family:Orbitron,sans-serif;font-size:20px;font-weight:900;color:#fff">${t.name}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">${t.game||'Free Fire'} · ${t.format||'BR'} · ${t.teamFormat||'Squad'}</div>
+          ${t.desc ? `<div style="font-size:12px;color:var(--text);margin-top:6px">${t.desc}</div>` : ''}
+        </div>
+        <span style="font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;background:var(--accent)22;color:var(--accent2);border:1px solid var(--accent)44">${(t.status||'OPEN').toUpperCase()}</span>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--accent2)">${approvedRegs.length}</div><div style="font-size:10px;color:var(--muted)">Teams</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--accent2)">${t.maxTeams||'∞'}</div><div style="font-size:10px;color:var(--muted)">Max</div></div>
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--accent2)">${t.entry>0?'₹'+t.entry:'Free'}</div><div style="font-size:10px;color:var(--muted)">Entry</div></div>
+        ${t.prizePool?`<div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#fbbf24">₹${t.prizePool}</div><div style="font-size:10px;color:var(--muted)">Prize</div></div>`:''}
+        <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--accent2)">${tMatches.length}</div><div style="font-size:10px;color:var(--muted)">Matches</div></div>
+      </div>
+      ${isAdmin && t.isPrivate ? `
+      <div style="margin-top:10px;background:#7c3aed18;border:1px solid #c084fc44;border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:10px;color:#c084fc;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:2px">🔒 Join Code (Admin Only)</div>
+          <div style="font-size:18px;font-weight:900;color:#fff;font-family:monospace;letter-spacing:4px">${t.joinCode}</div>
+        </div>
+        <button onclick="navigator.clipboard.writeText('${t.joinCode}').then(()=>toast('Code copied!','success'))" class="btn btn-ghost btn-sm" style="border-color:#c084fc44;color:#c084fc">📋 Copy</button>
+      </div>` : ''}
+    </div>
+
+    <!-- Captain: Status only (join is on card) -->
+    ${isCap && myReg ? `
+    <div style="margin-bottom:14px;padding:10px 14px;background:${myReg.status==='approved'?'#00c85318':'#fbbf2418'};border-radius:10px;border:1px solid ${myReg.status==='approved'?'#00c85344':'#fbbf2444'};text-align:center;font-size:13px;font-weight:700;color:${myReg.status==='approved'?'#00c853':'#fbbf24'}">
+      ${myReg.status==='approved'?'✅ You are participating in this tournament':'⏳ Join request pending admin approval'}
+    </div>` : ''}
+    <!-- Captain: Rules & Description (sabko dikhe, registered ho ya na ho) -->
+    ${isCap && t.desc ? `
+    <div class="card" style="margin-bottom:14px">
+      <div style="font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px">📋 Rules & Description</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap">${t.desc}</div>
+    </div>` : ''}
+
+    <!-- Captain jo registered nahi hai usse sirf rules dikhe, baaki sab nahi -->
+    ${isCap && !myReg ? `
+    <div class="card" style="margin-bottom:14px;border-color:rgba(251,191,36,0.3);text-align:center;padding:24px">
+      <div style="font-size:32px;margin-bottom:10px">🔒</div>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">Groups & Matches</div>
+      <div style="font-size:12px;color:var(--muted)">Tournament join karo to groups, matches aur slot details yahan dikhenge</div>
+      ${t.status==='open' ? `<button onclick="closeTournamentDetail();setTimeout(()=>renderTournamentList(),50)" style="margin-top:14px;background:linear-gradient(135deg,var(--accent),var(--accent2)99);border:none;border-radius:8px;padding:9px 20px;color:#fff;font-size:12px;font-weight:700;cursor:pointer">← Back to Join</button>` : ''}
+    </div>` : ''}
+
+    <!-- Admin: Pending approvals -->
+    ${isAdmin && pendingRegs.length ? `
+    <div class="card" style="margin-bottom:14px;border-color:#fbbf2444">
+      <div class="card-title" style="margin-bottom:12px">⏳ Pending Requests (${pendingRegs.length})</div>
+      ${pendingRegs.map(r => {
+        const cap = caps.find(c => c.username === r.captain);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${cap?.name||r.captain}</div>
+            <div style="font-size:11px;color:var(--muted)">${r.captain}</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-accent btn-sm" onclick="approveTournamentReg('${r.id}','${t.id}')">✓ Approve</button>
+            <button class="btn btn-red btn-sm" onclick="rejectTournamentReg('${r.id}','${t.id}')">✗ Reject</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}
+
+    <!-- Registered Teams + Groups + Matches: sirf registered captain aur admin ko dikhe -->
+    ${(isAdmin || (isCap && myReg)) ? `
+
+    <!-- Registered Teams (Captain view: team names only, no player UIDs) -->
+    ${isCap ? `
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title">👥 Registered Teams (${approvedRegs.length})</div>
+      </div>
+      ${approvedRegs.length ? approvedRegs.map((r,i) => {
+        const cap = caps.find(c => c.username === r.captain);
+        const isMe = r.captain === CUR.username;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px;${isMe?'border:1px solid var(--accent)44':''}">
+          <span style="font-size:11px;color:var(--muted);width:22px;text-align:right">${i+1}.</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text);flex:1">${r.teamName||cap?.name||r.captain}</span>
+          ${isMe ? `<span style="font-size:10px;background:var(--accent)22;color:var(--accent2);padding:2px 8px;border-radius:4px;font-weight:700">YOU</span>` : ''}
+        </div>`;
+      }).join('') : `<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">No teams registered yet</div>`}
+    </div>` : ''}
+
+    <!-- Groups Section -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title">👥 Groups</div>
+        ${isAdmin ? `<button class="btn btn-accent btn-sm" onclick="openGroupManager('${t.id}')">⚙ Manage Groups</button>` : ''}
+      </div>
+      ${groups.length ? groups.map(g => {
+        const groupTeams = approvedRegs.filter(r => r.group === g.id);
+        return `
+        <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px">Group ${g.name}</div>
+          ${groupTeams.length ? groupTeams.map(r => {
+            const cap = caps.find(c => c.username === r.captain);
+            return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:11px;color:var(--muted);width:20px">${groupTeams.indexOf(r)+1}.</span>
+              <span style="font-size:13px;color:var(--text)">${r.teamName||cap?.name||r.captain}</span>
+              ${r.captain===CUR.username?`<span style="font-size:10px;background:var(--accent)22;color:var(--accent2);padding:2px 6px;border-radius:4px">You</span>`:''}
+            </div>`;
+          }).join('') : `<div style="font-size:12px;color:var(--muted)">No teams in this group yet</div>`}
+        </div>`;
+      }).join('') : `<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">No groups created yet${isAdmin?' — Click Manage Groups to create':''}</div>`}
+    </div>
+
+    <!-- Tournament Matches -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title">⚔ Matches</div>
+        ${isAdmin ? `<button class="btn btn-accent btn-sm" onclick="openTournamentMatchCreate('${t.id}')">+ Match</button>` : ''}
+      </div>
+      ${(() => {
+        const tRegsAll = S.get('tournamentRegs')||[];
+        // Captain ke liye: sirf wo matches jisme uski team select ho
+        const visibleMatches = isCap
+          ? tMatches.filter(m => (m.teams||[]).some(tid => {
+              const reg = tRegsAll.find(r=>r.id===tid);
+              return reg && reg.captain === CUR.username;
+            }))
+          : tMatches;
+
+        if (!visibleMatches.length) {
+          return `<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">${isCap ? 'Abhi tumhare liye koi match schedule nahi hua' : 'No matches yet'}</div>`;
+        }
+
+        return visibleMatches.map(m => {
+          const isMyMatch = isCap && (m.teams||[]).some(tid => {
+            const reg = tRegsAll.find(r=>r.id===tid);
+            return reg && reg.captain === CUR.username;
+          });
+          return `
+          <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:10px;${isMyMatch?'border:1px solid var(--accent)44':''}">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <div style="font-size:13px;font-weight:700;color:#fff">${m.name}</div>
+              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:${m.matchType==='cs'?'#7c3aed22':'#0066ff22'};color:${m.matchType==='cs'?'#c084fc':'var(--accent2)'}">${(m.matchType||'br').toUpperCase()}</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${(m.teams||[]).length} teams · ${m.format||'Squad'}${m.schedule ? ' · 📅 '+new Date(m.schedule).toLocaleDateString('en-GB').replace(/\//g,'/')+(new Date(m.schedule).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) !== 'Invalid Date' ? ' '+new Date(m.schedule).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '') : ''}</div>
+            ${isMyMatch || isAdmin ? `
+            <div style="background:var(--bg2);border-radius:8px;padding:10px;margin-bottom:8px">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Match Details</div>
+              <div style="display:flex;gap:16px;font-size:12px;margin-bottom:8px">
+                <div><span style="color:var(--muted)">ID: </span><span style="color:var(--accent2);font-family:monospace;font-weight:700">${m.roomId||'—'}</span></div>
+                <div><span style="color:var(--muted)">Pass: </span><span style="color:var(--accent2);font-family:monospace;font-weight:700">${m.roomPass||'—'}</span></div>
+              </div>
+              ${isMyMatch && !isAdmin ? getMySlotBadge(m) : ''}
+              ${isMyMatch && !isAdmin ? getMyMatchTeamList(m) : ''}
+            </div>` : ''}
+            ${isAdmin ? renderMatchSlotTable(m) : ''}
+            ${isAdmin ? `
+            <div style="margin-top:8px;padding:10px;background:#fbbf2410;border:1px solid #fbbf2430;border-radius:8px">
+              <div style="font-size:11px;color:#fbbf24;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">⚡ Quick Verify — Enter Slot No.</div>
+              <div style="display:flex;gap:8px">
+                <input id="verifySlot_${m.id}" type="number" min="1" placeholder="Slot #" style="width:80px;text-align:center;font-weight:700" oninput="quickVerifySlot('${m.id}',this.value)" />
+                <div id="verifyResult_${m.id}" style="flex:1;font-size:12px;display:flex;align-items:center;color:var(--muted)">Type slot to verify team</div>
+              </div>
+            </div>` : ''}
+            ${m.status==='completed' ? renderMatchResult(m) : ''}
+            ${isAdmin && m.status!=='completed' ? `
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn btn-accent btn-sm" onclick="openMatchResult('${m.id}')">🏆 Result</button>
+              <button class="btn btn-ghost btn-sm" onclick="editTournamentMatch('${m.id}')">✏ Edit</button>
+            </div>` : ''}
+          </div>`;
+        }).join('');
+      })()}
+    </div>
+
+    ${isAdmin ? `
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-ghost btn-sm" onclick="editTournament('${t.id}')">✏ Edit Tournament</button>
+      <button class="btn btn-red btn-sm" onclick="deleteTournament('${t.id}')">🗑 Delete</button>
+    </div>` : ''}
+
+    ` : ''}
+  `;
+}
+
+function renderMatchResult(m) {
+  if (!m.result) return '';
+  if (m.matchType === 'cs') {
+    return `<div style="font-size:12px;color:#00c853;margin-top:4px">🏆 Winner: ${m.result.winner||'—'}</div>`;
+  } else {
+    const ranks = m.result.ranks || [];
+    return `<div style="font-size:11px;color:var(--muted);margin-top:4px">
+      ${ranks.slice(0,3).map((r,i)=>`<span style="margin-right:8px">${['🥇','🥈','🥉'][i]} ${r.teamName}</span>`).join('')}
+    </div>`;
+  }
+}
+
+// ─── Create Tournament Modal ───
+function openTournamentCreate(editId) {
+  const tournaments = S.get('tournaments') || [];
+  const t = editId ? tournaments.find(x => x.id === editId) : null;
+  const existing = document.getElementById('createTournamentModal');
+  if (existing) existing.remove();
+
+  const html = `
+  <div id="createTournamentModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('createTournamentModal')">
+    <div class="modal-box">
+      <div class="modal-title">${t ? '✏ Edit Tournament' : '🏆 Create Tournament'}</div>
+      <div class="form-row">
+        <label class="form-label">Tournament Name *</label>
+        <input id="tName" value="${t?.name||''}" placeholder="e.g. ZoneX Championship S1" />
+      </div>
+      <div class="grid2">
+        <div class="form-row">
+          <label class="form-label">Game Format</label>
+          <select id="tFormat">
+            <option value="BR" ${(t?.format||'BR')==='BR'?'selected':''}>BR (Battle Royale)</option>
+            <option value="CS" ${t?.format==='CS'?'selected':''}>CS (Clash Squad)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Team Format</label>
+          <select id="tTeamFormat">
+            <option value="Squad" ${(t?.teamFormat||'Squad')==='Squad'?'selected':''}>Squad (4)</option>
+            <option value="Duo" ${t?.teamFormat==='Duo'?'selected':''}>Duo (2)</option>
+            <option value="Solo" ${t?.teamFormat==='Solo'?'selected':''}>Solo (1)</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="form-row">
+          <label class="form-label">Entry Fee (₹)</label>
+          <input id="tEntry" type="number" value="${t?.entry||0}" placeholder="0 = Free" min="0" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Max Teams</label>
+          <input id="tMaxTeams" type="number" value="${t?.maxTeams||16}" placeholder="16" min="2" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Prize Pool (₹) — optional</label>
+        <input id="tPrize" type="number" value="${t?.prizePool||''}" placeholder="e.g. 5000" min="0" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Points System</label>
+        <select id="tPointsPreset" onchange="onPointsPresetChange()">
+          <option value="standard">Standard (12,9,8,7,6,5,4,3,2,1)</option>
+          <option value="wwcd">WWCD Only (Win = All Points)</option>
+          <option value="custom" ${t?.pointsSystem==='custom'?'selected':''}>Custom</option>
+        </select>
+      </div>
+      <div id="customPointsWrap" style="display:none">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Rank Points (comma separated, 1st to last)</div>
+        <input id="tCustomPoints" value="${t?.customPoints||'12,9,8,7,6,5,4,3,2,1'}" placeholder="12,9,8,7,6,5,4,3,2,1" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Kill Points</label>
+        <input id="tKillPoints" type="number" value="${t?.killPoints||1}" placeholder="1" min="0" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Tournament Date & Time</label>
+        <input id="tSchedule" type="datetime-local" value="${t?.schedule||''}" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Description — optional</label>
+        <textarea id="tDesc" rows="2" placeholder="Rules, schedule, etc.">${t?.desc||''}</textarea>
+      </div>
+
+      <!-- Private Tournament Toggle -->
+      <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+          <input type="checkbox" id="tPrivate" ${t?.isPrivate?'checked':''} style="width:16px;height:16px;accent-color:var(--accent)" onchange="onPrivateToggle()" />
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text)">🔒 Private Tournament</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">Sirf join code wale hi join kar sakenge</div>
+          </div>
+        </label>
+        <div id="joinCodeWrap" style="margin-top:10px;display:${t?.isPrivate?'block':'none'}">
+          <label class="form-label">Join Code *</label>
+          <div style="display:flex;gap:8px">
+            <input id="tJoinCode" value="${t?.joinCode||''}" placeholder="e.g. ZONEX2024" style="flex:1;text-transform:uppercase;letter-spacing:2px;font-weight:700" oninput="this.value=this.value.toUpperCase()" />
+            <button type="button" class="btn btn-ghost btn-sm" onclick="genJoinCode()" style="white-space:nowrap">🎲 Auto</button>
+          </div>
+          <div class="form-hint">Captains ko yeh code share karo join karne ke liye</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-accent btn-full" onclick="saveTournament(${editId?`'${editId}'`:'null'})">💾 ${t?'Update':'Create'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('createTournamentModal')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function onPointsPresetChange() {
+  const v = document.getElementById('tPointsPreset')?.value;
+  const wrap = document.getElementById('customPointsWrap');
+  if (wrap) wrap.style.display = v === 'custom' ? 'block' : 'none';
+}
+
+function onPrivateToggle() {
+  const checked = document.getElementById('tPrivate')?.checked;
+  const wrap = document.getElementById('joinCodeWrap');
+  if (wrap) wrap.style.display = checked ? 'block' : 'none';
+}
+
+function genJoinCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  const el = document.getElementById('tJoinCode');
+  if (el) el.value = code;
+}
+
+async function saveTournament(editId) {
+  const name = document.getElementById('tName')?.value?.trim();
+  if (!name) { toast('Tournament name required!', 'error'); return; }
+
+  const entry = Number(document.getElementById('tEntry')?.value || 0);
+  const preset = document.getElementById('tPointsPreset')?.value || 'standard';
+  const pointsMap = {
+    standard: [12,9,8,7,6,5,4,3,2,1],
+    wwcd: [1,0,0,0,0,0,0,0,0,0]
+  };
+
+  const isPrivate = document.getElementById('tPrivate')?.checked || false;
+  const joinCode = isPrivate ? (document.getElementById('tJoinCode')?.value?.trim().toUpperCase() || '') : '';
+  if (isPrivate && !joinCode) { toast('Private tournament ke liye join code daalo!', 'error'); return; }
+
+  const t = {
+    id: editId || 'T' + Date.now(),
+    name,
+    format: document.getElementById('tFormat')?.value || 'BR',
+    teamFormat: document.getElementById('tTeamFormat')?.value || 'Squad',
+    entry,
+    maxTeams: Number(document.getElementById('tMaxTeams')?.value || 16),
+    prizePool: Number(document.getElementById('tPrize')?.value || 0) || 0,
+    pointsSystem: preset,
+    rankPoints: preset === 'custom'
+      ? (document.getElementById('tCustomPoints')?.value||'12,9,8,7,6,5,4,3,2,1').split(',').map(Number)
+      : pointsMap[preset],
+    killPoints: Number(document.getElementById('tKillPoints')?.value || 1),
+    schedule: document.getElementById('tSchedule')?.value || '',
+    desc: document.getElementById('tDesc')?.value?.trim() || '',
+    isPrivate,
+    joinCode,
+    status: 'open',
+    groups: editId ? ((S.get('tournaments')||[]).find(x=>x.id===editId)?.groups||[]) : [],
+    createdAt: editId ? ((S.get('tournaments')||[]).find(x=>x.id===editId)?.createdAt||now()) : now(),
+  };
+
+  const tournaments = S.get('tournaments') || [];
+  if (editId) {
+    const idx = tournaments.findIndex(x => x.id === editId);
+    if (idx >= 0) tournaments[idx] = t; else tournaments.push(t);
+  } else {
+    tournaments.push(t);
+  }
+
+  await S.set('tournaments', tournaments);
+  closeModal('createTournamentModal');
+  toast(editId ? 'Tournament updated!' : 'Tournament created! 🏆', 'success');
+  renderTournament();
+}
+
+function editTournament(tId) { openTournamentCreate(tId); }
+
+async function deleteTournament(tId) {
+  if (!confirm('Delete this tournament? All groups and match data will be lost.')) return;
+  const tournaments = (S.get('tournaments')||[]).filter(t => t.id !== tId);
+  const tRegs = (S.get('tournamentRegs')||[]).filter(r => r.tId !== tId);
+  // Also delete all matches belonging to this tournament
+  const matches = (S.get('matches')||[]).filter(m => m.tournamentId !== tId);
+  await S.set('tournaments', tournaments);
+  await S.set('tournamentRegs', tRegs);
+  await S.set('matches', matches);
+  toast('Tournament deleted', 'success');
+  renderTournament();
+}
+
+// ─── Captain Join ───
+function joinTournament(tId) {
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  if (!t) return;
+
+  const wallets = S.get('wallets') || {};
+  const myBal = wallets[CUR.username] || 0;
+
+  if (t.entry > 0 && myBal < t.entry) {
+    toast(`Wallet mein ₹${t.entry} chahiye, balance: ₹${myBal}`, 'error');
+    return;
+  }
+
+  const tRegs = S.get('tournamentRegs') || [];
+  const alreadyJoined = tRegs.find(r => r.tId === tId && r.captain === CUR.username);
+  if (alreadyJoined) { toast('Already requested!', 'error'); return; }
+
+  // Private tournament: join code verify karo
+  if (t.isPrivate && t.joinCode) {
+    const entered = prompt(`🔒 Yeh private tournament hai!\n\nJoin code daalo:`);
+    if (entered === null) return; // cancelled
+    if (entered.trim().toUpperCase() !== t.joinCode.toUpperCase()) {
+      toast('❌ Galat join code!', 'error');
+      return;
+    }
+  }
+
+  // Open join modal
+  const ex = document.getElementById('joinTournamentModal');
+  if (ex) ex.remove();
+
+  const isSolo = t.teamFormat === 'Solo';
+  const isDuo = t.teamFormat === 'Duo';
+  const isSquad = !isSolo && !isDuo;
+
+  // Player slots config
+  const mandatory = isSolo ? 1 : isDuo ? 2 : 4;
+  const substitutes = isSolo ? 0 : isDuo ? 1 : 2;
+
+  function playerRow(idx, label) {
+    return `<div style="background:var(--bg3);border-radius:10px;padding:10px;margin-bottom:8px">
+      <div style="font-size:11px;color:${label.includes('Sub')?'#fbbf24':'var(--accent2)'};font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+        ${label.includes('Sub')?'🔄':'👤'} ${label}
+      </div>
+      <div class="grid2">
+        <div class="form-row" style="margin:0">
+          <label class="form-label" style="font-size:10px">IGN *</label>
+          <input id="pIGN_${idx}" placeholder="In-game name" style="font-size:13px" ${label.includes('Sub')?'':'required'} />
+        </div>
+        <div class="form-row" style="margin:0">
+          <label class="form-label" style="font-size:10px">UID *</label>
+          <input id="pUID_${idx}" placeholder="Player UID" style="font-size:13px" ${label.includes('Sub')?'':'required'} />
+        </div>
+      </div>
+    </div>`;
+  }
+
+  let playerFields = '';
+  for (let i = 1; i <= mandatory; i++) {
+    playerFields += playerRow(i, `Player ${i} (Mandatory)`);
+  }
+  for (let i = 1; i <= substitutes; i++) {
+    playerFields += playerRow(mandatory + i, `Sub ${i} (Optional)`);
+  }
+
+  const html = `
+  <div id="joinTournamentModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('joinTournamentModal')">
+    <div class="modal-box">
+      <div class="modal-title">⚡ Join Tournament</div>
+      <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:14px">
+        <div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:800;color:#fff">${t.name}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">${t.format||'BR'} · ${t.teamFormat||'Squad'}</div>
+        <div style="margin-top:6px;font-size:12px;font-weight:700;color:${t.entry>0?'#fbbf24':'#00c853'}">
+          ${t.entry>0?`Entry: ₹${t.entry} | Wallet: ₹${myBal}`:'Free Entry'}
+        </div>
+      </div>
+
+      ${!isSolo ? `
+      <div class="form-row">
+        <label class="form-label">Team Name *</label>
+        <input id="joinTName" placeholder="Apni team ka naam" />
+      </div>` : ''}
+
+      <div style="font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:10px">
+        👥 Player Details (${mandatory} Mandatory${substitutes>0?' + '+substitutes+' Sub':''})
+      </div>
+      ${playerFields}
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-accent btn-full" onclick="confirmJoinTournament('${tId}',${mandatory},${substitutes})">
+          ${t.entry>0?`💸 Pay ₹${t.entry} & Join`:'⚡ Send Join Request'}
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('joinTournamentModal')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  if (!isSolo) setTimeout(() => document.getElementById('joinTName')?.focus(), 100);
+}
+
+async function confirmJoinTournament(tId, mandatory, substitutes) {
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  if (!t) return;
+
+  const isSolo = t.teamFormat === 'Solo';
+  const teamName = isSolo ? CUR.name : (document.getElementById('joinTName')?.value?.trim() || '');
+  if (!isSolo && !teamName) { toast('Team name daalo!', 'error'); return; }
+
+  // Collect player data
+  const players = [];
+  for (let i = 1; i <= mandatory + substitutes; i++) {
+    const ign = document.getElementById('pIGN_'+i)?.value?.trim() || '';
+    const uid = document.getElementById('pUID_'+i)?.value?.trim() || '';
+    const isSub = i > mandatory;
+    if (!isSub && (!ign || !uid)) {
+      toast(`Player ${i} ki IGN aur UID dono bharo!`, 'error');
+      return;
+    }
+    if (ign || uid) players.push({ ign, uid, isSub, slot: i });
+  }
+
+  const wallets = S.get('wallets') || {};
+  const myBal = wallets[CUR.username] || 0;
+
+  const tRegs = S.get('tournamentRegs') || [];
+
+  const reg = {
+    id: 'TR' + Date.now(),
+    tId,
+    captain: CUR.username,
+    teamName,
+    players,
+    status: t.entry > 0 ? 'approved' : 'pending',
+    group: null,
+    joinedAt: now(),
+  };
+
+  if (t.entry > 0) {
+    wallets[CUR.username] = myBal - t.entry;
+    await S.set('wallets', wallets);
+    addTxn(CUR.username, { type:'debit', amount:t.entry, label:`Tournament Entry: ${t.name}`, date:now() });
+  }
+
+  tRegs.push(reg);
+  await S.set('tournamentRegs', tRegs);
+
+  closeModal('joinTournamentModal');
+
+  await addNotification('admin', {
+    msg: `${CUR.name} wants to join "${t.name}"`,
+    type: 'join_request',
+    tId,
+    regId: reg.id,
+    time: now()
+  });
+
+  if (t.entry > 0) {
+    toast(`Joined! ₹${t.entry} deducted ✅`, 'success');
+  } else {
+    toast('Join request sent! Waiting for approval ⏳', 'success');
+  }
+
+  renderTournamentList();
+}
+
+async function approveTournamentReg(regId, tId) {
+  const tRegs = S.get('tournamentRegs') || [];
+  const reg = tRegs.find(r => r.id === regId);
+  if (!reg) return;
+  reg.status = 'approved';
+  await S.set('tournamentRegs', tRegs);
+
+  const t = (S.get('tournaments')||[]).find(x=>x.id===tId);
+  await addNotification(reg.captain, {
+    msg: `✅ Your join request for "${t?.name}" has been approved!`,
+    type: 'approved', tId, time: now()
+  });
+
+  toast('Approved!', 'success');
+  openTournamentDetail(tId);
+}
+
+async function rejectTournamentReg(regId, tId) {
+  const tRegs = S.get('tournamentRegs') || [];
+  const reg = tRegs.find(r => r.id === regId);
+  if (!reg) return;
+  reg.status = 'rejected';
+  await S.set('tournamentRegs', tRegs);
+
+  const t = (S.get('tournaments')||[]).find(x=>x.id===tId);
+  await addNotification(reg.captain, {
+    msg: `❌ Your join request for "${t?.name}" was rejected.`,
+    type: 'rejected', tId, time: now()
+  });
+
+  toast('Rejected', 'success');
+  openTournamentDetail(tId);
+}
+
+// ─── Group Manager ───
+function openGroupManager(tId) {
+  const _ex_groupManagerModal = document.getElementById('groupManagerModal'); if (_ex_groupManagerModal) _ex_groupManagerModal.remove();
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  if (!t) return;
+  const tRegs = S.get('tournamentRegs') || [];
+  const approvedRegs = tRegs.filter(r => r.tId === tId && r.status === 'approved');
+  const caps = S.get('captains') || [];
+  const groups = t.groups || [];
+
+  const html = `
+  <div id="groupManagerModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('groupManagerModal')">
+    <div class="modal-box" style="max-width:520px">
+      <div class="modal-title">👥 Manage Groups — ${t.name}</div>
+
+      <!-- Add Group -->
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input id="newGroupName" placeholder="Group name (e.g. A, B, Alpha...)" style="flex:1" />
+        <button class="btn btn-accent btn-sm" onclick="addGroup('${tId}')">+ Add</button>
+      </div>
+
+      <!-- Groups list -->
+      ${groups.length ? groups.map(g => {
+        const groupTeams = approvedRegs.filter(r => r.group === g.id);
+        const ungrouped = approvedRegs.filter(r => !r.group);
+        return `
+        <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-size:13px;font-weight:700;color:var(--accent2)">Group ${g.name}</div>
+            <button class="btn btn-red btn-sm" onclick="removeGroup('${tId}','${g.id}')">✕ Remove</button>
+          </div>
+          <!-- Teams in this group -->
+          ${groupTeams.map(r => {
+            const cap = caps.find(c => c.username === r.captain);
+            return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:12px;color:var(--text)">${r.teamName||cap?.name||r.captain}</span>
+              <button class="btn btn-ghost btn-sm" style="font-size:10px" onclick="removeFromGroup('${tId}','${r.id}')">Remove</button>
+            </div>`;
+          }).join('')}
+          <!-- Add team to group dropdown -->
+          ${ungrouped.length ? `
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <select id="addTeamSel_${g.id}" style="flex:1;font-size:12px">
+              <option value="">— Add team —</option>
+              ${ungrouped.map(r=>{const cap=caps.find(c=>c.username===r.captain);return`<option value="${r.id}">${r.teamName||cap?.name||r.captain}</option>`}).join('')}
+            </select>
+            <button class="btn btn-accent btn-sm" onclick="addTeamToGroup('${tId}','${g.id}')">Add</button>
+          </div>` : `<div style="font-size:11px;color:var(--muted);margin-top:6px">All teams assigned</div>`}
+        </div>`;
+      }).join('') : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">No groups yet — add one above</div>'}
+
+      <!-- Ungrouped teams -->
+      ${approvedRegs.filter(r=>!r.group).length ? `
+      <div style="margin-top:8px;padding:10px;background:var(--bg3);border-radius:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Ungrouped Teams (${approvedRegs.filter(r=>!r.group).length})</div>
+        ${approvedRegs.filter(r=>!r.group).map(r=>{const cap=caps.find(c=>c.username===r.captain);return`<div style="font-size:12px;color:var(--text);padding:4px 0">${r.teamName||cap?.name||r.captain}</div>`}).join('')}
+      </div>` : ''}
+
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('groupManagerModal')" style="margin-top:12px;width:100%">Close</button>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function addGroup(tId) {
+  const name = document.getElementById('newGroupName')?.value?.trim();
+  if (!name) { toast('Enter group name!', 'error'); return; }
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  if (!t) return;
+  t.groups = t.groups || [];
+  if (t.groups.find(g => g.name.toLowerCase() === name.toLowerCase())) { toast('Group already exists!', 'error'); return; }
+  t.groups.push({ id: 'G' + Date.now(), name });
+  await S.set('tournaments', tournaments);
+  toast('Group added!', 'success');
+  closeModal('groupManagerModal');
+  openGroupManager(tId);
+}
+
+async function removeGroup(tId, gId) {
+  if (!confirm('Remove this group? Teams will become ungrouped.')) return;
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  t.groups = (t.groups||[]).filter(g => g.id !== gId);
+  const tRegs = S.get('tournamentRegs') || [];
+  tRegs.forEach(r => { if (r.tId === tId && r.group === gId) r.group = null; });
+  await S.set('tournaments', tournaments);
+  await S.set('tournamentRegs', tRegs);
+  toast('Group removed', 'success');
+  closeModal('groupManagerModal');
+  openGroupManager(tId);
+}
+
+async function addTeamToGroup(tId, gId) {
+  const sel = document.getElementById('addTeamSel_' + gId);
+  const regId = sel?.value;
+  if (!regId) { toast('Select a team!', 'error'); return; }
+  const tRegs = S.get('tournamentRegs') || [];
+  const reg = tRegs.find(r => r.id === regId);
+  if (reg) reg.group = gId;
+  await S.set('tournamentRegs', tRegs);
+  toast('Team added to group!', 'success');
+  closeModal('groupManagerModal');
+  openGroupManager(tId);
+}
+
+async function removeFromGroup(tId, regId) {
+  const tRegs = S.get('tournamentRegs') || [];
+  const reg = tRegs.find(r => r.id === regId);
+  if (reg) reg.group = null;
+  await S.set('tournamentRegs', tRegs);
+  toast('Removed from group', 'success');
+  closeModal('groupManagerModal');
+  openGroupManager(tId);
+}
+
+// ─── Tournament Match Create ───
+function openTournamentMatchCreate(tId) {
+  const _ex_tMatchCreateModal = document.getElementById('tMatchCreateModal'); if (_ex_tMatchCreateModal) _ex_tMatchCreateModal.remove();
+  const tournaments = S.get('tournaments') || [];
+  const t = tournaments.find(x => x.id === tId);
+  const tRegs = S.get('tournamentRegs') || [];
+  const approvedRegs = tRegs.filter(r => r.tId === tId && r.status === 'approved');
+  const caps = S.get('captains') || [];
+  const groups = t.groups || [];
+
+  const html = `
+  <div id="tMatchCreateModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('tMatchCreateModal')">
+    <div class="modal-box">
+      <div class="modal-title">⚔ Create Tournament Match</div>
+      <div class="form-row">
+        <label class="form-label">Match Name *</label>
+        <input id="tmName" placeholder="e.g. Group A - Match 1" />
+      </div>
+      <div class="grid2">
+        <div class="form-row">
+          <label class="form-label">Match Type</label>
+          <select id="tmType">
+            <option value="br">BR (Battle Royale)</option>
+            <option value="cs">CS (Clash Squad)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Format</label>
+          <select id="tmFormat">
+            <option value="Squad">Squad</option>
+            <option value="Duo">Duo</option>
+            <option value="Solo">Solo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Select teams by group or all -->
+      <div class="form-row">
+        <label class="form-label">Select Teams From</label>
+        <select id="tmGroupFilter" onchange="onTmGroupFilterChange('${tId}')">
+          <option value="all">All Teams</option>
+          ${groups.map(g=>`<option value="${g.id}">Group ${g.name}</option>`).join('')}
+        </select>
+      </div>
+
+      <div id="tmTeamList" style="background:var(--bg3);border-radius:10px;padding:10px;margin-bottom:12px;max-height:200px;overflow-y:auto">
+        ${approvedRegs.map(r=>{const cap=caps.find(c=>c.username===r.captain);return`
+        <label style="display:flex;align-items:center;gap:8px;padding:7px;cursor:pointer;border-radius:6px" class="tm-team-item" data-group="${r.group||''}">
+          <input type="checkbox" value="${r.id}" style="accent-color:var(--accent)">
+          <span style="font-size:13px;color:var(--text)">${r.teamName||cap?.name||r.captain}</span>
+          ${r.group ? `<span style="font-size:10px;color:var(--muted)">(${groups.find(g=>g.id===r.group)?.name||''})</span>` : ''}
+        </label>`}).join('')}
+      </div>
+
+      <div class="grid2">
+        <div class="form-row">
+          <label class="form-label">Room ID</label>
+          <input id="tmRoomId" placeholder="Match room ID" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">Room Password</label>
+          <input id="tmRoomPass" placeholder="Room password" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Schedule (optional)</label>
+        <input id="tmSchedule" type="datetime-local" />
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-accent btn-full" onclick="saveTournamentMatch('${tId}')">⚡ Create Match</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('tMatchCreateModal')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function onTmGroupFilterChange(tId) {
+  const gId = document.getElementById('tmGroupFilter')?.value;
+  document.querySelectorAll('.tm-team-item').forEach(item => {
+    if (gId === 'all') {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = item.dataset.group === gId ? 'flex' : 'none';
+    }
+  });
+}
+
+async function saveTournamentMatch(tId) {
+  const name = document.getElementById('tmName')?.value?.trim();
+  if (!name) { toast('Match name required!', 'error'); return; }
+
+  const selectedTeams = [...document.querySelectorAll('#tmTeamList input[type=checkbox]:checked')].map(cb => cb.value);
+  if (!selectedTeams.length) { toast('Select at least 1 team!', 'error'); return; }
+
+  // Assign slot numbers to each selected team
+  const slotAssignments = {};
+  selectedTeams.forEach((regId, idx) => {
+    slotAssignments[regId] = idx + 1;
+  });
+
+  const m = {
+    id: 'TM' + Date.now(),
+    tournamentId: tId,
+    name,
+    matchType: document.getElementById('tmType')?.value || 'br',
+    format: document.getElementById('tmFormat')?.value || 'Squad',
+    roomId: document.getElementById('tmRoomId')?.value?.trim() || '',
+    roomPass: document.getElementById('tmRoomPass')?.value?.trim() || '',
+    schedule: document.getElementById('tmSchedule')?.value || '',
+    teams: selectedTeams,
+    slots: slotAssignments,
+    status: 'upcoming',
+    createdAt: now(),
+  };
+
+  const matches = S.get('matches') || [];
+  matches.push(m);
+  await S.set('matches', matches);
+
+  // Notify selected teams
+  const tRegs = S.get('tournamentRegs') || [];
+  const t = (S.get('tournaments')||[]).find(x=>x.id===tId);
+  for (const regId of selectedTeams) {
+    const reg = tRegs.find(r => r.id === regId);
+    if (reg) {
+      const slot = slotAssignments[regId] || '?';
+      await addNotification(reg.captain, {
+        msg: `⚔ Match "${name}" — Slot #${slot} | Room ID: ${m.roomId||'TBA'} | Pass: ${m.roomPass||'TBA'}`,
+        type: 'match_created',
+        matchId: m.id, tId, slot, time: now()
+      });
+    }
+  }
+
+  closeModal('tMatchCreateModal');
+  toast('Match created! Teams notified 🔔', 'success');
+  openTournamentDetail(tId);
+}
+
+async function editTournamentMatch(matchId) {
+  const matches = S.get('matches') || [];
+  const m = matches.find(x => x.id === matchId);
+  if (!m) return;
+
+  const ex = document.getElementById('editTMatchModal');
+  if (ex) ex.remove();
+  const html = `
+  <div id="editTMatchModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('editTMatchModal')">
+    <div class="modal-box">
+      <div class="modal-title">✏ Edit Match — ${m.name}</div>
+      <div class="form-row">
+        <label class="form-label">Room ID</label>
+        <input id="etmRoomId" value="${m.roomId||''}" placeholder="Room ID" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">Room Password</label>
+        <input id="etmRoomPass" value="${m.roomPass||''}" placeholder="Room Password" />
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-accent btn-full" onclick="saveEditTMatch('${matchId}')">💾 Save & Notify</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('editTMatchModal')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function saveEditTMatch(matchId) {
+  const matches = S.get('matches') || [];
+  const m = matches.find(x => x.id === matchId);
+  if (!m) return;
+
+  m.roomId = document.getElementById('etmRoomId')?.value?.trim() || '';
+  m.roomPass = document.getElementById('etmRoomPass')?.value?.trim() || '';
+  await S.set('matches', matches);
+
+  const tRegs = S.get('tournamentRegs') || [];
+  const t = (S.get('tournaments')||[]).find(x=>x.id===m.tournamentId);
+  for (const regId of (m.teams||[])) {
+    const reg = tRegs.find(r => r.id === regId);
+    if (reg) {
+      await addNotification(reg.captain, {
+        msg: `🔄 Match "${m.name}" updated — Room ID: ${m.roomId||'TBA'}, Pass: ${m.roomPass||'TBA'}`,
+        type: 'match_updated', matchId: m.id, time: now()
+      });
+    }
+  }
+
+  closeModal('editTMatchModal');
+  toast('Match updated! Teams notified 🔔', 'success');
+  openTournamentDetail(m.tournamentId);
+}
+
+// ─── Match Result ───
+function openMatchResult(matchId) {
+  const _ex_matchResultModal = document.getElementById('matchResultModal'); if (_ex_matchResultModal) _ex_matchResultModal.remove();
+  const matches = S.get('matches') || [];
+  const m = matches.find(x => x.id === matchId);
+  if (!m) return;
+  const tRegs = S.get('tournamentRegs') || [];
+  const caps = S.get('captains') || [];
+  const teamRegs = (m.teams||[]).map(tid => tRegs.find(r=>r.id===tid)).filter(Boolean);
+
+  const html = `
+  <div id="matchResultModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('matchResultModal')">
+    <div class="modal-box">
+      <div class="modal-title">🏆 Set Match Result — ${m.name}</div>
+      ${m.matchType === 'cs' ? `
+        <!-- CS: Select winner -->
+        <div class="form-row">
+          <label class="form-label">Winning Team</label>
+          <select id="csWinner">
+            <option value="">— Select Winner —</option>
+            ${teamRegs.map(r=>{const cap=caps.find(c=>c.username===r.captain);return`<option value="${r.id}">${r.teamName||cap?.name||r.captain}</option>`}).join('')}
+          </select>
+        </div>
+      ` : `
+        <!-- BR: Give rank + kills to each team -->
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">Enter rank and kills for each team</div>
+        <div style="max-height:300px;overflow-y:auto">
+        ${teamRegs.map((r,i)=>{const cap=caps.find(c=>c.username===r.captain);return`
+        <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px">
+          <span style="font-size:12px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.teamName||cap?.name||r.captain}</span>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <div>
+              <div style="font-size:9px;color:var(--muted);text-align:center">Rank</div>
+              <input id="rank_${r.id}" type="number" value="${i+1}" min="1" style="width:52px;text-align:center;padding:4px" />
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--muted);text-align:center">Kills</div>
+              <input id="kills_${r.id}" type="number" value="0" min="0" style="width:52px;text-align:center;padding:4px" />
+            </div>
+          </div>
+        </div>`}).join('')}
+        </div>
+      `}
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn btn-accent btn-full" onclick="saveMatchResult('${matchId}')">✅ Save Result</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('matchResultModal')">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function saveMatchResult(matchId) {
+  const matches = S.get('matches') || [];
+  const m = matches.find(x => x.id === matchId);
+  if (!m) return;
+  const tRegs = S.get('tournamentRegs') || [];
+  const caps = S.get('captains') || [];
+  const t = (S.get('tournaments')||[]).find(x=>x.id===m.tournamentId);
+  const rankPoints = t?.rankPoints || [12,9,8,7,6,5,4,3,2,1];
+  const killPts = t?.killPoints || 1;
+  const teamRegs = (m.teams||[]).map(tid=>tRegs.find(r=>r.id===tid)).filter(Boolean);
+
+  if (m.matchType === 'cs') {
+    const winnerId = document.getElementById('csWinner')?.value;
+    if (!winnerId) { toast('Select a winner!', 'error'); return; }
+    const winReg = tRegs.find(r=>r.id===winnerId);
+    const cap = caps.find(c=>c.username===winReg?.captain);
+    m.result = { winner: winReg?.teamName||cap?.name||winReg?.captain, winnerId };
+    m.status = 'completed';
+
+    // Add points
+    teamRegs.forEach(r => {
+      r.points = (r.points||0) + (r.id===winnerId ? (rankPoints[0]||1) : 0);
+    });
+
+    // Notify all teams
+    for (const r of teamRegs) {
+      const isWin = r.id === winnerId;
+      await addNotification(r.captain, {
+        msg: `🏆 Match "${m.name}" result: ${isWin?'YOUR TEAM WON! 🥇':'Winner: '+(winReg?.teamName||cap?.name||'')}`,
+        type:'result', matchId, time:now()
+      });
+    }
+  } else {
+    // BR ranks
+    const ranks = teamRegs.map(r => {
+      const rank = Number(document.getElementById('rank_'+r.id)?.value||99);
+      const kills = Number(document.getElementById('kills_'+r.id)?.value||0);
+      const rPts = rankPoints[rank-1] || 0;
+      const totalPts = rPts + (kills * killPts);
+      const cap = caps.find(c=>c.username===r.captain);
+      return { regId:r.id, teamName:r.teamName||cap?.name||r.captain, rank, kills, rankPts:rPts, killPts:kills*killPts, totalPts };
+    }).sort((a,b)=>a.rank-b.rank);
+
+    m.result = { ranks };
+    m.status = 'completed';
+
+    // Update points
+    ranks.forEach(res => {
+      const reg = tRegs.find(r=>r.id===res.regId);
+      if (reg) reg.points = (reg.points||0) + res.totalPts;
+    });
+
+    // Notify each team their result
+    for (const res of ranks) {
+      const reg = tRegs.find(r=>r.id===res.regId);
+      if (reg) {
+        await addNotification(reg.captain, {
+          msg: `📊 Match "${m.name}" result: Rank #${res.rank}, Kills: ${res.kills}, Points: +${res.totalPts}`,
+          type:'result', matchId, time:now()
+        });
+      }
+    }
+  }
+
+  await S.set('matches', matches);
+  await S.set('tournamentRegs', tRegs);
+  closeModal('matchResultModal');
+  toast('Result saved! Teams notified ✅', 'success');
+  openTournamentDetail(m.tournamentId);
+}
+
+// ─── Notifications ───
+async function addNotification(username, notif) {
+  const notifs = S.get('notifications') || {};
+  if (!notifs[username]) notifs[username] = [];
+  notifs[username].unshift({ ...notif, id:'N'+Date.now(), read:false });
+  // Keep last 50 per user
+  if (notifs[username].length > 50) notifs[username] = notifs[username].slice(0,50);
+  await S.set('notifications', notifs);
+  // Update bell badge if it's current user
+  if (username === CUR.username || username === 'admin') updateNotifBadge();
+}
+
+function updateNotifBadge() {
+  const notifs = S.get('notifications') || {};
+  const myNotifs = notifs[CUR.username] || [];
+  const unread = myNotifs.filter(n=>!n.read).length;
+  const bell = document.getElementById('notifBell');
+  if (bell) {
+    bell.innerHTML = `🔔${unread>0?`<span style="position:absolute;top:-4px;right:-4px;background:#f43f5e;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700">${unread>9?'9+':unread}</span>`:''}`;
+  }
+}
+
+function openNotifications() {
+  const _ex_notifModal = document.getElementById('notifModal'); if (_ex_notifModal) _ex_notifModal.remove();
+  const notifs = S.get('notifications') || {};
+  const myNotifs = notifs[CUR.username] || [];
+
+  const html = `
+  <div id="notifModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('notifModal')">
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="modal-title" style="margin:0">🔔 Notifications</div>
+        ${myNotifs.length?`<button class="btn btn-ghost btn-sm" onclick="clearAllNotifs()">Clear All</button>`:''}
+      </div>
+      ${myNotifs.length ? myNotifs.map(n=>`
+        <div style="padding:10px;background:${n.read?'var(--bg3)':'var(--card)'};border-radius:8px;margin-bottom:8px;border-left:3px solid ${n.read?'var(--border)':'var(--accent)'}" onclick="markNotifRead('${n.id}')">
+          <div style="font-size:13px;color:${n.read?'var(--muted)':'var(--text)'}">${n.msg}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">${n.time||''}</div>
+        </div>`).join('')
+      : '<div style="text-align:center;color:var(--muted);padding:24px">No notifications yet</div>'}
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('notifModal')" style="width:100%;margin-top:8px">Close</button>
+    </div>
+  </div>`;
+
+  // Mark all as read
+  const allNotifs = S.get('notifications') || {};
+  if (allNotifs[CUR.username]) {
+    allNotifs[CUR.username].forEach(n=>n.read=true);
+    S.set('notifications', allNotifs);
+    updateNotifBadge();
+  }
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function markNotifRead(nId) {
+  const notifs = S.get('notifications') || {};
+  const myNotifs = notifs[CUR.username] || [];
+  const n = myNotifs.find(x=>x.id===nId);
+  if (n) n.read = true;
+  await S.set('notifications', notifs);
+}
+
+async function clearAllNotifs() {
+  const notifs = S.get('notifications') || {};
+  notifs[CUR.username] = [];
+  await S.set('notifications', notifs);
+  closeModal('notifModal');
+  updateNotifBadge();
+  toast('Cleared!', 'success');
+}
+
+
+
+
+function quickVerifySlot(matchId, slotNum) {
+  const resultEl = document.getElementById('verifyResult_' + matchId);
+  if (!resultEl || !slotNum) { if(resultEl) resultEl.innerHTML = '<span style="color:var(--muted)">Type slot to verify team</span>'; return; }
+
+  const m = (S.get('matches')||[]).find(x => x.id === matchId);
+  if (!m) return;
+  const slots = m.slots || {};
+  const tRegs = S.get('tournamentRegs') || [];
+  const caps = S.get('captains') || [];
+  const regs = S.get('registrations') || [];
+
+  // Find which regId has this slot number
+  const regId = Object.keys(slots).find(k => slots[k] == slotNum);
+  if (!regId) {
+    resultEl.innerHTML = `<span style="color:#f43f5e;font-weight:700">❌ Slot #${slotNum} not found</span>`;
+    return;
+  }
+
+  const reg = tRegs.find(r => r.id === regId);
+  if (!reg) { resultEl.innerHTML = `<span style="color:#f43f5e">Team data not found</span>`; return; }
+
+  const cap = caps.find(c => c.username === reg.captain);
+  const teamName = reg.teamName || cap?.name || reg.captain;
+  const tPlayers = reg.players || [];
+  const fallbackRegs = regs.filter(r => r.captain === reg.captain);
+  const displayPlayers = tPlayers.length ? tPlayers : fallbackRegs;
+
+  resultEl.innerHTML = `
+    <div style="width:100%">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div style="background:var(--accent);color:#fff;font-family:Orbitron,sans-serif;font-size:12px;font-weight:900;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${slotNum}</div>
+        <div style="font-size:13px;font-weight:700;color:#00c853">✅ ${teamName}</div>
+      </div>
+      ${tPlayers.length ? tPlayers.map(p => `
+        <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;align-items:center">
+          <span style="color:var(--accent2);font-weight:600;flex:1">${p.ign||'—'}</span>
+          <span style="color:var(--muted);font-family:monospace;font-size:10px">${p.uid||'—'}</span>
+          <span style="font-size:9px;padding:1px 5px;border-radius:3px;background:${p.isSub?'#fbbf2420':'var(--accent)20'};color:${p.isSub?'#fbbf24':'var(--accent2)'}">${p.isSub?'SUB':'MAIN'}</span>
+        </div>`).join('')
+      : fallbackRegs.length ? fallbackRegs.map(p => `
+        <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">
+          <span style="color:var(--text);flex:1">${p.name||'—'}</span>
+          <span style="color:var(--accent2);font-weight:600">${p.ign||p.IGN||'—'}</span>
+          <span style="color:var(--muted);font-family:monospace;font-size:10px">${p.uid||p.UID||'—'}</span>
+        </div>`).join('')
+      : `<div style="font-size:11px;color:var(--muted)">No player data</div>`}
+    </div>`;
+}
+window.quickVerifySlot = quickVerifySlot;
+
+function getMyMatchTeamList(m) {
+  const tRegs = S.get('tournamentRegs') || [];
+  const myReg = tRegs.find(r => r.captain === CUR.username && (m.teams||[]).includes(r.id));
+  if (!myReg) return '';
+  const mySlot = (m.slots||{})[myReg.id];
+  if (!mySlot) return '';
+  return `<div style="background:var(--accent)12;border:1px solid var(--accent)33;border-radius:8px;padding:10px;display:flex;align-items:center;gap:12px">
+    <div style="background:var(--accent);color:#fff;font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;min-width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center">${mySlot}</div>
+    <div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Your Slot Number</div>
+      <div style="font-size:13px;font-weight:700;color:var(--text)">${myReg.teamName||CUR.name}</div>
+    </div>
+  </div>`;
+}
+
+function getMySlotBadge(m) {
+  const myReg2 = (S.get('tournamentRegs')||[]).find(r => r.captain===CUR.username && (m.teams||[]).includes(r.id));
+  const mySlot = myReg2 ? (m.slots||{})[myReg2.id] : null;
+  if (!mySlot) return '';
+  return `<div style="background:var(--accent)15;border:1px solid var(--accent)33;border-radius:6px;padding:8px;font-size:13px;font-weight:700;color:var(--accent2);text-align:center">🎯 Your Slot: #${mySlot}</div>`;
+}
+
+// ─── Slot Table for Admin ───
+function renderMatchSlotTable(m) {
+  if (!m || !m.teams || !m.teams.length) return '';
+  const tRegs = S.get('tournamentRegs') || [];
+  const caps = S.get('captains') || [];
+  const slots = m.slots || {};
+
+  // Build slot rows sorted by slot number
+  const rows = m.teams.map(regId => {
+    const reg = tRegs.find(r => r.id === regId);
+    const cap = caps.find(c => c.username === reg?.captain);
+    const slotNo = slots[regId] || '?';
+    return { slotNo, reg, cap };
+  }).sort((a,b) => Number(a.slotNo) - Number(b.slotNo));
+
+  return `
+  <div style="margin-top:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;font-weight:700">📋 Slot Details</div>
+      <button class="btn btn-ghost btn-sm" style="font-size:10px" onclick="toggleSlotTable('slotTbl_${m.id}')">Toggle</button>
+    </div>
+    <div id="slotTbl_${m.id}">
+      ${rows.map(({slotNo, reg, cap}) => {
+        if (!reg) return '';
+        const teamName = reg.teamName || cap?.name || reg.captain;
+        // Use tournament reg players first, fallback to match registrations
+        const tPlayers = reg.players || [];
+        const fallbackRegs = S.get('registrations') || [];
+        const fallbackTeam = fallbackRegs.filter(r => r.captain === reg.captain);
+
+        return `
+        <div style="background:var(--bg3);border-radius:8px;padding:10px;margin-bottom:8px;border-left:3px solid var(--accent)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <div style="background:var(--accent);color:#fff;font-family:Orbitron,sans-serif;font-size:13px;font-weight:900;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${slotNo}</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#fff">${teamName}</div>
+              <div style="font-size:10px;color:var(--muted)">${reg.captain} · ${cap?.name||''}</div>
+            </div>
+          </div>
+          ${tPlayers.length ? `
+          <table style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead><tr style="background:var(--bg2)">
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">#</th>
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">IGN</th>
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">UID</th>
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">Role</th>
+            </tr></thead>
+            <tbody>
+              ${tPlayers.map((p,pi) => `
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:4px 8px;color:var(--muted)">${pi+1}</td>
+                <td style="padding:4px 8px;color:var(--accent2);font-weight:600">${p.ign||'—'}</td>
+                <td style="padding:4px 8px;color:var(--text);font-family:monospace;font-size:10px">${p.uid||'—'}</td>
+                <td style="padding:4px 8px"><span style="font-size:9px;padding:2px 6px;border-radius:4px;background:${p.isSub?'#fbbf2420':'var(--accent)20'};color:${p.isSub?'#fbbf24':'var(--accent2)'}">${p.isSub?'SUB':'MAIN'}</span></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>` : fallbackTeam.length ? `
+          <table style="width:100%;border-collapse:collapse;font-size:11px">
+            <thead><tr style="background:var(--bg2)">
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">#</th>
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">Player</th>
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">IGN</th>
+              <th style="padding:4px 8px;text-align:left;color:var(--muted)">UID</th>
+            </tr></thead>
+            <tbody>
+              ${fallbackTeam.map((pr,pi) => `
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:4px 8px;color:var(--muted)">${pi+1}</td>
+                <td style="padding:4px 8px;color:var(--text)">${pr.name||'—'}</td>
+                <td style="padding:4px 8px;color:var(--accent2);font-weight:600">${pr.ign||pr.IGN||'—'}</td>
+                <td style="padding:4px 8px;color:var(--text);font-family:monospace;font-size:10px">${pr.uid||pr.UID||'—'}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>` : `<div style="font-size:11px;color:var(--muted);padding:4px 0">No player data available</div>`}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function toggleSlotTable(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+window.toggleSlotTable = toggleSlotTable;
+
+
+window.openTournamentCreate = openTournamentCreate;
+window.saveTournament = saveTournament;
+window.editTournament = editTournament;
+window.deleteTournament = deleteTournament;
+window.openTournamentDetail = openTournamentDetail;
+window.closeTournamentDetail = closeTournamentDetail;
+window.joinTournament = joinTournament;
+window.confirmJoinTournament = confirmJoinTournament;
+window.approveTournamentReg = approveTournamentReg;
+window.rejectTournamentReg = rejectTournamentReg;
+window.openGroupManager = openGroupManager;
+window.addGroup = addGroup;
+window.removeGroup = removeGroup;
+window.addTeamToGroup = addTeamToGroup;
+window.removeFromGroup = removeFromGroup;
+window.openTournamentMatchCreate = openTournamentMatchCreate;
+window.onTmGroupFilterChange = onTmGroupFilterChange;
+window.saveTournamentMatch = saveTournamentMatch;
+window.editTournamentMatch = editTournamentMatch;
+window.saveEditTMatch = saveEditTMatch;
+window.openMatchResult = openMatchResult;
+window.saveMatchResult = saveMatchResult;
+window.openNotifications = openNotifications;
+window.clearAllNotifs = clearAllNotifs;
+window.onPointsPresetChange = onPointsPresetChange;
+window.onPrivateToggle = onPrivateToggle;
+window.genJoinCode = genJoinCode;
+
 
 function renderBranding() {
   const b = S.get('branding') || {};
@@ -1586,6 +2881,7 @@ function startSession() {
     : CUR.role === 'captain' ? 'dashboard'
     : 'p-matches';
   nav(firstTab);
+  setTimeout(updateNotifBadge, 400);
 }
 
 function doLogout() {
@@ -1609,21 +2905,19 @@ function renderUserBadge() {
   const badgeLabel = CUR.role === 'admin' ? 'Admin'
     : CUR.role === 'viewer' ? 'Viewer'
     : CUR.role === 'captain' ? 'Captain' : 'Player';
-  const bellHTML = CUR.role==='captain' ? `<button id="notifBellBtn" onclick="openNotifications()" style="position:relative;background:transparent;border:1px solid var(--border);color:var(--muted);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔔<span id="notifBadge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 4px;min-width:14px;text-align:center;line-height:1.3">0</span></button>` : '';
   document.getElementById('userBadge').innerHTML = `
-    ${bellHTML}
+    <button id="notifBell" onclick="openNotifications()" style="position:relative;background:none;border:none;cursor:pointer;font-size:18px;padding:0 4px;line-height:1">🔔</button>
     <span style="font-size:13px;font-family:Rajdhani,sans-serif;font-weight:600">${CUR.name}</span>
     <span class="role-pill ${badgeClass}">${badgeLabel}</span>
     <button id="logoutBtn" onclick="doLogout()">Logout</button>
   `;
-  if (CUR.role === 'captain') renderNotifBell();
 }
 
 // ═══════ NAV ═══════
 const ADMIN_TABS = [
   {id:'dashboard',label:'Dashboard'},
+  {id:'tournament',label:'🏆 Tournament'},
   {id:'matches',label:'Matches'},
-  {id:'tournaments',label:'🏆 Tournaments'},
   {id:'slots',label:'Slots'},
   {id:'distribute',label:'Distribute'},
   {id:'captains',label:'Captains'},
@@ -1633,8 +2927,8 @@ const ADMIN_TABS = [
 ];
 const CAP_TABS = [
   {id:'dashboard',label:'Dashboard'},
+  {id:'tournament',label:'🏆 Tournament'},
   {id:'matches',label:'Matches'},
-  {id:'tournaments',label:'🏆 Tournaments'},
   {id:'myteam',label:'My Teams'},
   {id:'wallet',label:'Wallet'},
 ];
@@ -1666,7 +2960,7 @@ function nav(sec) {
 function renderSection(sec) {
   if (sec==='dashboard') renderDashboard();
   else if (sec==='matches') renderMatches();
-  else if (sec==='tournaments') renderTournaments();
+  else if (sec==='tournament') renderTournament();
   else if (sec==='myteam') renderMyTeam();
   else if (sec==='wallet') renderWallet();
   else if (sec==='slots') renderSlots();
@@ -1691,11 +2985,11 @@ function renderDashboard() {
       return a + (m ? Number(m.entry) : 0);
     }, 0);
     document.getElementById('dashStats').innerHTML = `
-      <div class="stat-box"><div class="stat-val">${matches.length}</div><div class="stat-label">Total Matches</div></div>
+      <div class="stat-box"><div class="stat-val">${matches.filter(m=>!m.tournamentId).length}</div><div class="stat-label">Total Matches</div></div>
       <div class="stat-box"><div class="stat-val">${caps.length}</div><div class="stat-label">Captains</div></div>
       <div class="stat-box"><div class="stat-val">₹${totalEntry}</div><div class="stat-label">Total Entry Collected</div></div>
     `;
-    const active = matches.filter(m => m.status !== 'completed').slice(0,3);
+    const active = matches.filter(m => !m.tournamentId && m.status !== 'completed').slice(0,3);
     document.getElementById('dashMatches').innerHTML = active.length
       ? `<div class="page-title" style="font-size:15px">Active Matches</div>` + active.map(m => matchCardHTML(m, regs)).join('')
       : `<div class="empty"><div class="empty-icon">🎮</div><p>No active matches</p></div>`;
@@ -1706,11 +3000,13 @@ function renderDashboard() {
     document.getElementById('dashStats').innerHTML = `
       <div class="stat-box"><div class="stat-val">₹${bal}</div><div class="stat-label">Wallet Balance</div></div>
       <div class="stat-box"><div class="stat-val">${myRegs.length}</div><div class="stat-label">Matches Joined</div></div>
-      <div class="stat-box"><div class="stat-val">${matches.filter(m=>m.status!=='completed').length}</div><div class="stat-label">Open Matches</div></div>
+      <div class="stat-box"><div class="stat-val">${matches.filter(m=>!m.tournamentId && m.status!=='completed').length}</div><div class="stat-label">Open Matches</div></div>
     `;
-    const open = matches.filter(m => m.status!=='completed').slice(0,3);
-    document.getElementById('dashMatches').innerHTML = open.length
-      ? `<div class="page-title" style="font-size:15px">Open Matches</div>` + open.map(m => matchCardHTML(m, regs)).join('')
+    const tRegs = S.get('tournamentRegs') || [];
+    // Dashboard mein sirf standalone matches dikhao (tournament matches nahi)
+    const openStandalone = matches.filter(m => !m.tournamentId && m.status!=='completed').slice(0,3);
+    document.getElementById('dashMatches').innerHTML = openStandalone.length
+      ? `<div class="page-title" style="font-size:15px">Open Matches</div>` + openStandalone.map(m => matchCardHTML(m, regs)).join('')
       : `<div class="empty"><div class="empty-icon">🏆</div><p>No open matches right now</p></div>`;
   }
 }
@@ -1793,9 +3089,13 @@ function renderMatches() {
   else document.getElementById('createMatchBtn').style.display='none';
   const matches = S.get('matches');
   const regs = S.get('registrations');
-  document.getElementById('matchesList').innerHTML = matches.length
-    ? matches.map(m => matchCardHTML(m, regs)).join('')
-    : `<div class="empty"><div class="empty-icon">🎮</div><p>No matches yet. Create one!</p></div>`;
+
+  // Tournament matches KABHI bhi bahar nahi dikhne chahiye — na admin ko, na captain ko
+  const visibleMatches = matches.filter(m => !m.tournamentId);
+
+  document.getElementById('matchesList').innerHTML = visibleMatches.length
+    ? visibleMatches.map(m => matchCardHTML(m, regs)).join('')
+    : `<div class="empty"><div class="empty-icon">🎮</div><p>${CUR.role==='captain'?'Abhi koi match available nahi hai':'No matches yet. Create one!'}</p></div>`;
 }
 
 // MY TEAM (Captain)
@@ -2988,469 +4288,17 @@ async function editCaptainWhatsapp(username) {
   renderCaptains();
 }
 
-// ═══════ TOURNAMENTS ═══════
-
-// ── List ──
-function renderTournaments() {
-  const btn = document.getElementById('createTournamentBtnWrap');
-  if (btn) btn.style.display = CUR.role==='admin' ? 'inline-flex' : 'none';
-  const tours = S.get('tournaments') || [];
-  document.getElementById('tournamentsList').innerHTML = tours.length
-    ? tours.map(t => tournamentCardHTML(t)).join('')
-    : `<div class="empty"><div class="empty-icon">🏆</div><p>No tournaments yet${CUR.role==='admin' ? '. Create one!' : ''}</p></div>`;
-}
-
-function tournamentCardHTML(t) {
-  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===t.id);
-  const confirmed = teams.filter(x=>x.status==='confirmed');
-  const myTeam = CUR.role==='captain' ? teams.find(x=>x.captain===CUR.username) : null;
-  const statusCls = t.status==='ongoing' ? 'mc-status-live' : t.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
-  const borderLeft = t.status==='ongoing' ? '#fbbf24' : t.status==='completed' ? '#f43f5e' : '#00e676';
-  const dt = new Date(t.startDate);
-  const fmtShort = (t.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
-
-  return `<div class="match-card" style="border-left-color:${borderLeft}">
-    <div class="mc-body">
-      <div class="mc-top">
-        <div class="mc-badges">
-          <span class="mc-type-badge">🏆 ${fmtShort.toUpperCase()}</span>
-          ${t.codeRequired ? `<span class="mc-format-badge">🔒 PRIVATE</span>` : ''}
-        </div>
-        <span class="${statusCls}">${(t.status||'upcoming').toUpperCase()}</span>
-      </div>
-      <div class="match-name">${t.name}</div>
-      ${!isNaN(dt) ? `<div class="mc-date-row">📅 ${dt.toLocaleDateString('en-GB')} · ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
-      <div class="mc-teams-row">👥 <span style="color:var(--text);font-weight:600">${confirmed.length}${t.maxTeams?'/'+t.maxTeams:''}</span>&nbsp;teams confirmed</div>
-    </div>
-    <div class="mc-divider"></div>
-    <div class="mc-footer">
-      <div class="mc-prize">🏆 <span style="font-size:15px">${t.prizePool||'TBD'}</span></div>
-      <div class="mc-entry">ENTRY: ${t.entryFee||'Free'}</div>
-    </div>
-    <div class="mc-actions">
-      <button class="btn btn-ghost btn-sm" onclick="openTournamentDetail('${t.id}')">📋 View Details</button>
-      ${CUR.role==='captain' && !myTeam && t.status!=='completed' ? `<button class="btn btn-accent btn-sm" onclick="openRegisterTournament('${t.id}')">⚡ Register Team</button>` : ''}
-      ${myTeam ? `<span class="badge badge-${myTeam.status==='confirmed'?'green':'orange'}" style="padding:6px 12px;font-size:12px">${myTeam.status==='confirmed'?'✓ Confirmed':'⏳ Pending'}${myTeam.group?' • Grp '+myTeam.group:''}</span>` : ''}
-      ${CUR.role==='admin' ? `<button class="btn btn-red btn-sm" onclick="deleteTournament('${t.id}','${t.name.replace(/'/g,"\\'")}')">🗑 Delete</button>` : ''}
-    </div>
-  </div>`;
-}
-
-// ── Create / Delete Tournament ──
-async function createTournament() {
-  const name=v('tName'), format=v('tFormat'), maxTeams=v('tMaxTeams'),
-        entryFee=v('tEntry')||'Free', prizePool=v('tPrize')||'TBD',
-        startDate=v('tStart'), desc=v('tDesc'),
-        codeRequired = document.getElementById('tCodeRequired').checked,
-        code = v('tCode');
-  if (!name) { toast('Tournament name daalo','error'); return; }
-  if (codeRequired && !code) { toast('Code required ON hai toh code bhi daalo','error'); return; }
-
-  const tours = S.get('tournaments') || [];
-  tours.push({ id:'t'+Date.now(), name, format, maxTeams, entryFee, prizePool, startDate, description:desc, codeRequired, code, status:'upcoming', createdAt:now() });
-  await S.set('tournaments', tours);
-
-  closeModal('createTournamentModal');
-  ['tName','tMaxTeams','tEntry','tPrize','tStart','tDesc','tCode'].forEach(id=>{ const el=document.getElementById(id); if (el) el.value=''; });
-  document.getElementById('tCodeRequired').checked = false;
-  document.getElementById('tCodeRow').style.display = 'none';
-  toast('Tournament created!','success');
-  renderTournaments();
-}
-
-async function deleteTournament(tid, tname) {
-  if (!confirm(`"${tname}" tournament delete karna chahte ho?\n\nSaari team registrations aur matches bhi delete ho jayengi!`)) return;
-  const tours = (S.get('tournaments')||[]).filter(x=>x.id!==tid);
-  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId!==tid);
-  const tmatches = (S.get('tournamentMatches')||[]).filter(x=>x.tournamentId!==tid);
-  await Promise.all([
-    S.set('tournaments', tours),
-    S.set('tournamentTeams', teams),
-    S.set('tournamentMatches', tmatches)
-  ]);
-  toast('Tournament deleted','success');
-  renderTournaments();
-}
-
-// ── Tournament Detail ──
-let currentTourneyId = null;
-function openTournamentDetail(tid) {
-  currentTourneyId = tid;
-  renderTournamentDetail();
-  openModal('tournamentDetailModal');
-}
-
-function renderTournamentDetail() {
-  const t = (S.get('tournaments')||[]).find(x=>x.id===currentTourneyId);
-  if (!t) { closeModal('tournamentDetailModal'); return; }
-  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===t.id);
-  const tmatches = (S.get('tournamentMatches')||[]).filter(x=>x.tournamentId===t.id);
-  const myTeam = CUR.role==='captain' ? teams.find(x=>x.captain===CUR.username) : null;
-  const confirmed = teams.filter(x=>x.status==='confirmed');
-  const pending = teams.filter(x=>x.status==='pending');
-  const fmtShort = (t.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
-
-  let html = `
-    <div class="modal-title">🏆 ${t.name}</div>
-    <div class="match-info" style="margin-bottom:12px">
-      <div class="match-info-item"><strong>${t.entryFee||'Free'}</strong>Entry Fee</div>
-      <div class="match-info-item"><strong>${t.prizePool||'TBD'}</strong>Prize Pool</div>
-      <div class="match-info-item"><strong>${fmtShort}</strong>Format</div>
-      <div class="match-info-item"><strong>${confirmed.length}${t.maxTeams?'/'+t.maxTeams:''}</strong>Confirmed Teams</div>
-    </div>
-    ${t.description ? `<div style="font-size:12px;color:var(--muted);margin-bottom:12px;white-space:pre-wrap">${t.description}</div>` : ''}
-    ${t.codeRequired && CUR.role!=='captain' ? `<div style="font-size:11px;color:var(--muted);margin-bottom:12px">🔒 Registration Code: <strong style="color:var(--accent2);font-family:'Orbitron',sans-serif;letter-spacing:1px">${t.code}</strong></div>` : ''}
-    <div class="divider"></div>`;
-
-  if (CUR.role === 'admin') {
-    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted)">Teams (${teams.length})</div>
-      <button class="btn btn-accent btn-sm" onclick="openCreateTourneyMatch('${t.id}')">+ Create Match</button>
-    </div>`;
-    if (pending.length) {
-      html += `<div style="font-size:11px;color:var(--gold);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">⏳ Pending Approval (${pending.length})</div>`;
-      html += pending.map(team => tourneyTeamRowHTML(team)).join('');
-    }
-    if (confirmed.length) {
-      html += `<div style="font-size:11px;color:var(--green);margin:10px 0 6px;text-transform:uppercase;letter-spacing:0.5px">✓ Confirmed Teams (${confirmed.length})</div>`;
-      html += confirmed.map(team => tourneyTeamRowHTML(team)).join('');
-    }
-    if (!teams.length) html += `<div class="empty" style="padding:16px"><p>Koi team register nahi hui abhi</p></div>`;
-
-    html += `<div class="divider"></div>
-      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Matches (${tmatches.length})</div>`;
-    html += tmatches.length ? tmatches.map(tm => tourneyMatchCardHTML(tm, t, teams)).join('') : `<div class="empty" style="padding:16px"><p>Koi match create nahi hua abhi</p></div>`;
-
-  } else if (CUR.role === 'viewer') {
-    html += `<div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Confirmed Teams (${confirmed.length})</div>`;
-    html += confirmed.length ? confirmed.map(team => tourneyTeamRowHTML(team, true)).join('') : `<div class="empty" style="padding:16px"><p>No confirmed teams yet</p></div>`;
-    html += `<div class="divider"></div>
-      <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Matches (${tmatches.length})</div>`;
-    html += tmatches.length ? tmatches.map(tm => tourneyMatchCardHTML(tm, t, teams)).join('') : `<div class="empty" style="padding:16px"><p>No matches yet</p></div>`;
-
-  } else { // captain
-    if (!myTeam) {
-      html += t.status==='completed'
-        ? `<div class="empty" style="padding:16px"><p>Tournament khatam ho gaya</p></div>`
-        : `<button class="btn btn-accent btn-full" onclick="closeModal('tournamentDetailModal');openRegisterTournament('${t.id}')">⚡ Register Your Team</button>`;
-    } else {
-      html += tourneyTeamRowHTML(myTeam, true);
-      const myMatches = tmatches.filter(tm => tm.teamIds.includes(myTeam.id));
-      html += `<div class="divider"></div>
-        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px">Your Matches (${myMatches.length})</div>`;
-      html += myMatches.length ? myMatches.map(tm => tourneyMatchCardHTML(tm, t, teams)).join('') : `<div class="empty" style="padding:16px"><p>Abhi koi match assign nahi hua. Jab admin match banayega, notification mil jayegi.</p></div>`;
-    }
-  }
-
-  document.getElementById('tourneyDetailContent').innerHTML = html;
-}
-
-function tourneyTeamRowHTML(team, readonly) {
-  return `<div style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-    <div style="display:flex;align-items:center;gap:10px">
-      ${team.slot ? `<span class="slot-no">#${team.slot}</span>` : ''}
-      <div>
-        <div style="font-size:13px;font-weight:600">${team.teamName}</div>
-        <div style="font-size:11px;color:var(--muted)">@${team.captain}${team.group?' • Group '+team.group:''}</div>
-      </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-      <span class="badge badge-${team.status==='confirmed'?'green':'orange'}">${team.status==='confirmed'?'✓ Confirmed':'⏳ Pending'}</span>
-      ${readonly ? '' : `
-        <button class="btn btn-ghost btn-sm" onclick="assignTeamGroup('${team.id}')">${team.group?'✏ Group':'+ Group'}</button>
-        ${team.status==='pending' ? `<button class="btn btn-green btn-sm" onclick="approveTourneyTeam('${team.id}')">✓ Approve</button>` : ''}
-        <button class="btn btn-red btn-sm" onclick="removeTourneyTeam('${team.id}')">🗑</button>
-      `}
-    </div>
-  </div>`;
-}
-
-async function assignTeamGroup(teamId) {
-  const teams = S.get('tournamentTeams');
-  const team = teams.find(x=>x.id===teamId);
-  const g = prompt(`${team.teamName} ke liye group naam:`, team.group||'');
-  if (g===null) return;
-  team.group = g.trim();
-  await S.set('tournamentTeams', teams);
-  toast('Group updated','success');
-  renderTournamentDetail();
-}
-
-async function approveTourneyTeam(teamId) {
-  const teams = S.get('tournamentTeams');
-  teams.find(x=>x.id===teamId).status = 'confirmed';
-  await S.set('tournamentTeams', teams);
-  toast('Team confirmed!','success');
-  renderTournamentDetail();
-}
-
-async function removeTourneyTeam(teamId) {
-  if (!confirm('Team ko tournament se remove karna hai?')) return;
-  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.id!==teamId);
-  await S.set('tournamentTeams', teams);
-  toast('Team removed','success');
-  renderTournamentDetail();
-}
-
-// ── Register Team (Captain) ──
-let regTourneyId = null;
-function openRegisterTournament(tid) {
-  regTourneyId = tid;
-  const t = (S.get('tournaments')||[]).find(x=>x.id===tid);
-  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===tid);
-
-  document.getElementById('regTourneyInfo').innerHTML = `
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-      <div class="card-title">${t.name}</div>
-      <span class="badge badge-orange">${t.format||'Squad'}</span>
-      ${t.codeRequired ? `<span class="badge badge-red">🔒 Code Required</span>` : ''}
-    </div>
-    <div class="match-info" style="margin-top:10px">
-      <div class="match-info-item"><strong>${t.entryFee||'Free'}</strong>Entry Fee</div>
-      <div class="match-info-item"><strong>${teams.length}${t.maxTeams?'/'+t.maxTeams:''}</strong>Teams Registered</div>
-    </div>`;
-
-  const fmt = (t.format||'Squad').toLowerCase();
-  const isSolo = fmt.includes('solo');
-  const isDuo  = fmt.includes('duo');
-  const isSquad6 = fmt.includes('6');
-  const mainCount = isSolo ? 1 : isDuo ? 2 : 4;
-  const subCount  = isSquad6 ? 2 : 0;
-
-  document.getElementById('rtTeamNameRow').style.display = isSolo ? 'none' : '';
-
-  let html = '';
-  for (let i=1; i<=mainCount; i++) {
-    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-      <input id="rtUID${i}" placeholder="${isSolo?'Your':'P'+i} UID *" />
-      <input id="rtIGN${i}" placeholder="${isSolo?'Your':'P'+i} IGN *" />
-    </div>`;
-  }
-  if (subCount > 0) {
-    html += `<div style="font-size:11px;color:var(--muted);margin:8px 0 6px;text-transform:uppercase;letter-spacing:0.5px">Substitutes (Optional)</div>`;
-    for (let i=mainCount+1; i<=mainCount+subCount; i++) {
-      html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="rtUID${i}" placeholder="Sub ${i-mainCount} UID" />
-        <input id="rtIGN${i}" placeholder="Sub ${i-mainCount} IGN" />
-      </div>`;
-    }
-  }
-  for (let i=mainCount+subCount+1; i<=6; i++) {
-    html += `<input id="rtUID${i}" type="hidden" value="" /><input id="rtIGN${i}" type="hidden" value="" />`;
-  }
-  document.getElementById('rtPlayersContainer').innerHTML = html;
-  document.getElementById('rtCodeRow').style.display = t.codeRequired ? 'block' : 'none';
-  document.getElementById('rtTeamName').value = '';
-  document.getElementById('rtCode').value = '';
-  openModal('registerTournamentModal');
-}
-
-async function registerTourneyTeam() {
-  const t = (S.get('tournaments')||[]).find(x=>x.id===regTourneyId);
-  const teams = S.get('tournamentTeams') || [];
-
-  if (teams.find(x=>x.tournamentId===regTourneyId && x.captain===CUR.username)) {
-    toast('Aap already register ho is tournament mein','error'); return;
-  }
-  if (t.maxTeams && teams.filter(x=>x.tournamentId===regTourneyId).length >= Number(t.maxTeams)) {
-    toast('Tournament full hai!','error'); return;
-  }
-  if (t.codeRequired) {
-    const code = v('rtCode');
-    if (!code || code !== t.code) { toast('Galat ya missing tournament code','error'); return; }
-  }
-
-  const fmt = (t.format||'Squad').toLowerCase();
-  const isSolo = fmt.includes('solo');
-  const isDuo  = fmt.includes('duo');
-  const mainCount = isSolo ? 1 : isDuo ? 2 : 4;
-
-  const teamName = isSolo ? (CUR.name||CUR.username) : v('rtTeamName');
-  if (!isSolo && !teamName) { toast('Team name daalo','error'); return; }
-
-  for (let i=1; i<=mainCount; i++) {
-    if (!v(`rtUID${i}`)) { toast(`P${i} UID daalo`,'error'); return; }
-    if (!v(`rtIGN${i}`)) { toast(`P${i} In-Game Name daalo`,'error'); return; }
-  }
-
-  const players = [];
-  for (let i=1; i<=6; i++) {
-    const uid=v(`rtUID${i}`), ign=v(`rtIGN${i}`);
-    if (uid) players.push({uid,ign});
-  }
-
-  const slot = teams.filter(x=>x.tournamentId===regTourneyId).length + 1;
-  teams.push({ id:'tt'+Date.now(), tournamentId:regTourneyId, captain:CUR.username, teamName, players, group:'', status:'pending', slot, registeredAt:now() });
-  await S.set('tournamentTeams', teams);
-  closeModal('registerTournamentModal');
-  toast('Registration submitted! Admin approval ka wait karo.','success');
-  renderTournaments();
-}
-
-// ── Create Tournament Match (Admin) ──
-let createMatchTourneyId = null;
-function openCreateTourneyMatch(tid) {
-  createMatchTourneyId = tid;
-  const teams = (S.get('tournamentTeams')||[]).filter(x=>x.tournamentId===tid && x.status==='confirmed');
-  document.getElementById('tmTeamsContainer').innerHTML = teams.length
-    ? teams.map(team => `<label style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;cursor:pointer">
-        <input type="checkbox" value="${team.id}" class="tmTeamChk" style="width:auto" />
-        <span>${team.teamName} <span style="color:var(--muted);font-size:11px">@${team.captain}${team.group?' • Grp '+team.group:''}</span></span>
-      </label>`).join('')
-    : `<div style="font-size:12px;color:var(--muted)">Koi confirmed team nahi hai. Pehle teams approve karo.</div>`;
-  document.getElementById('tmName').value = '';
-  document.getElementById('tmTime').value = '';
-  document.getElementById('tmMap').value = '';
-  openModal('createTourneyMatchModal');
-}
-
-async function createTourneyMatch() {
-  const name=v('tmName'), time=v('tmTime'), map=v('tmMap');
-  const checked = Array.from(document.querySelectorAll('.tmTeamChk:checked')).map(c=>c.value);
-  if (!name) { toast('Match name daalo','error'); return; }
-  if (!checked.length) { toast('Kam se kam ek team select karo','error'); return; }
-
-  const tmatches = S.get('tournamentMatches') || [];
-  const tm = { id:'tm'+Date.now(), tournamentId:createMatchTourneyId, name, time, map, teamIds:checked, status:'open', roomId:'', roomPass:'', createdAt:now() };
-  tmatches.push(tm);
-
-  const t = (S.get('tournaments')||[]).find(x=>x.id===createMatchTourneyId);
-  const teams = S.get('tournamentTeams') || [];
-  const notifs = S.get('notifications') || [];
-  checked.forEach(teamId => {
-    const team = teams.find(x=>x.id===teamId);
-    if (team) {
-      notifs.push({ id:'n'+Date.now()+Math.random().toString(36).slice(2,6), captain:team.captain, title:'🎮 Match Assigned', message:`Your team "${team.teamName}" has been added to "${name}" in tournament "${t.name}"`, tournamentId:createMatchTourneyId, matchId:tm.id, time:now(), read:false });
-    }
-  });
-
-  await Promise.all([
-    S.set('tournamentMatches', tmatches),
-    S.set('notifications', notifs)
-  ]);
-  closeModal('createTourneyMatchModal');
-  toast(`Match created! ${checked.length} team(s) notified`,'success');
-  renderTournamentDetail();
-}
-
-function tourneyMatchCardHTML(tm, t, teams) {
-  const involvedTeams = tm.teamIds.map(id => teams.find(x=>x.id===id)).filter(Boolean);
-  const myTeam = CUR.role==='captain' ? teams.find(x=>x.captain===CUR.username) : null;
-  const isMine = myTeam && tm.teamIds.includes(myTeam.id);
-  const dt = new Date(tm.time);
-  const statusCls = tm.status==='live' ? 'mc-status-live' : tm.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
-  const borderLeft = tm.status==='live' ? '#fbbf24' : tm.status==='completed' ? '#f43f5e' : '#00e676';
-
-  return `<div class="match-card" style="border-left-color:${borderLeft}">
-    <div class="mc-body">
-      <div class="mc-top">
-        <div class="mc-badges"><span class="mc-type-badge">🎮 ${involvedTeams.length} Teams</span></div>
-        <span class="${statusCls}">${(tm.status||'open').toUpperCase()}</span>
-      </div>
-      <div class="match-name">${tm.name}</div>
-      ${!isNaN(dt) ? `<div class="mc-date-row">📅 ${dt.toLocaleDateString('en-GB')} · ${dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
-      ${tm.map ? `<div class="mc-map-row">📍 ${tm.map}</div>` : ''}
-      <details style="margin-top:8px">
-        <summary style="font-size:11px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:0.5px">👥 Team Rosters (${involvedTeams.length})</summary>
-        ${involvedTeams.map(team => `
-          <div style="background:var(--bg3);border-radius:7px;padding:8px 10px;margin-top:8px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              ${team.slot ? `<span class="slot-no">#${team.slot}</span>` : ''}
-              <span style="font-size:12px;font-weight:700;color:var(--text)">${team.teamName}</span>
-            </div>
-            <div class="uid-list">
-              ${(team.players||[]).map((p,i) => p ? `<span class="${i<4?'uid-required':'uid-optional'}">P${i+1}: <strong>${p.ign||'—'}</strong> <span style="opacity:0.5">(${p.uid})</span>${i>=4?' (sub)':''}</span>` : '').join('')}
-            </div>
-          </div>`).join('') || '<div style="font-size:11px;color:var(--muted);margin-top:6px">—</div>'}
-      </details>
-    </div>
-    ${tm.roomId && (CUR.role==='admin' || CUR.role==='viewer' || isMine) ? `<div style="padding:0 16px 12px"><div class="room-cred">
-      <div class="rc-label">Room ID</div>
-      <div class="rc-row"><div class="rc-val">${tm.roomId}</div><button class="rc-copy-btn" onclick="copyRC('${tm.roomId}',this)">📋 Copy</button></div>
-      <div class="rc-label" style="margin-top:10px">Password</div>
-      <div class="rc-row"><div class="rc-val">${tm.roomPass}</div><button class="rc-copy-btn" onclick="copyRC('${tm.roomPass}',this)">📋 Copy</button></div>
-    </div></div>` : (tm.roomId && CUR.role==='captain' && !isMine ? `<div style="padding:0 16px 12px;font-size:11px;color:var(--muted)">🔑 Room ID sirf assigned teams ko milega</div>` : '')}
-    ${CUR.role==='admin' ? `<div class="mc-divider"></div><div class="mc-actions">
-      <button class="btn btn-ghost btn-sm" onclick="openTourneyRoomCreds('${tm.id}')">🔑 Set Room</button>
-      <button class="btn btn-ghost btn-sm" onclick="changeTourneyMatchStatus('${tm.id}','${tm.status||"open"}')">⟳ Status</button>
-      <button class="btn btn-red btn-sm" onclick="deleteTourneyMatch('${tm.id}')">🗑 Delete</button>
-    </div>` : ''}
-  </div>`;
-}
-
-let roomCredTMId = null;
-function openTourneyRoomCreds(tmid) {
-  roomCredTMId = tmid;
-  const tm = (S.get('tournamentMatches')||[]).find(x=>x.id===tmid);
-  document.getElementById('trcRoomId').value = tm.roomId||'';
-  document.getElementById('trcRoomPass').value = tm.roomPass||'';
-  openModal('tourneyRoomCredModal');
-}
-
-async function saveTourneyRoomCreds() {
-  const rid=v('trcRoomId'), rp=v('trcRoomPass');
-  if (!rid||!rp) { toast('Enter room ID and password','error'); return; }
-  const tmatches = S.get('tournamentMatches');
-  const tm = tmatches.find(x=>x.id===roomCredTMId);
-  tm.roomId = rid; tm.roomPass = rp;
-  await S.set('tournamentMatches', tmatches);
-  closeModal('tourneyRoomCredModal');
-  toast('Room credentials set!','success');
-  renderTournamentDetail();
-}
-
-async function changeTourneyMatchStatus(tmid, cur) {
-  const statuses = ['open','live','completed'];
-  const next = statuses[(statuses.indexOf(cur)+1)%statuses.length];
-  const tmatches = S.get('tournamentMatches');
-  tmatches.find(x=>x.id===tmid).status = next;
-  await S.set('tournamentMatches', tmatches);
-  toast(`Status → ${next}`,'success');
-  renderTournamentDetail();
-}
-
-async function deleteTourneyMatch(tmid) {
-  if (!confirm('Match delete karna hai?')) return;
-  const tmatches = (S.get('tournamentMatches')||[]).filter(x=>x.id!==tmid);
-  await S.set('tournamentMatches', tmatches);
-  toast('Match deleted','success');
-  renderTournamentDetail();
-}
-
-// ── Notifications (Captain) ──
-function renderNotifBell() {
-  const badge = document.getElementById('notifBadge');
-  if (!badge || !CUR) return;
-  const unread = (S.get('notifications')||[]).filter(n=>n.captain===CUR.username && !n.read);
-  if (unread.length) { badge.style.display='block'; badge.textContent = unread.length>9 ? '9+' : unread.length; }
-  else { badge.style.display='none'; }
-}
-
-function openNotifications() {
-  const notifs = (S.get('notifications')||[]).filter(n=>n.captain===CUR.username).slice().reverse();
-  document.getElementById('notifList').innerHTML = notifs.length
-    ? notifs.map(n => `<div class="card" style="margin-bottom:8px;${n.read?'opacity:0.65':''}">
-        <div style="font-size:13px;font-weight:700">${n.title}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:4px">${n.message}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:6px">${n.time}</div>
-      </div>`).join('')
-    : `<div class="empty" style="padding:16px"><div class="empty-icon">🔔</div><p>Koi notification nahi hai</p></div>`;
-  openModal('notifModal');
-  markAllNotifRead();
-}
-
-async function markAllNotifRead() {
-  const notifs = S.get('notifications') || [];
-  let changed = false;
-  notifs.forEach(n => { if (n.captain===CUR.username && !n.read) { n.read = true; changed = true; } });
-  if (changed) { await S.set('notifications', notifs); renderNotifBell(); }
-}
-
 // ═══════ UTILS ═══════
 function v(id) { return document.getElementById(id)?.value?.trim()||''; }
 function now() { return new Date().toLocaleString(); }
 function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Dynamic modals (inserted via insertAdjacentHTML) - remove them
+  if (!el.classList.contains('open') || el.dataset.dynamic) { el.remove(); return; }
+  el.classList.remove('open');
+}
 
 function toast(msg, type='') {
   const t = document.getElementById('toast');
@@ -3549,23 +4397,6 @@ window.doRegister = doRegister;
 window.saveBranding = saveBranding;
 window.resetBranding = resetBranding;
 window.onPresetChange = onPresetChange;
-window.renderTournaments = renderTournaments;
-window.createTournament = createTournament;
-window.deleteTournament = deleteTournament;
-window.openTournamentDetail = openTournamentDetail;
-window.assignTeamGroup = assignTeamGroup;
-window.approveTourneyTeam = approveTourneyTeam;
-window.removeTourneyTeam = removeTourneyTeam;
-window.openRegisterTournament = openRegisterTournament;
-window.registerTourneyTeam = registerTourneyTeam;
-window.openCreateTourneyMatch = openCreateTourneyMatch;
-window.createTourneyMatch = createTourneyMatch;
-window.openTourneyRoomCreds = openTourneyRoomCreds;
-window.saveTourneyRoomCreds = saveTourneyRoomCreds;
-window.changeTourneyMatchStatus = changeTourneyMatchStatus;
-window.deleteTourneyMatch = deleteTourneyMatch;
-window.openNotifications = openNotifications;
-window.renderNotifBell = renderNotifBell;
 </script>
 </body>
 </html>
