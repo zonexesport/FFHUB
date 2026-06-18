@@ -1512,7 +1512,7 @@ function openTournamentCreate(editId) {
       </div>
       <div class="form-row">
         <label class="form-label">Prize Pool (₹) — optional</label>
-        <input id="tPrize" type="number" value="${t?.prizePool||''}" placeholder="e.g. 5000" min="0" />
+        <input id="tPrize" type="text" value="${t?.prizePool||''}" placeholder="e.g. 5000 or 1st:3000 2nd:1500" />
       </div>
       <div class="form-row">
         <label class="form-label">Points System</label>
@@ -1610,7 +1610,7 @@ async function saveTournament(editId) {
     teamFormat: document.getElementById('tTeamFormat')?.value || 'Squad',
     entry,
     maxTeams: Number(document.getElementById('tMaxTeams')?.value || 16),
-    prizePool: Number(document.getElementById('tPrize')?.value || 0) || 0,
+    prizePool: document.getElementById('tPrize')?.value?.trim() || '',
     pointsSystem: preset,
     rankPoints: preset === 'custom'
       ? (document.getElementById('tCustomPoints')?.value||'12,9,8,7,6,5,4,3,2,1').split(',').map(Number)
