@@ -605,6 +605,7 @@
     <div class="page-title">Dashboard</div>
     <div class="grid3" id="dashStats"></div>
     <div style="margin-top:18px" id="dashMatches"></div>
+    <div style="margin-top:18px" id="dashTournamentMatches"></div>
   </div>
 
   <!-- TOURNAMENT -->
@@ -1384,14 +1385,17 @@ function renderTournamentDetailView(t) {
       <div class="card-title" style="margin-bottom:12px">⏳ Pending Requests (${pendingRegs.length})</div>
       ${pendingRegs.map(r => {
         const cap = caps.find(c => c.username === r.captain);
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
-          <div>
-            <div style="font-size:13px;font-weight:600;color:var(--text)">${cap?.name||r.captain}</div>
-            <div style="font-size:11px;color:var(--muted)">${r.captain}</div>
-          </div>
-          <div style="display:flex;gap:8px">
-            <button class="btn btn-accent btn-sm" onclick="approveTournamentReg('${r.id}','${t.id}')">✓ Approve</button>
-            <button class="btn btn-red btn-sm" onclick="rejectTournamentReg('${r.id}','${t.id}')">✗ Reject</button>
+        return `<div style="padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <div style="min-width:0;flex:1 1 140px">
+              <div style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.teamName || cap?.name || r.captain}</div>
+              <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cap?.name||''} ${cap?.name?'·':''} ${r.captain}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">
+              <button class="btn btn-ghost btn-sm" onclick="openTeamDetailModal('${r.id}')">👁 View</button>
+              <button class="btn btn-accent btn-sm" onclick="approveTournamentReg('${r.id}','${t.id}')">✓ Approve</button>
+              <button class="btn btn-red btn-sm" onclick="rejectTournamentReg('${r.id}','${t.id}')">✗ Reject</button>
+            </div>
           </div>
         </div>`;
       }).join('')}
@@ -1400,8 +1404,8 @@ function renderTournamentDetailView(t) {
     <!-- Registered Teams + Groups + Matches: sirf registered captain aur admin ko dikhe -->
     ${(isAdmin || (isCap && myReg)) ? `
 
-    <!-- Registered Teams (Captain view: team names only, no player UIDs) -->
-    ${isCap ? `
+    <!-- Registered Teams (Captain: names only; Admin: names + view/remove) -->
+    ${isCap || isAdmin ? `
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
         <div class="card-title">👥 Registered Teams (${approvedRegs.length})</div>
@@ -1409,10 +1413,14 @@ function renderTournamentDetailView(t) {
       ${approvedRegs.length ? approvedRegs.map((r,i) => {
         const cap = caps.find(c => c.username === r.captain);
         const isMe = r.captain === CUR.username;
-        return `<div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px;${isMe?'border:1px solid var(--accent)44':''}">
-          <span style="font-size:11px;color:var(--muted);width:22px;text-align:right">${i+1}.</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text);flex:1">${r.teamName||cap?.name||r.captain}</span>
-          ${isMe ? `<span style="font-size:10px;background:var(--accent)22;color:var(--accent2);padding:2px 8px;border-radius:4px;font-weight:700">YOU</span>` : ''}
+        return `<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px;${isMe?'border:1px solid var(--accent)44':''}">
+          <span style="font-size:11px;color:var(--muted);width:22px;text-align:right;flex-shrink:0">${i+1}.</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.teamName||cap?.name||r.captain}</span>
+          ${isMe ? `<span style="font-size:10px;background:var(--accent)22;color:var(--accent2);padding:2px 8px;border-radius:4px;font-weight:700;flex-shrink:0">YOU</span>` : ''}
+          ${isAdmin ? `
+            <button class="btn btn-ghost btn-sm" style="flex-shrink:0;padding:6px 10px;font-size:11px" onclick="openTeamDetailModal('${r.id}')">👁 View</button>
+            <button class="btn btn-red btn-sm" style="flex-shrink:0;padding:6px 10px;font-size:11px" onclick="removeTournamentTeam('${r.id}','${t.id}')">🗑</button>
+          ` : ''}
         </div>`;
       }).join('') : `<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">No teams registered yet</div>`}
     </div>` : ''}
@@ -1492,10 +1500,13 @@ function renderTournamentDetailView(t) {
               </div>
             </div>` : ''}
             ${m.status==='completed' ? renderMatchResult(m) : ''}
-            ${isAdmin && m.status!=='completed' ? `
-            <div style="display:flex;gap:8px;margin-top:8px">
+            ${isAdmin ? `
+            <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+              ${m.status!=='completed' ? `
               <button class="btn btn-accent btn-sm" onclick="openMatchResult('${m.id}')">🏆 Result</button>
               <button class="btn btn-ghost btn-sm" onclick="editTournamentMatch('${m.id}')">✏ Edit</button>
+              ` : ''}
+              <button class="btn btn-red btn-sm" onclick="deleteTournamentMatch('${m.id}','${(m.name||'').replace(/'/g,"\\'")}','${t.id}')">🗑 Delete</button>
             </div>` : ''}
           </div>`;
         }).join('');
@@ -2272,6 +2283,97 @@ async function saveEditTMatch(matchId) {
   closeModal('editTMatchModal');
   toast('Match updated! Teams notified 🔔', 'success');
   openTournamentDetail(m.tournamentId);
+}
+
+async function deleteTournamentMatch(matchId, mname, tId) {
+  if (!confirm(`"${mname}" match delete karna chahte ho?\n\nYeh permanently delete ho jayega.`)) return;
+  let matches = S.get('matches') || [];
+  matches = matches.filter(x => x.id !== matchId);
+  let imgs = S.get('matchImages') || {};
+  delete imgs[matchId];
+  await Promise.all([
+    S.set('matches', matches),
+    S.set('matchImages', imgs)
+  ]);
+  await logViewerAction('🗑 Deleted Match', `"${mname}" → Tournament ID: ${tId}`);
+  toast('Match deleted!', 'success');
+  openTournamentDetail(tId);
+}
+
+function openTeamDetailModal(regId) {
+  const tRegs = S.get('tournamentRegs') || [];
+  const reg = tRegs.find(r => r.id === regId);
+  if (!reg) return;
+  const caps = S.get('captains') || [];
+  const cap = caps.find(c => c.username === reg.captain);
+  const t = (S.get('tournaments')||[]).find(x => x.id === reg.tId);
+
+  const ex = document.getElementById('teamDetailModal'); if (ex) ex.remove();
+  const players = reg.players || [];
+  const mains = players.filter(p => !p.isSub);
+  const subs = players.filter(p => p.isSub);
+  const statusColor = reg.status==='approved' ? '#00c853' : reg.status==='pending' ? '#fbbf24' : '#f43f5e';
+
+  const html = `
+  <div id="teamDetailModal" class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal('teamDetailModal')">
+    <div class="modal-box">
+      <div class="modal-title">👥 ${reg.teamName || cap?.name || reg.captain}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">
+        Captain: <span style="color:var(--text);font-weight:600">${cap?.name || reg.captain}</span> (${reg.captain})<br>
+        ${t ? `Tournament: <span style="color:var(--text)">${t.name}</span><br>` : ''}
+        Status: <span style="color:${statusColor};font-weight:700">${(reg.status||'').toUpperCase()}</span>
+        ${reg.group ? ` · Group: <span style="color:var(--accent2);font-weight:700">${(t?.groups||[]).find(g=>g.id===reg.group)?.name || reg.group}</span>` : ''}
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Main Players (${mains.length})</div>
+      ${mains.length ? mains.map((p,i) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600;color:var(--text)">P${i+1}: ${p.ign||'—'}</span>
+          <span style="font-size:12px;color:var(--accent2);font-family:monospace">${p.uid||'—'}</span>
+        </div>`).join('') : `<div style="font-size:12px;color:var(--muted);padding:8px">No player details</div>`}
+      ${subs.length ? `
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin:14px 0 8px;text-transform:uppercase;letter-spacing:0.5px">Substitutes (${subs.length})</div>
+      ${subs.map((p,i) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--bg3);border-radius:8px;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:600;color:var(--text)">Sub ${i+1}: ${p.ign||'—'}</span>
+          <span style="font-size:12px;color:var(--accent2);font-family:monospace">${p.uid||'—'}</span>
+        </div>`).join('')}` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('teamDetailModal')" style="margin-top:12px;width:100%">Close</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+async function removeTournamentTeam(regId, tId) {
+  const tRegs = S.get('tournamentRegs') || [];
+  const reg = tRegs.find(r => r.id === regId);
+  if (!reg) return;
+  const teamLabel = reg.teamName || reg.captain;
+  if (!confirm(`"${teamLabel}" team ko tournament se remove karna chahte ho?\n\nUnki registration delete ho jayegi. Agar entry fee li thi to wallet refund manually karna hoga (Wallet section se).`)) return;
+
+  const newRegs = tRegs.filter(r => r.id !== regId);
+  await S.set('tournamentRegs', newRegs);
+
+  // Tournament ke matches mein se bhi yeh team hata do
+  const matches = S.get('matches') || [];
+  let changed = false;
+  matches.forEach(m => {
+    if (m.tournamentId === tId && Array.isArray(m.teams) && m.teams.includes(regId)) {
+      m.teams = m.teams.filter(tid => tid !== regId);
+      if (m.slots && typeof m.slots === 'object' && !Array.isArray(m.slots)) delete m.slots[regId];
+      changed = true;
+    }
+  });
+  if (changed) await S.set('matches', matches);
+
+  const t = (S.get('tournaments')||[]).find(x=>x.id===tId);
+  await addNotification(reg.captain, {
+    msg: `⚠ Aapki team "${teamLabel}" ko "${t?.name||'tournament'}" se remove kar diya gaya hai.`,
+    type: 'removed', tId, time: now()
+  });
+
+  await logViewerAction('🗑 Removed Team', `Team: ${teamLabel} → Tournament ID: ${tId}`);
+  toast('Team removed from tournament', 'success');
+  openTournamentDetail(tId);
 }
 
 // ─── Match Result ───
@@ -3123,6 +3225,12 @@ function renderDashboard() {
     document.getElementById('dashMatches').innerHTML = active.length
       ? `<div class="page-title" style="font-size:15px">Active Matches</div>` + active.map(m => matchCardHTML(m, regs)).join('')
       : `<div class="empty"><div class="empty-icon">🎮</div><p>No active matches</p></div>`;
+
+    // Tournament matches — admin only
+    const tActive = matches.filter(m => m.tournamentId && m.status !== 'completed').slice(0,3);
+    document.getElementById('dashTournamentMatches').innerHTML = tActive.length
+      ? `<div class="page-title" style="font-size:15px">🏆 Tournament Matches</div>` + tActive.map(m => tournamentMatchDashCardHTML(m)).join('')
+      : '';
   } else {
     const wallets = S.get('wallets');
     const bal = wallets[CUR.username] || 0;
@@ -3138,7 +3246,48 @@ function renderDashboard() {
     document.getElementById('dashMatches').innerHTML = openStandalone.length
       ? `<div class="page-title" style="font-size:15px">Open Matches</div>` + openStandalone.map(m => matchCardHTML(m, regs)).join('')
       : `<div class="empty"><div class="empty-icon">🏆</div><p>No open matches right now</p></div>`;
+
+    // Tournament matches sirf admin ko dikhte hain — captain/viewer ke liye khaali
+    document.getElementById('dashTournamentMatches').innerHTML = '';
   }
+}
+
+function tournamentMatchDashCardHTML(m) {
+  const t = (S.get('tournaments')||[]).find(x => x.id === m.tournamentId);
+  const tName = t ? t.name : 'Tournament';
+  const teamCount = (m.teams||[]).length;
+  const fmtShort = (m.format||'Squad').replace(' (6 players)','').replace(' (2 players)','');
+  const typeShort = (m.matchType||'br').toUpperCase();
+  const statusLabel = (m.status||'upcoming').toUpperCase();
+  const statusCls = m.status==='live' ? 'mc-status-live' : m.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
+  let dateStr = '';
+  if (m.schedule) {
+    const sd = new Date(m.schedule);
+    if (!isNaN(sd)) dateStr = sd.toLocaleDateString('en-GB').replace(/\//g,'/') + ' · ' + sd.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  }
+  return `<div class="match-card" style="border-left-color:#fbbf24">
+    <div class="mc-body">
+      <div class="mc-top">
+        <div class="mc-badges">
+          <span class="mc-type-badge">🎯 ${typeShort}</span>
+          <span class="mc-format-badge">${fmtShort.toUpperCase()}</span>
+        </div>
+        <span class="${statusCls}">${statusLabel}</span>
+      </div>
+      <div class="match-name">${m.name}</div>
+      <div class="mc-date-row">🏆 ${tName}${dateStr ? ' &nbsp;·&nbsp; 📅 '+dateStr : ''}</div>
+      <div class="mc-teams-row">👥 <span style="color:var(--text);font-weight:600">${teamCount}</span>&nbsp;teams</div>
+    </div>
+    <div class="mc-divider"></div>
+    <div class="mc-actions">
+      <button class="btn btn-ghost btn-sm" onclick="goToTournamentMatch('${m.tournamentId}')">🏆 View in Tournament</button>
+    </div>
+  </div>`;
+}
+
+function goToTournamentMatch(tId) {
+  nav('tournament');
+  openTournamentDetail(tId);
 }
 
 function matchCardHTML(m, regs) {
@@ -4756,6 +4905,10 @@ window.nav = nav;
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.createMatch = createMatch;
+window.goToTournamentMatch = goToTournamentMatch;
+window.deleteTournamentMatch = deleteTournamentMatch;
+window.openTeamDetailModal = openTeamDetailModal;
+window.removeTournamentTeam = removeTournamentTeam;
 window.openJoinMatch = openJoinMatch;
 window.joinMatch = joinMatch;
 window.openRoomCreds = openRoomCreds;
