@@ -1254,7 +1254,7 @@ function renderTournamentList() {
 
       <!-- Schedule -->
       ${t.schedule ? `<div style="padding:0 14px 8px;font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px">
-        <span>📅</span><span>${new Date(t.schedule).toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+        <span>📅</span><span>${new Date(t.schedule).toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})}</span>
       </div>` : ''}
 
       <!-- Teams count -->
@@ -1479,7 +1479,7 @@ function renderTournamentDetailView(t) {
               <div style="font-size:13px;font-weight:700;color:#fff">${m.name}</div>
               <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:${m.matchType==='cs'?'#7c3aed22':'#0066ff22'};color:${m.matchType==='cs'?'#c084fc':'var(--accent2)'}">${(m.matchType||'br').toUpperCase()}</span>
             </div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${(m.teams||[]).length} teams · ${m.format||'Squad'}${m.schedule ? ' · 📅 '+new Date(m.schedule).toLocaleDateString('en-GB').replace(/\//g,'/')+(new Date(m.schedule).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) !== 'Invalid Date' ? ' '+new Date(m.schedule).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '') : ''}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${(m.teams||[]).length} teams · ${m.format||'Squad'}${m.schedule ? ' · 📅 '+new Date(m.schedule).toLocaleDateString('en-GB').replace(/\//g,'/')+(new Date(m.schedule).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}) !== 'Invalid Date' ? ' '+new Date(m.schedule).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false}) : '') : ''}</div>
             ${isMyMatch || isAdmin ? `
             <div style="background:var(--bg2);border-radius:8px;padding:10px;margin-bottom:8px">
               <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Match Details</div>
@@ -3263,7 +3263,7 @@ function tournamentMatchDashCardHTML(m) {
   let dateStr = '';
   if (m.schedule) {
     const sd = new Date(m.schedule);
-    if (!isNaN(sd)) dateStr = sd.toLocaleDateString('en-GB').replace(/\//g,'/') + ' · ' + sd.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    if (!isNaN(sd)) dateStr = sd.toLocaleDateString('en-GB').replace(/\//g,'/') + ' · ' + sd.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
   }
   return `<div class="match-card" style="border-left-color:#fbbf24">
     <div class="mc-body">
@@ -3315,7 +3315,7 @@ function matchCardHTML(m, regs) {
 
   // Date display
   const dateStr = isNaN(dt) ? '—' : dt.toLocaleDateString('en-GB').replace(/\//g,'/');
-  const timeStr = isNaN(dt) ? '' : dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const timeStr = isNaN(dt) ? '' : dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
 
   // Prize display
   const prizeDisplay = (!m.prize || m.prize==='0' || m.prize===0) ? 'TBD' : '₹'+m.prize;
@@ -4694,7 +4694,7 @@ function renderPlayerMatches() {
     const statusCls = m.status==='live' ? 'mc-status-live' : m.status==='completed' ? 'mc-status-completed' : 'mc-status-open';
     const borderLeft = m.status==='live' ? '#fbbf24' : m.status==='completed' ? '#f43f5e' : '#00e676';
     const dateStr = isNaN(dt) ? '—' : dt.toLocaleDateString('en-GB');
-    const timeStr = isNaN(dt) ? '' : dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const timeStr = isNaN(dt) ? '' : dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false});
     const prizeDisplay = (!m.prize || m.prize==='0' || m.prize===0) ? 'TBD' : '₹'+m.prize;
     return `<div class="match-card" style="border-left-color:${borderLeft};${bgStyle}">
       <div class="mc-body">
@@ -4834,7 +4834,7 @@ async function editCaptainWhatsapp(username) {
 
 // ═══════ UTILS ═══════
 function v(id) { return document.getElementById(id)?.value?.trim()||''; }
-function now() { return new Date().toLocaleString(); }
+function now() { return new Date().toLocaleString('en-IN', {hour12:false}); }
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) {
   const el = document.getElementById(id);
