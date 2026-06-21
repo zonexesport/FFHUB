@@ -3091,6 +3091,17 @@ function doLogin() {
 }
 
 // Tries to log in silently using credentials saved in this browser. Returns true if successful.
+async function recordCaptainActivity(username) {
+  try {
+    const caps = S.get('captains') || [];
+    const cap = caps.find(c => c.username === username);
+    if (cap) {
+      cap.lastActive = now();
+      await S.set('captains', caps);
+    }
+  } catch (e) { /* non-critical, ignore */ }
+}
+
 function tryAutoLogin() {
   let saved;
   try { saved = JSON.parse(localStorage.getItem(SAVED_LOGIN_KEY) || 'null'); } catch(e) { saved = null; }
@@ -3127,6 +3138,7 @@ function tryAutoLogin() {
 }
 
 function startSession() {
+  if (CUR.role === 'captain') recordCaptainActivity(CUR.username);
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('header').style.display = 'flex';
   document.getElementById('nav').style.display = 'flex';
