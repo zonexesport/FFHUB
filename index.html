@@ -585,6 +585,9 @@
     <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--muted)">
       Naya captain ho? <a href="javascript:void(0)" onclick="openModal('capRegModal')" style="color:#3b9eff;font-weight:600;text-decoration:none">Create New Account</a>
     </div>
+    <div id="forgotPassLink" style="text-align:center;margin-top:10px;font-size:13px">
+      <a href="javascript:void(0)" onclick="openForgotPasswordModal()" style="color:#f59e0b;font-weight:600;text-decoration:none">🔑 Forgot Password?</a>
+    </div>
   </div>
 </div>
 
@@ -933,6 +936,31 @@
   </div>
 </div>
 
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-overlay" id="forgotPassModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('forgotPassModal')">✕</button>
+    <div id="forgotPassStep1">
+      <div class="modal-title">🔑 Forgot Password</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Apna username daalo — admin ko request chali jayegi aur woh tumse contact karenge.</div>
+      <div class="form-row">
+        <label class="form-label">Username</label>
+        <input id="fpUsername" placeholder="Enter your username" />
+      </div>
+      <button class="btn btn-accent btn-full" onclick="submitForgotPasswordRequest()">Send Request to Admin</button>
+    </div>
+    <div id="forgotPassStep2" style="display:none">
+      <div class="modal-title">✅ Request Sent!</div>
+      <div style="font-size:13px;color:var(--text);margin-bottom:14px;line-height:1.6">Tumhari request admin ko bhej di gayi hai. Jaldi reply ke liye seedha WhatsApp pe admin se contact karo:</div>
+      <a href="https://wa.me/917861876386?text=Hi%2C%20mujhe%20mera%20password%20bhool%20gaya%20hai.%20Mera%20username%3A%20" target="_blank" class="btn btn-full" style="background:#25D366;color:#fff;text-align:center;display:block;text-decoration:none;font-weight:700;padding:14px">
+        💬 Contact Admin on WhatsApp
+      </a>
+      <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">+91 78618 76386</div>
+      <button class="btn btn-ghost btn-full" style="margin-top:12px" onclick="closeModal('forgotPassModal')">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADMIN ADD CAPTAIN MODAL -->
 <div class="modal-overlay" id="adminAddCaptainModal">
   <div class="modal">
@@ -1002,7 +1030,7 @@ const S = {
   }
 };
 
-const KEYS = ['admin','captains','viewers','viewerLog','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','tournamentImages','globalImages','branding','tournaments','tournamentRegs','notifications'];
+const KEYS = ['admin','captains','viewers','viewerLog','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','tournamentImages','globalImages','branding','tournaments','tournamentRegs','notifications','passwordResetRequests'];
 
 const DEFAULTS = {
   admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN', viewerCode:'ZX@VIEW' },
@@ -1022,7 +1050,8 @@ const DEFAULTS = {
   branding:      { appName:'ZONEX', coloredPart:'', appTagline:'ESPORTS PLATFORM', appSlogan:'ONE TOURNAMENT · ONE CHAMPION', themePreset:'blue', accentColor:'#0066ff', accent2Color:'#00c3ff' },
   tournaments:   [],
   tournamentRegs:[],
-  notifications: {}
+  notifications: {},
+  passwordResetRequests: []
 };
 
 // ═══════ INIT ═══════
@@ -2978,6 +3007,7 @@ function showLoader(show) {
 // ═══════ AUTH ═══════
 let CUR = null;
 let selectedRole = 'captain'; // default tab on login screen
+let captainSearchTerm = '';
 
 const ROLE_HINTS = {
   admin:   'Username, password aur admin code daalo. Full control milega.',
@@ -2999,6 +3029,8 @@ function selectRole(r) {
   if (hint) hint.style.display = 'none';
   const title = document.getElementById('loginRoleTitle');
   if (title) title.textContent = r === 'admin' ? 'ADMIN' : 'CAPTAIN';
+  const forgotLink = document.getElementById('forgotPassLink');
+  if (forgotLink) forgotLink.style.display = r === 'captain' ? 'block' : 'none';
   ['loginUser','loginPass','loginCode'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
@@ -3546,11 +3578,8 @@ function renderDistribute() {
 function renderCaptains() {
   const wrap = document.getElementById('addCaptainBtnWrap');
   if (wrap) wrap.innerHTML = CUR.role==='admin' ? `<button class="btn btn-accent btn-sm" onclick="openModal('adminAddCaptainModal')">+ Add Captain</button>` : '';
-  const caps = S.get('captains');
-  const wallets = S.get('wallets');
-  const regs = S.get('registrations');
-  const matches = S.get('matches');
   const adm = S.get('admin');
+  const pwResetReqs = (S.get('passwordResetRequests')||[]).filter(r => r.status === 'pending');
   document.getElementById('captainsContent').innerHTML = `
 
     <!-- ADMIN LOGIN SETTINGS -->
@@ -3591,7 +3620,45 @@ function renderCaptains() {
       </div>
     </div>
 
-    ${caps.length ? caps.map(c=>{
+    ${CUR.role==='admin' && pwResetReqs.length ? `
+    <div class="card" style="border-color:rgba(245,158,11,0.4);margin-bottom:18px">
+      <div class="card-title" style="margin-bottom:10px">🔓 Password Reset Requests (${pwResetReqs.length})</div>
+      ${pwResetReqs.map(r => `
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
+          <div style="min-width:0;flex:1 1 140px">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${r.name||r.username}</div>
+            <div style="font-size:11px;color:var(--muted)">@${r.username} • ${r.time}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">
+            <a href="https://wa.me/917861876386?text=${encodeURIComponent('Hi '+(r.name||r.username)+', aapka password reset request mila hai.')}" target="_blank" class="btn btn-sm" style="background:#25D366;color:#fff;text-decoration:none">💬 WhatsApp</a>
+            <button class="btn btn-ghost btn-sm" onclick="resolvePasswordResetRequest('${r.id}')">✓ Resolved</button>
+          </div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    ${CUR.role==='admin' ? `
+    <div class="form-row" style="margin-bottom:18px">
+      <input id="captainSearchInput" placeholder="🔍 Find captain by name or username..." value="${captainSearchTerm}" oninput="captainSearchTerm=this.value; renderCaptainCardsList();" />
+    </div>` : ''}
+
+    <div id="captainCardsList"></div>
+  `;
+  renderCaptainCardsList();
+}
+
+function renderCaptainCardsList() {
+  const listEl = document.getElementById('captainCardsList');
+  if (!listEl) return;
+  const allCaps = S.get('captains');
+  const term = (captainSearchTerm||'').trim().toLowerCase();
+  const caps = term
+    ? allCaps.filter(c => (c.name||'').toLowerCase().includes(term) || (c.username||'').toLowerCase().includes(term))
+    : allCaps;
+  const wallets = S.get('wallets');
+  const regs = S.get('registrations');
+  const matches = S.get('matches');
+
+  listEl.innerHTML = caps.length ? caps.map(c=>{
       const capRegs = regs.filter(r=>r.captain===c.username);
       const histHTML = capRegs.length ? capRegs.map(r=>{
         const m = matches.find(x=>x.id===r.matchId);
@@ -3608,9 +3675,10 @@ function renderCaptains() {
 
       return `<div class="card">
         <div class="card-head">
-          <div>
+          <div style="min-width:0">
             <div class="card-title">${c.name}</div>
             <div style="font-size:11px;color:var(--muted)">@${c.username} • UID: ${c.uid}</div>
+            ${CUR.role==='admin' ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">🔒 Password: <span style="color:var(--text);font-weight:600;font-family:monospace">${c.password}</span></div>` : ''}
             <div style="font-size:11px;margin-top:2px;display:flex;align-items:center;gap:6px">
               <span style="color:${c.whatsapp?'var(--green)':'var(--muted)'}">📱 ${c.whatsapp||'No WhatsApp number'}</span>
               ${CUR.role==='admin' ? `<button class="btn btn-ghost btn-sm" style="padding:1px 7px;font-size:10px" onclick="editCaptainWhatsapp('${c.username}')">✏</button>` : ''}
@@ -3632,8 +3700,7 @@ function renderCaptains() {
         </details>
       </div>`;
     }).join('')
-    : `<div class="empty"><div class="empty-icon">👥</div><p>Koi captain nahi. Upar se add karo.</p></div>`}
-  `;
+    : (term ? `<div class="empty"><div class="empty-icon">🔍</div><p>"${captainSearchTerm}" se koi captain nahi mila</p></div>` : `<div class="empty"><div class="empty-icon">👥</div><p>Koi captain nahi. Upar se add karo.</p></div>`);
 }
 
 
@@ -4172,6 +4239,39 @@ async function doRegister() {
   selectRole('captain');
   const lu = document.getElementById('loginUser'); if (lu) lu.value = u;
   const lp = document.getElementById('loginPass'); if (lp) lp.value = p;
+}
+
+function openForgotPasswordModal() {
+  document.getElementById('forgotPassStep1').style.display = 'block';
+  document.getElementById('forgotPassStep2').style.display = 'none';
+  const fp = document.getElementById('fpUsername'); if (fp) fp.value = '';
+  openModal('forgotPassModal');
+}
+
+async function submitForgotPasswordRequest() {
+  const u = v('fpUsername');
+  if (!u) { toast('Username daalo','error'); return; }
+  const caps = S.get('captains') || [];
+  const cap = caps.find(c => c.username === u);
+  if (!cap) { toast('Yeh username nahi mila','error'); return; }
+
+  const reqs = S.get('passwordResetRequests') || [];
+  reqs.push({ id: 'PR'+Date.now(), username: u, name: cap.name, time: now(), status: 'pending' });
+  await S.set('passwordResetRequests', reqs);
+
+  document.getElementById('forgotPassStep1').style.display = 'none';
+  document.getElementById('forgotPassStep2').style.display = 'block';
+  const waLink = document.querySelector('#forgotPassStep2 a');
+  if (waLink) waLink.href = `https://wa.me/917861876386?text=${encodeURIComponent('Hi, mujhe mera password bhool gaya hai. Mera username: '+u)}`;
+}
+
+async function resolvePasswordResetRequest(reqId) {
+  const reqs = S.get('passwordResetRequests') || [];
+  const r = reqs.find(x => x.id === reqId);
+  if (r) r.status = 'resolved';
+  await S.set('passwordResetRequests', reqs);
+  toast('Request resolved', 'success');
+  renderCaptains();
 }
 
 function renderPendingDeps() {
@@ -4899,6 +4999,10 @@ initData().finally(() => clearTimeout(_connectWatchdog));
 
 // Make all functions global (needed because type="module" scopes them)
 window.selectRole = selectRole;
+window.openForgotPasswordModal = openForgotPasswordModal;
+window.submitForgotPasswordRequest = submitForgotPasswordRequest;
+window.resolvePasswordResetRequest = resolvePasswordResetRequest;
+window.renderCaptainCardsList = renderCaptainCardsList;
 window.doLogin = doLogin;
 window.doLogout = doLogout;
 window.nav = nav;
