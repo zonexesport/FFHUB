@@ -1013,8 +1013,14 @@ const firebaseConfig = {
   appId: "1:172809979091:web:4cf7a080541345561a8026"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+let app, db;
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+} catch (e) {
+  console.error('Firebase init failed:', e);
+  alert('⚠ Database connect nahi ho paya:\n' + (e?.message||e) + '\n\nApp ke kuch features kaam nahi karenge. Internet check karo aur page reload karo.');
+}
 
 // ═══════ DATA STORE (Firestore) ═══════
 // In-memory cache — sab S.get/S.set synchronously kaam karte hain
@@ -3650,11 +3656,16 @@ function renderCaptains() {
 
     ${CUR.role==='admin' ? `
     <div class="form-row" style="margin-bottom:18px">
-      <input id="captainSearchInput" placeholder="🔍 Find captain by name or username..." value="${captainSearchTerm}" oninput="captainSearchTerm=this.value; renderCaptainCardsList();" />
+      <input id="captainSearchInput" placeholder="🔍 Find captain by name or username..." value="${captainSearchTerm}" oninput="onCaptainSearchInput(this.value)" />
     </div>` : ''}
 
     <div id="captainCardsList"></div>
   `;
+  renderCaptainCardsList();
+}
+
+function onCaptainSearchInput(val) {
+  captainSearchTerm = val;
   renderCaptainCardsList();
 }
 
@@ -5004,17 +5015,13 @@ function copyRC(text, btn) {
 }
 
 // ═══════ INIT ═══════
-const _connectWatchdog = setTimeout(() => {
-  alert('Connecting 10 seconds se zyada time le raha hai.\n\nPossible reasons:\n- Internet slow/band hai\n- Firestore security rules read/write block kar rahe hain\n- Firebase project disabled/deleted ho gaya hai\n\nApna internet check karo aur page reload karo.');
-}, 10000);
-initData().finally(() => clearTimeout(_connectWatchdog));
-
 // Make all functions global (needed because type="module" scopes them)
 window.selectRole = selectRole;
 window.openForgotPasswordModal = openForgotPasswordModal;
 window.submitForgotPasswordRequest = submitForgotPasswordRequest;
 window.resolvePasswordResetRequest = resolvePasswordResetRequest;
 window.renderCaptainCardsList = renderCaptainCardsList;
+window.onCaptainSearchInput = onCaptainSearchInput;
 window.doLogin = doLogin;
 window.doLogout = doLogout;
 window.nav = nav;
@@ -5064,6 +5071,13 @@ window.doRegister = doRegister;
 window.saveBranding = saveBranding;
 window.resetBranding = resetBranding;
 window.onPresetChange = onPresetChange;
+
+
+const _connectWatchdog = setTimeout(() => {
+  alert('Connecting 10 seconds se zyada time le raha hai.\n\nPossible reasons:\n- Internet slow/band hai\n- Firestore security rules read/write block kar rahe hain\n- Firebase project disabled/deleted ho gaya hai\n\nApna internet check karo aur page reload karo.');
+}, 10000);
+initData().finally(() => clearTimeout(_connectWatchdog));
+
 </script>
 </body>
 </html>
