@@ -607,6 +607,7 @@
   <div id="sec-dashboard" class="section">
     <div class="page-title">Dashboard</div>
     <div class="grid3" id="dashStats"></div>
+    <div style="margin-top:18px" id="dashPendingApprovals"></div>
     <div style="margin-top:18px" id="dashMatches"></div>
     <div style="margin-top:18px" id="dashTournamentMatches"></div>
   </div>
@@ -1036,7 +1037,7 @@ const S = {
   }
 };
 
-const KEYS = ['admin','captains','viewers','viewerLog','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','tournamentImages','globalImages','branding','tournaments','tournamentRegs','notifications','passwordResetRequests'];
+const KEYS = ['admin','captains','viewers','viewerLog','matches','registrations','wallets','deposits','withdrawals','txns','paySettings','matchImages','tournamentImages','globalImages','branding','tournaments','tournamentRegs','notifications','passwordResetRequests','pendingResults','pendingDistributions'];
 
 const DEFAULTS = {
   admin:         { username:'9999999999', password:'admin123', adminCode:'ZX@ADMIN', viewerCode:'ZX@VIEW' },
@@ -1057,7 +1058,9 @@ const DEFAULTS = {
   tournaments:   [],
   tournamentRegs:[],
   notifications: {},
-  passwordResetRequests: []
+  passwordResetRequests: [],
+  pendingResults: [],
+  pendingDistributions: []
 };
 
 // ═══════ INIT ═══════
@@ -1215,11 +1218,15 @@ function renderTournament() {
   const tRegs = S.get('tournamentRegs') || [];
 
   document.getElementById('tournamentContent').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:8px;flex-wrap:wrap">
       <div class="page-title" style="margin:0">🏆 Tournaments</div>
-      ${isAdmin ? `<button class="btn btn-accent btn-sm" onclick="openTournamentCreate()">+ Create</button>` : ''}
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="viewTournamentHistory()">📜 History</button>
+        ${isAdmin ? `<button class="btn btn-accent btn-sm" onclick="openTournamentCreate()">+ Create</button>` : ''}
+      </div>
     </div>
     <div id="tournamentList"></div>
+    <div id="tournamentHistoryList" style="display:none"></div>
     <div id="tournamentDetail" style="display:none"></div>
   `;
 
@@ -1233,7 +1240,8 @@ function renderTournament() {
 }
 
 function renderTournamentList() {
-  const tournaments = S.get('tournaments') || [];
+  const allTournaments = S.get('tournaments') || [];
+  const tournaments = allTournaments.filter(t => t.status !== 'completed');
   const tRegs = S.get('tournamentRegs') || [];
   const isAdmin = CUR.role === 'admin';
   const isCap = CUR.role === 'captain';
@@ -1241,7 +1249,7 @@ function renderTournamentList() {
   if (!el) return;
 
   if (!tournaments.length) {
-    el.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);padding:32px">No tournaments yet</div>`;
+    el.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);padding:32px">${allTournaments.length ? 'Koi active tournament nahi — purane tournaments History mein dekho 📜' : 'No tournaments yet'}</div>`;
     return;
   }
 
@@ -1333,23 +1341,117 @@ function renderTournamentList() {
   }).join('');
 }
 
+let tournamentDetailReturnTo = 'list';
+
+function renderTournamentHistoryList() {
+  const allTournaments = S.get('tournaments') || [];
+  const history = allTournaments.filter(t => t.status === 'completed');
+  const tRegs = S.get('tournamentRegs') || [];
+  const isAdmin = CUR.role === 'admin';
+  const el = document.getElementById('tournamentHistoryList');
+  if (!el) return;
+
+  const header = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="closeTournamentHistory()">← Back</button>
+      ${isAdmin && history.length ? `<button class="btn btn-red btn-sm" onclick="clearAllTournamentHistory()">🗑 Clear All History</button>` : ''}
+    </div>
+    <div class="page-title" style="font-size:16px;margin-bottom:14px">📜 Past Tournaments (${history.length})</div>
+  `;
+
+  if (!history.length) {
+    el.innerHTML = header + `<div class="card" style="text-align:center;color:var(--muted);padding:32px">Abhi koi completed tournament nahi hai</div>`;
+    return;
+  }
+
+  el.innerHTML = header + history.map(t => {
+    const approvedCount = tRegs.filter(r => r.tId === t.id && r.status === 'approved').length;
+    return `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;padding:14px;border-left:3px solid #888;max-width:100%;box-sizing:border-box">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;min-width:0">
+        <div style="min-width:0;flex:1">
+          <div style="font-family:Orbitron,sans-serif;font-size:15px;font-weight:900;color:#fff;text-transform:uppercase;overflow-wrap:break-word">${t.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">${t.format||'BR'} · ${t.teamFormat||'Squad'} · ${approvedCount} teams</div>
+          ${t.schedule ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📅 ${new Date(t.schedule).toLocaleDateString('en-IN')}</div>` : ''}
+        </div>
+        <span style="font-size:10px;font-weight:800;letter-spacing:1px;color:#888;border:1px solid #888;border-radius:6px;padding:4px 10px;flex-shrink:0">COMPLETED</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost btn-sm" style="flex:1" onclick="openTournamentDetailFromHistory('${t.id}')">📋 View Details</button>
+        ${isAdmin ? `<button class="btn btn-red btn-sm" onclick="deleteTournament('${t.id}')">🗑</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function clearAllTournamentHistory() {
+  const allTournaments = S.get('tournaments') || [];
+  const history = allTournaments.filter(t => t.status === 'completed');
+  if (!history.length) return;
+  if (!confirm(`${history.length} completed tournament(s) ki saari history permanently delete karna chahte ho?\n\nIske saath unke matches aur registrations bhi delete ho jayenge. Yeh action UNDO nahi ho sakta.`)) return;
+  if (!confirm(`Pakka? Yeh FINAL confirmation hai — ${history.length} tournament(s) ka data hamesha ke liye chala jayega.`)) return;
+
+  const historyIds = history.map(t => t.id);
+  const remainingTournaments = allTournaments.filter(t => t.status !== 'completed');
+  const remainingRegs = (S.get('tournamentRegs')||[]).filter(r => !historyIds.includes(r.tId));
+  const remainingMatches = (S.get('matches')||[]).filter(m => !historyIds.includes(m.tournamentId));
+
+  await S.set('tournaments', remainingTournaments);
+  await S.set('tournamentRegs', remainingRegs);
+  await S.set('matches', remainingMatches);
+
+  toast(`${history.length} tournament(s) history cleared`, 'success');
+  renderTournamentHistoryList();
+}
+
 function openTournamentDetail(tId) {
   const tournaments = S.get('tournaments') || [];
   const t = tournaments.find(x => x.id === tId);
   if (!t) return;
   const list = document.getElementById('tournamentList');
   if (list) list.style.display = 'none';
+  const hist = document.getElementById('tournamentHistoryList');
+  if (hist) hist.style.display = 'none';
   const det = document.getElementById('tournamentDetail');
   if (!det) return;
   det.style.display = 'block';
   renderTournamentDetailView(t);
 }
 
+function openTournamentDetailFromHistory(tId) {
+  tournamentDetailReturnTo = 'history';
+  openTournamentDetail(tId);
+}
+
 function closeTournamentDetail() {
-  const list = document.getElementById('tournamentList');
-  if (list) list.style.display = 'block';
   const det = document.getElementById('tournamentDetail');
   if (det) det.style.display = 'none';
+  if (tournamentDetailReturnTo === 'history') {
+    const hist = document.getElementById('tournamentHistoryList');
+    if (hist) hist.style.display = 'block';
+    tournamentDetailReturnTo = 'list';
+  } else {
+    const list = document.getElementById('tournamentList');
+    if (list) list.style.display = 'block';
+  }
+}
+
+function viewTournamentHistory() {
+  const list = document.getElementById('tournamentList');
+  if (list) list.style.display = 'none';
+  const det = document.getElementById('tournamentDetail');
+  if (det) det.style.display = 'none';
+  const hist = document.getElementById('tournamentHistoryList');
+  if (!hist) return;
+  hist.style.display = 'block';
+  renderTournamentHistoryList();
+}
+
+function closeTournamentHistory() {
+  const hist = document.getElementById('tournamentHistoryList');
+  if (hist) hist.style.display = 'none';
+  const list = document.getElementById('tournamentList');
+  if (list) list.style.display = 'block';
 }
 
 function renderTournamentDetailView(t) {
@@ -1491,6 +1593,7 @@ function renderTournamentDetailView(t) {
       </div>
       ${(() => {
         const tRegsAll = S.get('tournamentRegs')||[];
+        const pendingResultsAll = S.get('pendingResults')||[];
         // Captain ke liye: sirf wo matches jisme uski team select ho
         const visibleMatches = isCap
           ? tMatches.filter(m => (m.teams||[]).some(tid => {
@@ -1508,6 +1611,7 @@ function renderTournamentDetailView(t) {
             const reg = tRegsAll.find(r=>r.id===tid);
             return reg && reg.captain === CUR.username;
           });
+          const myPendingResult = pendingResultsAll.find(p => p.matchId === m.id && p.status === 'pending');
           return `
           <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:10px;${isMyMatch?'border:1px solid var(--accent)44':''}">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
@@ -1535,11 +1639,24 @@ function renderTournamentDetailView(t) {
               </div>
             </div>` : ''}
             ${m.status==='completed' ? renderMatchResult(m) : ''}
+            ${myPendingResult ? `
+            <div style="margin-top:8px;padding:10px;background:#fbbf2410;border:1px solid #fbbf2430;border-radius:8px">
+              <div style="font-size:11px;color:#fbbf24;font-weight:700;margin-bottom:6px">⏳ Result Pending Admin Approval</div>
+              <div style="font-size:11px;color:var(--muted)">Submitted by ${myPendingResult.submittedByName||myPendingResult.submittedBy} • ${myPendingResult.submittedAt}</div>
+              ${CUR.role==='admin' ? `
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn btn-accent btn-sm" onclick="approvePendingResult('${myPendingResult.id}')">✓ Approve</button>
+                <button class="btn btn-red btn-sm" onclick="rejectPendingResult('${myPendingResult.id}')">✗ Reject</button>
+              </div>` : ''}
+            </div>` : ''}
             ${isAdmin ? `
             <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-              ${m.status!=='completed' ? `
-              <button class="btn btn-accent btn-sm" onclick="openMatchResult('${m.id}')">🏆 Result</button>
+              ${m.status!=='completed' && !myPendingResult ? `
+              <button class="btn btn-accent btn-sm" onclick="openMatchResult('${m.id}')">${CUR.role==='viewer'?'⏳ Submit Result':'🏆 Result'}</button>
               <button class="btn btn-ghost btn-sm" onclick="editTournamentMatch('${m.id}')">✏ Edit</button>
+              ` : ''}
+              ${m.status!=='completed' && myPendingResult && CUR.role==='admin' ? `
+              <button class="btn btn-ghost btn-sm" onclick="openMatchResult('${m.id}')">✏ Enter Different Result</button>
               ` : ''}
               <button class="btn btn-red btn-sm" onclick="deleteTournamentMatch('${m.id}','${(m.name||'').replace(/'/g,"\\'")}','${t.id}')">🗑 Delete</button>
             </div>` : ''}
@@ -1570,7 +1687,7 @@ function renderTournamentDetailView(t) {
         }).join('')}
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <button class="btn btn-accent btn-sm" onclick="confirmTournamentDistribute('${t.id}')">💰 Send to Wallets</button>
+        <button class="btn btn-accent btn-sm" onclick="confirmTournamentDistribute('${t.id}')">${CUR.role==='viewer'?'⏳ Submit for Admin Approval':'💰 Send to Wallets'}</button>
         <button class="btn btn-ghost btn-sm" onclick="autoFillPrize('${t.id}')">⚡ Auto Fill</button>
       </div>
       <div id="tPrizeLog_${t.id}" style="margin-top:10px"></div>
@@ -2455,7 +2572,7 @@ function openMatchResult(matchId) {
         </div>
       `}
       <div style="display:flex;gap:10px;margin-top:12px">
-        <button class="btn btn-accent btn-full" onclick="saveMatchResult('${matchId}')">✅ Save Result</button>
+        <button class="btn btn-accent btn-full" onclick="saveMatchResult('${matchId}')">${CUR.role==='viewer'?'⏳ Submit for Admin Approval':'✅ Save Result'}</button>
         <button class="btn btn-ghost btn-sm" onclick="closeModal('matchResultModal')">Cancel</button>
       </div>
     </div>
@@ -2475,29 +2592,14 @@ async function saveMatchResult(matchId) {
   const killPts = t?.killPoints || 1;
   const teamRegs = (m.teams||[]).map(tid=>tRegs.find(r=>r.id===tid)).filter(Boolean);
 
+  let resultPayload;
   if (m.matchType === 'cs') {
     const winnerId = document.getElementById('csWinner')?.value;
     if (!winnerId) { toast('Select a winner!', 'error'); return; }
     const winReg = tRegs.find(r=>r.id===winnerId);
     const cap = caps.find(c=>c.username===winReg?.captain);
-    m.result = { winner: winReg?.teamName||cap?.name||winReg?.captain, winnerId };
-    m.status = 'completed';
-
-    // Add points
-    teamRegs.forEach(r => {
-      r.points = (r.points||0) + (r.id===winnerId ? (rankPoints[0]||1) : 0);
-    });
-
-    // Notify all teams
-    for (const r of teamRegs) {
-      const isWin = r.id === winnerId;
-      await addNotification(r.captain, {
-        msg: `🏆 Match "${m.name}" result: ${isWin?'YOUR TEAM WON! 🥇':'Winner: '+(winReg?.teamName||cap?.name||'')}`,
-        type:'result', matchId, time:now()
-      });
-    }
+    resultPayload = { matchType:'cs', winner: winReg?.teamName||cap?.name||winReg?.captain, winnerId };
   } else {
-    // BR ranks
     const ranks = teamRegs.map(r => {
       const rank = Number(document.getElementById('rank_'+r.id)?.value||99);
       const kills = Number(document.getElementById('kills_'+r.id)?.value||0);
@@ -2506,17 +2608,64 @@ async function saveMatchResult(matchId) {
       const cap = caps.find(c=>c.username===r.captain);
       return { regId:r.id, teamName:r.teamName||cap?.name||r.captain, rank, kills, rankPts:rPts, killPts:kills*killPts, totalPts };
     }).sort((a,b)=>a.rank-b.rank);
+    resultPayload = { matchType:'br', ranks };
+  }
 
+  // Viewer (partner/community manager) submissions need real-admin approval before they go live
+  if (CUR.role === 'viewer') {
+    const pending = S.get('pendingResults') || [];
+    pending.push({
+      id: 'PRES'+Date.now(), matchId, tournamentId: m.tournamentId, matchName: m.name,
+      submittedBy: CUR.username, submittedByName: CUR.name, resultPayload,
+      status: 'pending', submittedAt: now()
+    });
+    await S.set('pendingResults', pending);
+    await logViewerAction('📝 Submitted Match Result (pending approval)', `Match: ${m.name}`);
+    await addNotification('admin', { msg: `⏳ ${CUR.name} ne "${m.name}" ka result submit kiya — approval chahiye`, type:'pending_result', matchId, time: now() });
+    closeModal('matchResultModal');
+    toast('Result admin approval ke liye bhej diya ⏳', 'success');
+    openTournamentDetail(m.tournamentId);
+    return;
+  }
+
+  await applyMatchResult(matchId, resultPayload);
+  closeModal('matchResultModal');
+  toast('Result saved! Teams notified ✅', 'success');
+  openTournamentDetail(m.tournamentId);
+}
+
+async function applyMatchResult(matchId, resultPayload) {
+  const matches = S.get('matches') || [];
+  const m = matches.find(x => x.id === matchId);
+  if (!m) return;
+  const tRegs = S.get('tournamentRegs') || [];
+  const caps = S.get('captains') || [];
+  const teamRegs = (m.teams||[]).map(tid=>tRegs.find(r=>r.id===tid)).filter(Boolean);
+
+  if (resultPayload.matchType === 'cs') {
+    const { winner, winnerId } = resultPayload;
+    m.result = { winner, winnerId };
+    m.status = 'completed';
+    const t = (S.get('tournaments')||[]).find(x=>x.id===m.tournamentId);
+    const rankPoints = t?.rankPoints || [12,9,8,7,6,5,4,3,2,1];
+    teamRegs.forEach(r => {
+      r.points = (r.points||0) + (r.id===winnerId ? (rankPoints[0]||1) : 0);
+    });
+    for (const r of teamRegs) {
+      const isWin = r.id === winnerId;
+      await addNotification(r.captain, {
+        msg: `🏆 Match "${m.name}" result: ${isWin?'YOUR TEAM WON! 🥇':'Winner: '+winner}`,
+        type:'result', matchId, time:now()
+      });
+    }
+  } else {
+    const { ranks } = resultPayload;
     m.result = { ranks };
     m.status = 'completed';
-
-    // Update points
     ranks.forEach(res => {
       const reg = tRegs.find(r=>r.id===res.regId);
       if (reg) reg.points = (reg.points||0) + res.totalPts;
     });
-
-    // Notify each team their result
     for (const res of ranks) {
       const reg = tRegs.find(r=>r.id===res.regId);
       if (reg) {
@@ -2531,9 +2680,31 @@ async function saveMatchResult(matchId) {
   await S.set('matches', matches);
   await S.set('tournamentRegs', tRegs);
   await logViewerAction('🏆 Saved Match Result', `Match result updated`);
-  closeModal('matchResultModal');
-  toast('Result saved! Teams notified ✅', 'success');
-  openTournamentDetail(m.tournamentId);
+}
+
+async function approvePendingResult(pendingId) {
+  const pending = S.get('pendingResults') || [];
+  const p = pending.find(x => x.id === pendingId);
+  if (!p) return;
+  if (!confirm(`"${p.matchName}" ka result approve karke publish karna chahte ho? Teams ko notify kar diya jayega.`)) return;
+  await applyMatchResult(p.matchId, p.resultPayload);
+  p.status = 'approved';
+  await S.set('pendingResults', pending);
+  await addNotification(p.submittedBy, { msg: `✅ Aapka result "${p.matchName}" approve ho gaya hai`, type:'result_approved', time: now() });
+  toast('Result approved & published! ✅', 'success');
+  openTournamentDetail(p.tournamentId);
+}
+
+async function rejectPendingResult(pendingId) {
+  const pending = S.get('pendingResults') || [];
+  const p = pending.find(x => x.id === pendingId);
+  if (!p) return;
+  if (!confirm(`"${p.matchName}" ka result reject karna chahte ho?`)) return;
+  p.status = 'rejected';
+  await S.set('pendingResults', pending);
+  await addNotification(p.submittedBy, { msg: `❌ Aapka result "${p.matchName}" reject hua hai — dobara check karke submit karo`, type:'result_rejected', time: now() });
+  toast('Result rejected', 'success');
+  openTournamentDetail(p.tournamentId);
 }
 
 // ─── Notifications ───
@@ -2700,11 +2871,11 @@ function renderMatchSlotTable(m) {
 
   return `
   <div style="margin-top:10px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;font-weight:700">📋 Slot Details</div>
-      <button class="btn btn-ghost btn-sm" style="font-size:10px" onclick="toggleSlotTable('slotTbl_${m.id}')">Toggle</button>
-    </div>
-    <div id="slotTbl_${m.id}">
+    <button class="btn btn-ghost btn-sm" style="width:100%;display:flex;justify-content:space-between;align-items:center" onclick="toggleSlotTable('slotTbl_${m.id}', this)">
+      <span style="font-size:11px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;font-weight:700">📋 Slot Details (${rows.length} teams)</span>
+      <span style="font-size:11px">▼</span>
+    </button>
+    <div id="slotTbl_${m.id}" style="display:none;margin-top:8px">
       ${rows.map(({slotNo, reg, cap}) => {
         if (!reg) return '';
         const teamName = reg.teamName || cap?.name || reg.captain;
@@ -2763,9 +2934,15 @@ function renderMatchSlotTable(m) {
   </div>`;
 }
 
-function toggleSlotTable(id) {
+function toggleSlotTable(id, btn) {
   const el = document.getElementById(id);
-  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  if (!el) return;
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? 'block' : 'none';
+  if (btn) {
+    const arrow = btn.querySelector('span:last-child');
+    if (arrow) arrow.textContent = isHidden ? '▲' : '▼';
+  }
 }
 
 window.toggleSlotTable = toggleSlotTable;
@@ -2776,6 +2953,10 @@ window.saveTournament = saveTournament;
 window.editTournament = editTournament;
 window.deleteTournament = deleteTournament;
 window.openTournamentDetail = openTournamentDetail;
+window.openTournamentDetailFromHistory = openTournamentDetailFromHistory;
+window.viewTournamentHistory = viewTournamentHistory;
+window.closeTournamentHistory = closeTournamentHistory;
+window.clearAllTournamentHistory = clearAllTournamentHistory;
 window.closeTournamentDetail = closeTournamentDetail;
 window.joinTournament = joinTournament;
 window.confirmJoinTournament = confirmJoinTournament;
@@ -3271,6 +3452,41 @@ function renderDashboard() {
       <div class="stat-box"><div class="stat-val">${caps.length}</div><div class="stat-label">Captains</div></div>
       <div class="stat-box"><div class="stat-val">₹${totalEntry}</div><div class="stat-label">Total Entry Collected</div></div>
     `;
+
+    // Pending approvals — results & prize distributions submitted by viewers (partner managers)
+    const pendingResults = (S.get('pendingResults')||[]).filter(p => p.status === 'pending');
+    const pendingDist = (S.get('pendingDistributions')||[]).filter(p => p.status === 'pending');
+    const totalPending = pendingResults.length + pendingDist.length;
+    if (totalPending) {
+      document.getElementById('dashPendingApprovals').innerHTML = `
+        <div class="card" style="border-color:rgba(245,158,11,0.45)">
+          <div class="card-title" style="margin-bottom:10px">🔔 Pending Approvals (${totalPending})</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:12px">Partner/viewer-submitted results aur prize distributions — review karke approve ya reject karo.</div>
+          ${pendingResults.map(p => `
+            <div style="padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">🏆 Result: ${p.matchName}</div>
+              <div style="font-size:11px;color:var(--muted);margin:4px 0 8px">Submitted by ${p.submittedByName||p.submittedBy} • ${p.submittedAt}</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-accent btn-sm" onclick="approvePendingResult('${p.id}')">✓ Approve</button>
+                <button class="btn btn-red btn-sm" onclick="rejectPendingResult('${p.id}')">✗ Reject</button>
+                <button class="btn btn-ghost btn-sm" onclick="goToTournamentMatch('${p.tournamentId}')">👁 Tournament</button>
+              </div>
+            </div>`).join('')}
+          ${pendingDist.map(p => `
+            <div style="padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
+              <div style="font-size:12px;font-weight:700;color:var(--text)">💰 Prize Distribution: ${p.tournamentName} — ₹${p.total}</div>
+              <div style="font-size:11px;color:var(--muted);margin:4px 0 8px">Submitted by ${p.submittedByName||p.submittedBy} • ${p.submittedAt}</div>
+              <div style="font-size:11px;color:var(--muted);margin-bottom:8px">${p.distributed.map(d=>`${d.name}: ₹${d.amt}`).join(' · ')}</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-accent btn-sm" onclick="approvePendingDistribution('${p.id}')">✓ Approve & Send</button>
+                <button class="btn btn-red btn-sm" onclick="rejectPendingDistribution('${p.id}')">✗ Reject</button>
+              </div>
+            </div>`).join('')}
+        </div>`;
+    } else {
+      document.getElementById('dashPendingApprovals').innerHTML = '';
+    }
+
     const active = matches.filter(m => !m.tournamentId && m.status !== 'completed').slice(0,3);
     document.getElementById('dashMatches').innerHTML = active.length
       ? `<div class="page-title" style="font-size:15px">Active Matches</div>` + active.map(m => matchCardHTML(m, regs)).join('')
@@ -3299,6 +3515,7 @@ function renderDashboard() {
 
     // Tournament matches sirf admin ko dikhte hain — captain/viewer ke liye khaali
     document.getElementById('dashTournamentMatches').innerHTML = '';
+    document.getElementById('dashPendingApprovals').innerHTML = '';
   }
 }
 
@@ -4582,30 +4799,66 @@ function clearTournamentImage(tid) {
 async function confirmTournamentDistribute(tId) {
   const tRegs = S.get('tournamentRegs') || [];
   const approvedRegs = tRegs.filter(r => r.tId === tId && r.status === 'approved');
-  const wallets = S.get('wallets') || {};
-  const txns = S.get('txns') || {};
-  let total = 0;
-  let distributed = [];
 
+  let distributed = [];
+  let total = 0;
   for (const r of approvedRegs) {
     const inp = document.getElementById('pdAmt_' + tId + '_' + r.id);
     const amt = Number(inp?.value || 0);
     if (amt <= 0) continue;
-    // Add to wallet
-    if (!wallets[r.captain]) wallets[r.captain] = 0;
-    wallets[r.captain] += amt;
-    // Add txn
-    if (!txns[r.captain]) txns[r.captain] = [];
-    txns[r.captain].unshift({ type:'credit', amount:amt, desc:'Tournament Prize', date:now() });
-    distributed.push({ name: r.teamName || r.captain, amt });
+    distributed.push({ regId: r.id, captain: r.captain, name: r.teamName || r.captain, amt });
     total += amt;
-    if (inp) { inp.value = ''; inp.disabled = true; }
   }
 
   if (!distributed.length) { toast('Koi amount nahi daala!', 'error'); return; }
 
-  S.set('wallets', wallets);
-  S.set('txns', txns);
+  // Viewer (partner/community manager) submissions need real-admin approval before money moves
+  if (CUR.role === 'viewer') {
+    const pending = S.get('pendingDistributions') || [];
+    const t = (S.get('tournaments')||[]).find(x=>x.id===tId);
+    pending.push({
+      id: 'PDIST'+Date.now(), tId, tournamentName: t?.name||'Tournament',
+      submittedBy: CUR.username, submittedByName: CUR.name,
+      distributed, total, status:'pending', submittedAt: now()
+    });
+    await S.set('pendingDistributions', pending);
+    await logViewerAction('📝 Submitted Prize Distribution (pending approval)', `Tournament: ${tId} · Total: ₹${total}`);
+    await addNotification('admin', { msg: `⏳ ${CUR.name} ne "${t?.name||'tournament'}" ke liye ₹${total} prize distribution submit kiya — approval chahiye`, type:'pending_distribution', tId, time: now() });
+
+    approvedRegs.forEach(r => {
+      const inp = document.getElementById('pdAmt_' + tId + '_' + r.id);
+      if (inp) inp.disabled = true;
+    });
+    const logEl = document.getElementById('tPrizeLog_' + tId);
+    if (logEl) {
+      logEl.innerHTML = `<div style="background:#fbbf2410;border:1px solid #fbbf2430;border-radius:8px;padding:10px">
+        <div style="font-size:12px;font-weight:700;color:#fbbf24">⏳ ₹${total} — admin approval ke liye pending hai</div>
+      </div>`;
+    }
+    toast('Distribution admin approval ke liye bheja gaya ⏳', 'success');
+    return;
+  }
+
+  await applyPrizeDistribution(tId, distributed, total);
+  approvedRegs.forEach(r => {
+    const inp = document.getElementById('pdAmt_' + tId + '_' + r.id);
+    if (inp) inp.disabled = true;
+  });
+}
+
+async function applyPrizeDistribution(tId, distributed, total) {
+  const wallets = S.get('wallets') || {};
+  const txns = S.get('txns') || {};
+
+  for (const d of distributed) {
+    if (!wallets[d.captain]) wallets[d.captain] = 0;
+    wallets[d.captain] += d.amt;
+    if (!txns[d.captain]) txns[d.captain] = [];
+    txns[d.captain].unshift({ type:'credit', amount:d.amt, desc:'Tournament Prize', date:now() });
+  }
+
+  await S.set('wallets', wallets);
+  await S.set('txns', txns);
 
   const logEl = document.getElementById('tPrizeLog_' + tId);
   if (logEl) {
@@ -4617,6 +4870,29 @@ async function confirmTournamentDistribute(tId) {
   }
   await logViewerAction('💰 Distributed Prize', `Tournament: ${tId} · Total: ₹${total}`);
   toast('Prize wallets mein bhej diya! ✅', 'success');
+}
+
+async function approvePendingDistribution(pendingId) {
+  const pending = S.get('pendingDistributions') || [];
+  const p = pending.find(x => x.id === pendingId);
+  if (!p) return;
+  if (!confirm(`"${p.tournamentName}" ke liye ₹${p.total} distribute karna confirm karte ho? Yeh wallets mein credit ho jayega.`)) return;
+  await applyPrizeDistribution(p.tId, p.distributed, p.total);
+  p.status = 'approved';
+  await S.set('pendingDistributions', pending);
+  await addNotification(p.submittedBy, { msg: `✅ Aapka ₹${p.total} prize distribution "${p.tournamentName}" approve ho gaya`, type:'distribution_approved', time: now() });
+  toast('Distribution approved & sent! ✅', 'success');
+}
+
+async function rejectPendingDistribution(pendingId) {
+  const pending = S.get('pendingDistributions') || [];
+  const p = pending.find(x => x.id === pendingId);
+  if (!p) return;
+  if (!confirm(`"${p.tournamentName}" ka ₹${p.total} distribution reject karna chahte ho?`)) return;
+  p.status = 'rejected';
+  await S.set('pendingDistributions', pending);
+  await addNotification(p.submittedBy, { msg: `❌ Aapka prize distribution "${p.tournamentName}" reject hua — dobara check karo`, type:'distribution_rejected', time: now() });
+  toast('Distribution rejected', 'success');
 }
 
 function autoFillPrize(tId) {
@@ -5030,6 +5306,10 @@ window.closeModal = closeModal;
 window.createMatch = createMatch;
 window.goToTournamentMatch = goToTournamentMatch;
 window.deleteTournamentMatch = deleteTournamentMatch;
+window.approvePendingResult = approvePendingResult;
+window.rejectPendingResult = rejectPendingResult;
+window.approvePendingDistribution = approvePendingDistribution;
+window.rejectPendingDistribution = rejectPendingDistribution;
 window.openTeamDetailModal = openTeamDetailModal;
 window.removeTournamentTeam = removeTournamentTeam;
 window.openJoinMatch = openJoinMatch;
